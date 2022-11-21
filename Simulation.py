@@ -1,5 +1,13 @@
 import numpy as np
 from Area import Area
+from Line import Line
 
-danmark = Area("Danmark")
-print(danmark.getName())
+class Simulation:
+    def __init__(self, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool):
+        self.simulationYear = asimulationYear
+        self.climateYear = aclimateYear
+        self.saveFilePath = asaveFilePath
+        self.saving = asaving
+
+    def RunSimulation(self, beginHour: int, endHour: int):
+        print("running")

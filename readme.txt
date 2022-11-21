@@ -1,43 +1,67 @@
-Der er en hovedklasse kaldt Simulation. Denne har metoder: 
-
-Constructor(int simulationYear, int climateYear):  
-
+Der er en klasse kaldt Simulation, der kører selve simuleringen. simulationYear forstås som året, der simuleres (eks 2030), 
+climateYear forstås som året der hentes timeserier fra (eks 2009)
+Denne har metoder: 
+class Simulation:
+__init___(int simulationYear, int climateYear, string saveFile, bool saving):  
 Initialiserer en liste af el-områder som henter data for det givne simulationyear og climateYear 
-
 Initialiserer en liste af deres demands 
+Initialiserer en liste af deres samlede productioncapacities 
+Initialiserer en liste af alle tilgængelige lines
+Initialiser en liste til at holde på de transmissioner, der beregnes i SolveMaxFlow()
+Initialisér lister for hver node, der holder på produktionstyperne i den gældende node
+Initialiser saveFile, en path til den fil, der kommer til at indeholde data efter run.
+Initialiser saving, en bool der siger om simuleringsdataet skal skrives i en txt fil. 
+Hvis saving, skab en txt-fil der kan indeholde data, og lav en header i denne fil.
 
-Initialiserer en liste af deres capacities 
-
-Initialiserer en liste af alle tilgængelige lines 
-
- 
-
-PrepareHour(int timetal): 
-
+PrepareHour(int hour): 
 Løber listen igennem af el-områder og beder dem alle om at forberede sig på timen i det givne timetal. 
+Efter det, opdater listerne med hvor meget kapacitet der er i hver node, hvor meget demand der er, og hvilke lines der er tilgængelige. 
 
-Efter det, opdater listerne med hvor meget kapacitet der er i hver node, hvor meget demand der er, og  
+SolveMaxFlow():
+Under de parametre, der er blevet opdateret i PrepareHour(), løs Maxflow problemet. Scrambl rækkefølgen af nodes inden?
 
- 
+SaveData():
+Append en linje til txt-filen med dataen for den pågældende time.
 
-Klasse: El-område 
+RunSimulation(int beginHour, int endHour):
+Kører simulationen fra begyndelsestimen til endtimen (dvs 0 til 8760 hvis man vil køre hele året) ved at gøre følgende i et for-loop:
+PrepareHour() for den pågældende time
+SolveMaxFlow()
+Der skal være en prioriteringsliste af, hvad man slukker for først, når man har overskud man ikke kan komme af med. Man slukker så for produktionen 
+i værker i noden indtil der ikke længere er overskud af strøm i noden (ifht transmission og demand) 
+Hvis saving, SaveData()
 
- 
 
-Superklasse: agent 
 
- 
+Area klassen simulerer et el-pris-område som f.eks. DK-øst
+Class: Area
+__init___(string name, int simulationYear, int climateYear):
+Indhenter værdierne for produktion i forskellige værkstyper i simuleringsåret. Og også demand. 
+Indhenter timeserier for området
 
-Agent: Line 
+GetDemand(int hour):
+Returnér demand i den pågældende time, beregnet ud fra timeserien og demand i noden i simuleringsåret (værdier i TVAR.csv er jo normerede)
 
- 
+GetPVProduction(int hour):
+Returnér PV production i den pågældende time, beregnet ud fra timeserien og PV capacitet i noden i simuleringsåret (værdier i TVAR.csv er jo normerede)
 
-Agent: Producer 
+GetWSProduction(int hour):
+Ligesom PVproduction men for havvind. Gentag dette for alle typer af produktioner. Man kunne forestille sig at batterier ville skulle behandles specielt, Hvis
+man ville sørge for at de overholdte energibevarelse.
 
- 
+I senere implementationer af simuleringen skal denne klasse også håndtere nedetiden af værker. 
 
-Agent: Producer: VariableProducer 
 
- 
 
-Agent: Producer: BatteryType 
+Line klassen holder styr på transmissionslinjer
+Class: Line
+__init__(string a, string b, double maxCapAB, double maxCapBA):
+Konstruerer line-objekt.
+
+GetMaxAB():
+Returner maxcapaciteten fra A til B 
+
+GetMaxBA():
+Returner maxcapaciteten fra B til A
+
+Denne klasse kan senere håndtere at en linje kan have et sammenbrud. 
