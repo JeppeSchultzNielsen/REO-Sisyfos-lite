@@ -8,6 +8,7 @@ class Simulation:
         self.climateYear = aclimateYear
         self.saveFilePath = asaveFilePath
         self.saving = asaving
+        self.nameList = ["DK1"]
 
     def RunSimulation(self, beginHour: int, endHour: int):
         print("running")
