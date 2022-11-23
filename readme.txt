@@ -42,12 +42,11 @@ Indhenter timeserier for området
 GetDemand(int hour):
 Returnér demand i den pågældende time, beregnet ud fra timeserien og demand i noden i simuleringsåret (værdier i TVAR.csv er jo normerede)
 
-GetPVProduction(int hour):
-Returnér PV production i den pågældende time, beregnet ud fra timeserien og PV capacitet i noden i simuleringsåret (værdier i TVAR.csv er jo normerede)
+PrepareHour(int hour):
+Skal kunne give nogle kraftværker nedetid. Ikke implementeret i første omgang. 
 
-GetWSProduction(int hour):
-Ligesom PVproduction men for havvind. Gentag dette for alle typer af produktioner. Man kunne forestille sig at batterier ville skulle behandles specielt, Hvis
-man ville sørge for at de overholdte energibevarelse.
+GetProduction(int hour, string type):
+Returnerer produktionen af denne energitype i area for den pågældende time. 
 
 I senere implementationer af simuleringen skal denne klasse også håndtere nedetiden af værker. 
 
