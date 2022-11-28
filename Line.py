@@ -8,3 +8,4 @@ class Line:
 
     def GetName(self):
         return self.a + "_to_" + self.b
+    #Test om jeg kan push
