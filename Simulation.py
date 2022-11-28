@@ -1,6 +1,8 @@
 import numpy as np
 from Area import Area
 from Line import Line
+from pulp import LpMaximize, LpProblem, LpStatus, lpSum, LpVariable, LpMinimize
+import random
 
 class Simulation:
     def __init__(self, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool):
@@ -64,13 +66,21 @@ class Simulation:
                 self.fileOut.write(line.GetName() + "\t")
 
 
+
+
     #helper function for initializing all lines
     def InitializeLines(self):
         pass #bliver noget med self.linesList.append(Line("navnA",navnB osv))
 
+
+
+
     #helper function
     def GetOriginalAreaIndex(self, name: str):
         return self.nameList.index(name, 0, len(self.nameList))
+
+
+
 
     def PrepareHour(self, hour: int):
         i = 0
@@ -112,9 +122,79 @@ class Simulation:
             self.fileOut.write(self.transferList[i] + "\t")
             i += 1
 
+
+
+
     #solves the MaxFlow problem under current conditions. 
     def SolveMaxFlowProblem(self):
-        pass
+
+        #first, create a scrambled list of area names
+        scrambledNames = self.nameList.copy()
+        random.shuffle(scrambledNames)
+        scrambledProductions = []
+        scrambledDemands = []
+
+        scrambledLines = self.linesList.copy()
+        random.shuffle(scrambledLines)
+
+        #create equally shuffled lists of productions and demands
+        for name in scrambledNames:
+            origIndex = self.GetOriginalAreaIndex(name)
+            scrambledProductions.append(self.productionList[origIndex])
+            scrambledDemands.append(self.demandList[origIndex])
+        
+        #now, solve Maxflow Problem
+        F_vec = []
+    
+        for i in range(len(scrambledLines)):
+            F_vec.append(0)
+            F_vec[i] = LpVariable(name="F"+str(i), lowBound=-scrambledLines.GetMaxCapBA(), upBound = scrambledLines.GetMaxCapAB())
+
+        #create model
+        model = LpProblem(name="maxFlow", sense=LpMaximize)
+        obj_func = 0
+
+        #find demand and production in each node. 
+        for i in range(len(scrambledDemands)):
+            hasSurplus = True
+            surplus = scrambledProductions[i] - scrambledDemands[i]
+            if(surplus < 0):
+                hasSurplus = False
+            build = 0
+            #find lines relevant to this node. If they are in index 0, they represent flow out, if they are in index 1, they
+            #represent flow in.
+            j = 0
+            for line in range(len(scrambledLines)):
+                if(scrambledNames[i] == line.GetA()):
+                    #positive flow corresponds to flow out of node
+                    build -= F_vec[j]
+                    if(not hasSurplus):
+                        #if node does not have surplus, should maximize flow into node
+                        obj_func -= F_vec[j]
+                if(scrambledNames[i] == line.GetB()):
+                    #positive flow corresponds to flow into node
+                    build += F_vec[j]
+                    if(not hasSurplus):
+                        #if node does not have surplus, should maximize flow into node
+                        obj_func += F_vec[j]
+
+            model += (-build <= surplus, "constraint_demand" + str(i))
+            j +=1
+    
+        #create objective for model
+        model += obj_func
+
+        #solve model
+        status = model.solve()
+
+        #save line output 
+        for i in (range(len(scrambledLines))):
+            for j in range(len(self.linesList)):
+                if(scrambledLines[i].GetName() == self.linesList[j].GetName()):
+                    self.transferList[j] = model.variables()[i].value()
+
+
+
 
     #Running the simulation
     def RunSimulation(self, beginHour: int, endHour: int):

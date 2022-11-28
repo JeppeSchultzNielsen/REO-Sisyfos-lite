@@ -1,3 +1,6 @@
+Mappen "data" indeholder det data, der skal læses ind i simuleringen. Den indeholder også en jupyter notebook, der gerne skal oversætte de navne, der nogle gange bruges i Sisyfosdata
+til de navne, der bruges i TVAR.csv
+
 Der er en klasse kaldt Simulation, der kører selve simuleringen. simulationYear forstås som året, der simuleres (eks 2030), 
 climateYear forstås som året der hentes timeserier fra (eks 2009)
 Denne har metoder: 
