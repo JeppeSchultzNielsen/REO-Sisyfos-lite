@@ -1,7 +1,7 @@
 import numpy as np
 from Area import Area
 from Line import Line
-from pulp import LpMaximize, LpProblem, LpStatus, lpSum, LpVariable, LpMinimize
+from pulp import LpMaximize, LpProblem, LpStatus, lpSum, LpVariable, LpMinimize, GLPK_CMD
 import random
 
 class Simulation:
@@ -15,43 +15,32 @@ class Simulation:
         self.nameList = ["DK1", "DK2", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","CZSK","HU"]
 
         #list to contain all areas
-        self.areaList = []
+        self.areaList = np.empty(shape=len(self.nameList), dtype = Area)
 
         #list with demands of all areas
-        self.demandList = []
+        self.demandList = np.zeros(len(self.nameList))
 
         #list of productions in all areas
-        self.productionList = []
+        self.productionList = np.zeros(len(self.nameList))
 
         #initialize the lists
-        for name in self.nameList:
-            self.areaList.append(Area(name,self.simulationYear,self.climateYear))
-            self.demandList.append(0)
-            self.productionList.append(0)
+        for i in range(len(self.nameList)):
+            self.areaList[i] = (Area(self.nameList[i],self.simulationYear,self.climateYear))
+
+        self.numberOfLines = self.GetNumberOfLines()
 
         #list of all lines
-        self.linesList = []
+        self.linesList = np.empty(shape=self.numberOfLines, dtype = Line)
 
         #initialize the lines
         self.InitializeLines()
 
         #list to store the value transfered on each line
-        self.transferList = []
-
-        #initialize the list
-        for line in self.linesList:
-            self.transferList.append(0)
+        self.transferList = np.zeros(self.numberOfLines)
 
         #we wish to know how much production there is of each type in each node.
         self.productionTypeNames = ["WS","PV","Nclear","etc"]
-        self.productionTypeMatrix = []
-
-        #initialize productionTypeMatrix
-        for area in self.areaList:
-            productions = []
-            for types in self.productionTypeNames:
-                productions.append(0)
-            self.productionTypeMatrix.append(productions)
+        self.productionTypeMatrix = np.zeros([len(self.nameList), len(self.productionTypeNames)])
 
         #create file for saving output
         if(self.saving):
@@ -73,12 +62,22 @@ class Simulation:
         f = open("data\linedata"+str(self.simulationYear)+".csv","r")
         line = f.readline() #skip header
         line = f.readline() #read 1st line
+        i = 0
         while(line):
             splitted = line.split(",")
-            self.linesList.append(Line(splitted[0],splitted[1],float(splitted[2]),float(splitted[3])))
+            self.linesList[i] = (Line(splitted[0],splitted[1],float(splitted[2]),float(splitted[3])))
             line = f.readline() #read next line
+            i = i+1
 
-
+    def GetNumberOfLines(self):
+        i = 0
+        f = open("data\linedata"+str(self.simulationYear)+".csv","r")
+        line = f.readline() #skip header
+        line = f.readline() #read 1st line
+        while(line):
+            line = f.readline() #read next line
+            i = i+1
+        return i
 
 
     #helper function
@@ -137,23 +136,24 @@ class Simulation:
         #first, create a scrambled list of area names
         scrambledNames = self.nameList.copy()
         random.shuffle(scrambledNames)
-        scrambledProductions = []
-        scrambledDemands = []
+        scrambledProductions = np.zeros(len(self.productionList))
+        scrambledDemands = np.zeros(len(self.demandList))
 
         scrambledLines = self.linesList.copy()
         random.shuffle(scrambledLines)
 
         #create equally shuffled lists of productions and demands
+        i = 0
         for name in scrambledNames:
             origIndex = self.GetOriginalAreaIndex(name)
-            scrambledProductions.append(self.productionList[origIndex])
-            scrambledDemands.append(self.demandList[origIndex])
+            scrambledProductions[i] = (self.productionList[origIndex])
+            scrambledDemands[i] = (self.demandList[origIndex])
+            i = i + 1
         
         #now, solve Maxflow Problem
-        F_vec = []
+        F_vec = np.empty(shape=self.numberOfLines, dtype = LpVariable)
     
         for i in range(len(scrambledLines)):
-            F_vec.append(0)
             F_vec[i] = LpVariable(name="F"+str(i), lowBound=-scrambledLines[i].GetMaxCapBA(), upBound = scrambledLines[i].GetMaxCapAB())
 
         #create model
@@ -189,7 +189,8 @@ class Simulation:
         model += obj_func
 
         #solve model
-        status = model.solve()
+        status = model.solve(GLPK_CMD(msg=False))
+
 
         #save line output 
         for i in (range(len(scrambledLines))):

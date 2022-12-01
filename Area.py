@@ -1,7 +1,9 @@
+import numpy as np
+
 class Area:
     def __init__(self, areaName: str, simulationYear: int, climateYear: int):
         self.name = areaName
-        self.demands 
+        self.demands = np.zeros(24*365)
 
     def PrepareHour(self, hour: int):
         pass
