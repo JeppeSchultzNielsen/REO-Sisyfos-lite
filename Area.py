@@ -1,6 +1,7 @@
 class Area:
     def __init__(self, areaName: str, simulationYear: int, climateYear: int):
         self.name = areaName
+        self.demands 
 
     def PrepareHour(self, hour: int):
         pass

@@ -12,7 +12,7 @@ class Simulation:
         self.saving = asaving
 
         #list of names of all areas
-        self.nameList = ["DK1", "DK2", "etc"]
+        self.nameList = ["DK1", "DK2", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","CZSK","HU"]
 
         #list to contain all areas
         self.areaList = []
@@ -70,7 +70,13 @@ class Simulation:
 
     #helper function for initializing all lines
     def InitializeLines(self):
-        pass #bliver noget med self.linesList.append(Line("navnA",navnB osv))
+        f = open("data\linedata"+str(self.simulationYear)+".csv","r")
+        line = f.readline() #skip header
+        line = f.readline() #read 1st line
+        while(line):
+            splitted = line.split(",")
+            self.linesList.append(Line(splitted[0],splitted[1],float(splitted[2]),float(splitted[3])))
+            line = f.readline() #read next line
 
 
 
@@ -119,7 +125,7 @@ class Simulation:
                 j += 1
         i = 0
         for line in self.linesList:
-            self.fileOut.write(self.transferList[i] + "\t")
+            self.fileOut.write(str(self.transferList[i]) + "\t")
             i += 1
 
 
@@ -148,7 +154,7 @@ class Simulation:
     
         for i in range(len(scrambledLines)):
             F_vec.append(0)
-            F_vec[i] = LpVariable(name="F"+str(i), lowBound=-scrambledLines.GetMaxCapBA(), upBound = scrambledLines.GetMaxCapAB())
+            F_vec[i] = LpVariable(name="F"+str(i), lowBound=-scrambledLines[i].GetMaxCapBA(), upBound = scrambledLines[i].GetMaxCapAB())
 
         #create model
         model = LpProblem(name="maxFlow", sense=LpMaximize)
@@ -163,15 +169,14 @@ class Simulation:
             build = 0
             #find lines relevant to this node. If they are in index 0, they represent flow out, if they are in index 1, they
             #represent flow in.
-            j = 0
-            for line in range(len(scrambledLines)):
-                if(scrambledNames[i] == line.GetA()):
+            for j in range(len(scrambledLines)):
+                if(scrambledNames[i] == scrambledLines[j].GetA()):
                     #positive flow corresponds to flow out of node
                     build -= F_vec[j]
                     if(not hasSurplus):
                         #if node does not have surplus, should maximize flow into node
                         obj_func -= F_vec[j]
-                if(scrambledNames[i] == line.GetB()):
+                if(scrambledNames[i] == scrambledLines[j].GetB()):
                     #positive flow corresponds to flow into node
                     build += F_vec[j]
                     if(not hasSurplus):
@@ -179,7 +184,6 @@ class Simulation:
                         obj_func += F_vec[j]
 
             model += (-build <= surplus, "constraint_demand" + str(i))
-            j +=1
     
         #create objective for model
         model += obj_func
