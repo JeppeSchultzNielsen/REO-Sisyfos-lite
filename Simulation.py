@@ -2,6 +2,7 @@ import numpy as np
 from Area import Area
 from Line import Line
 from pulp import LpMaximize, LpProblem, LpStatus, lpSum, LpVariable, LpMinimize, GLPK_CMD
+from DataHolder import DataHolder
 import random
 
 class Simulation:
@@ -11,8 +12,10 @@ class Simulation:
         self.saveFilePath = asaveFilePath
         self.saving = asaving
 
+        dh = DataHolder()
+
         #list of names of all areas
-        self.nameList = ["DK1", "DK2", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","CZSK","HU"]
+        self.nameList = dh.names
 
         #list to contain all areas
         self.areaList = np.empty(shape=len(self.nameList), dtype = Area)
@@ -39,7 +42,7 @@ class Simulation:
         self.transferList = np.zeros(self.numberOfLines)
 
         #we wish to know how much production there is of each type in each node.
-        self.productionTypeNames = ["WS","PV","Nclear","etc"]
+        self.productionTypeNames = dh.productionTypes
         self.productionTypeMatrix = np.zeros([len(self.nameList), len(self.productionTypeNames)])
 
         #create file for saving output
