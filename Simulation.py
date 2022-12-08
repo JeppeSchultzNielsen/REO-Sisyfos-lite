@@ -98,7 +98,7 @@ class Simulation:
             totalProduction = 0
             j = 0
             for prodType in self.productionTypeNames:
-                prod = area.GetProduction(hour, prodType)
+                prod = area.GetProduction(hour, j)
                 totalProduction += prod
                 self.productionTypeMatrix[i][j] = prod
                 j += 1

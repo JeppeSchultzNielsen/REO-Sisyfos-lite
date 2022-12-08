@@ -1,0 +1,544 @@
+EsbjergvÊrket Blok 3,DK-West,1,0,1,CKV_EX
+EsbjergvÊrket Blok 3.1,DK-West,1,0,1,CKV_BP
+FynsvÊrket Blok 7,DK-West,1,0,1,CKV_EX
+FynsvÊrket Blok 7.1,DK-West,1,272,1,CKV_BP
+FynsvÊrket Blok 7.2,DK-West,1,35,1,CKV_BP
+FynsvÊrket Blok 8,DK-West,1,31,1,CKV_BP
+HerningvÊrket -,DK-West,1,73.2,1,CKV_BP
+NordjyllandsvÊrket Blok 2,DK-West,1,0,1,CKV_EX
+NordjyllandsvÊrket Blok 3,DK-West,1,0,1,CKV_EX
+NordjyllandsvÊrket Blok 3.1,DK-West,1,0,1,CKV_BP
+SkÊrbÊkvÊrket Blok 3,DK-West,1,392,1,CKV_EX
+StudstrupvÊrket Blok 3,DK-West,1,0,1,CKV_EX
+StudstrupvÊrket Blok 4,DK-West,1,0,1,CKV_EX
+StudstrupvÊrket Blok 5,DK-West,1,14,1,CKV_GT
+RandersvÊrket -,DK-West,1,52,1,CKV_BP
+Hj¯rring_KV ,DK-West,1,56.15,1,DKV_CC
+AVV-ForbrÊnding_KV ,DK-West,1,3.22,1,DKV_affald
+Frederikshavn_KV ,DK-West,1,0,1,DKV_GT
+AVù-ForbrÊnding_KV ,DK-West,1,1.68,1,DKV_affald
+ForbrÊndingsmotor_Biogas_Frederikshavn ,DK-West,1,0,1,DKV_GM
+Br¯nderslev_KV ,DK-West,1,22.4,1,DKV_GM
+Br¯nderslev_ORC_CSP ,DK-West,1,4,1,DKV_bio
+Thisted-ForbrÊnding_KV ,DK-West,1,2.31,1,DKV_affald
+ForbrÊndingsmotor_Naturgas_Thisted ,DK-West,1,0,1,DKV_GM
+MÜbjergvÊrket_KV ,DK-West,1,18.9,1,DKV_affald
+ForbrÊndingsmotor_Biogas_HolstebroStruer ,DK-West,1,0,1,DKV_GM
+Viborg_KV ,DK-West,1,57,1,DKV_CC
+GrenÜ_KV ,DK-West,1,0,1,DKV_bio
+ForbrÊndingsmotor_Naturgas_Herning ,DK-West,1,0,1,DKV_GM
+ForbrÊndingsmotor_Biogas_Herning ,DK-West,1,0,1,DKV_GM
+Silkeborg_KV ,DK-West,1,54.25,1,DKV_CC
+Silkeborg_KV_Ombygget ,DK-West,1,54.3,1,DKV_CC
+Lisbjerg_KV ,DK-West,1,37,1,DKV_bio
+RenoSyd_KV ,DK-West,1,1.995,1,CKV_affald
+èrhus-ForbrÊnding_KV_Ovn4 ,DK-West,1,7.91,1,CKV_affald
+èrhus-ForbrÊnding_KV_Ovn2 ,DK-West,1,3.15,1,CKV_affald
+èrhus-ForbrÊnding_KV_Ovn1 ,DK-West,1,3.15,1,CKV_affald
+ForbrÊndingsmotor_Biogas_èrhus ,DK-West,1,0,1,DKV_GM
+Horsens_KV ,DK-West,1,4.9,1,DKV_CC
+L90-Esbjerg-ForbrÊnding_KV ,DK-West,1,12.95,1,CKV_affald
+ForbrÊndingsmotor_Biogas_Esbjerg ,DK-West,1,0,1,DKV_GM
+TAS-ForbrÊnding_KV ,DK-West,1,4.382,1,CKV_affald
+ForbrÊndingsmotor_Biogas_TVIS ,DK-West,1,0,1,DKV_GM
+S¯nderborg_KV ,DK-West,1,3.5,1,DKV_CC
+Odense_KV_Affaldslinje11+12 ,DK-West,1,6.3,1,CKV_affald
+Odense_KV_Affaldslinje11+12_LevetidsforlÊnget ,DK-West,1,0,1,CKV_affald
+Odense_KV_Affaldslinje13 ,DK-West,1,9.1,1,CKV_affald
+Odense_KV_Affaldslinje13_LevetidsforlÊnget ,DK-West,1,0,1,CKV_affald
+DalumPapir_KV ,DK-West,1,0,1,DKV_bio
+Motor_Naturgas_Odense ,DK-West,1,5.58,1,DKV_GM
+Motor_Biogas_Odense ,DK-West,1,0,1,DKV_GM
+Motor_Olie_Odense ,DK-West,1,0,1,DKV_GM
+Svendborg_KV ,DK-West,1,3.15,1,DKV_affald
+ForbrÊndingsmotor_Naturgas_Svendborg ,DK-West,1,0,1,DKV_GM
+L¯gumkloster_KV ,DK-West,1,0,1,DKV_GM
+Gasturbine_Naturgas_NG_DK-West ,DK-West,1,35.436,7,DKV_GT
+Skive_KV ,DK-West,1,0,1,DKV_GM
+Biomasse_KV_BIO_DK-West ,DK-West,1,0,1,DKV_bio
+Gasturbine_Naturgas_BIO_DK-West ,DK-West,1,0,1,DKV_GT
+Aars_KV ,DK-West,1,2.023,1,DKV_affald
+KombianlÊg_NG ,DK-West,1,11.9,1,DKV_GM
+Gasturbine_Esbjerg ,DK-West,1,25,1,Regulerkraft
+ForbrÊndingsmotor_Anholt ,DK-West,1,2.4,1,DKV_GM
+N¯dstr¯msanlÊg ,DK-West,1,0,1,Regulerkraft
+I/S Reno Nord ,DK-West,1,4.9,1,CKV_affald
+ForbrÊndingsmotor_ùstermoseBioenergi ,DK-West,1,0,1,DKV_GM
+Motorer - restomrÜder - DK1 ,DK-West,1,394.2840487,79,DKV_GM
+I/S Reno Nord ,DK-West,1,12.53,1,CKV_affald
+ùvrig decentral regulerkraft-Vest ,DK-West,1,8.386343156,2,Regulerkraft
+Overskudsel_DK-West ,DK-West,1,120.683,1,ICHP
+Havvind DKV,DK-West,1,2787,1,Wind
+Kystvind DKV,DK-West,1,200,1,Wind
+Energi¯Vest,EnergyIsland,5,0,1,Wind
+Landvind DKV,DK-West,1,3345.35,1,Wind
+Solceller DKV,DK-West,1,8060,1,Solar
+VandkraftDK,DK-West,1,6.93,1,ROR
+DivKapDK1,DK-West,1,0,1,StratRes
+FlatDemandDK1,DK-West,1,-1117.776919,1,Demand
+ReservesDK-West,DK-West,1,-110,1,RS
+AmagervÊrket Blok 1,DK-East,2,0,1,CKV_BP
+AmagervÊrket Blok 3,DK-East,2,0,1,CKV_EX
+AmagervÊrket Blok 4,DK-East,2,150,1,CKV_BP
+AsnÊsvÊrket Blok 2,DK-East,2,0,1,CKV_EX
+AsnÊsvÊrket Blok 2.1,DK-East,2,0,1,CKV_BP
+AsnÊsvÊrket Blok 4,DK-East,2,0,1,CKV_EX
+AsnÊsvÊrket Blok 5,DK-East,2,0,1,CKV_EX
+AsnÊsvÊrket Blok 6,DK-East,2,25,1,CKV_BP
+Aved¯revÊrket Blok 1,DK-East,2,0,1,CKV_EX
+Aved¯revÊrket Blok 2,DK-East,2,560,1,CKV_EX
+H.C. ùrstedsvÊrket Sektion 2 (Blok 1-4),DK-East,2,0,1,CKV_BP
+H.C. ùrstedsvÊrket Blok 7,DK-East,2,0,1,CKV_BP
+H.C. ùrstedsvÊrket Blok 8,DK-East,2,0,1,CKV_GT
+KyndbyvÊrket Blok 21,DK-East,2,2,1,CKV_EX
+StigsnÊsvÊrket Blok 1,DK-East,2,0,1,CKV_EX
+StigsnÊsvÊrket Blok 2,DK-East,2,0,1,CKV_EX
+Svanem¯llevÊrket Blok 1-3,DK-East,2,0,1,CKV_BP
+Svanem¯llevÊrket Blok 7,DK-East,2,0,1,CKV_BP
+ùstkraft Blok 6,Bornholm,3,37,1,CKV_EX
+KyndbyvÊrket Blok 22,DK-East,2,260,1,KYV22
+KyndbyvÊrket Blok 41,DK-East,2,18,1,CKV_GT
+KyndbyvÊrket Blok 51,DK-East,2,63,1,CKV_GT
+KyndbyvÊrket Blok 52,DK-East,2,63,1,CKV_GT
+Masned¯vÊrket Blok 31,DK-East,2,70,1,CKV_GT
+ùstkraft DieselvÊrk,Bornholm,3,19.6,4,CKV_DI
+ùstkraft Blok 5,Bornholm,3,27.5,1,KYV22
+ùstkraft Blok 7,Bornholm,3,15,3,CKV_DI
+Helsing¯r_KV ,DK-East,2,55,1,DKV_CC
+Helsing¯r_KV_GT ,DK-East,2,0,1,DKV_CC
+Helsing¯r_KV_2 ,DK-East,2,0,1,DKV_CC
+NordforbrÊnding_KV ,DK-East,2,5.6,1,CKV_affald
+ForbrÊndingsmotor_Naturgas_Helsing¯r ,DK-East,2,0,1,DKV_GM
+Hiller¯d_KV ,DK-East,2,0,1,DKV_CC
+Hiller¯d_KV_ORC ,DK-East,2,5.12,1,DKV_bio
+Flisforgasser_Gasmotor_Hiller¯d ,DK-East,2,3.94,1,DKV_GM
+DTU_KV ,DK-East,2,38.5,1,DKV_CC
+Koge_KV_Blok7 ,DK-East,2,0,1,DKV_bio
+Koge_KV_Blok8 ,DK-East,2,15,1,DKV_bio
+ARC_KV_AmagerBakke ,DK-East,2,43.4,1,CKV_affald
+KARA-ForbrÊnding_KV_AnlÊg5 ,DK-East,2,9.59,1,CKV_affald
+KARA-ForbrÊnding_KV_AnlÊg6 ,DK-East,2,13.58,1,CKV_affald
+VestforbrÊnding_KV_AnlÊg5 ,DK-East,2,11.9,1,CKV_affald
+VestforbrÊnding_KV_AnlÊg6 ,DK-East,2,15.4,1,CKV_affald
+ForbrÊndingsmotor_Biogas_KBH ,DK-East,2,0,1,DKV_GM
+Slagelse-ForbrÊnding_KV ,DK-East,2,7.63,1,DKV_affald
+Masned¯KV ,DK-East,2,9.98,1,DKV_bio
+MariboSaksk¯bing_KV ,DK-East,2,11.5,1,DKV_bio
+Haslev_KV ,DK-East,2,0,1,DKV_bio
+N¯dstr¯msanlÊg_DK-East ,DK-East,2,3.6,1,DKV_GM
+Nyk¯bingFalster-ForbrÊnding_KV ,DK-East,2,4.69,1,DKV_affald
+NÊstved-ForbrÊnding_KV ,DK-East,2,9.023,1,DKV_affald
+Motorer - restomrÜder - DK2 ,DK-East,2,110.9997778,22,DKV_GM
+ùvrig decentral regulerkraft-ùst ,DK-East,2,36,7,Regulerkraft
+Overskudsel_DK-East ,DK-East,2,40.165,1,ICHP
+I/S Norfors ,DK-East,2,5.18,1,CKV_affald
+Havvind DKù,DK-East,2,2004.8,1,Wind
+Kystvind DKù,DK-East,2,500,1,Wind
+Landvind DKù,DK-East,2,693.285,1,Wind
+Solceller DKù,DK-East,2,4598.55,1,Solar
+VindBornholm,Bornholm,3,37,1,Wind
+PVBornholm,Bornholm,3,46.45,1,Solar
+HavvindKF,KriegersFlak,4,600,1,Wind
+Energi¯ùst,Bornholm,3,0,1,Wind
+DivKapDK2,DK-West,2,0,1,StratRes
+FlatDemandDK2,DK-West,1,-233.5900374,1,Demand
+ReservesDK-East,DK-East,2,-86,1,RS
+Nuclear_NOm,NOm,6,0,1,Nuclear
+Lignite_NOm,NOm,6,0,1,KulUdland
+Coal_NOm,NOm,6,0,1,KulUdland
+Gas_NOm,NOm,6,0,1,GasUdland
+Oil_NOm,NOm,6,0,1,OlieUdland
+HydroRun_NOm,NOm,6,0,1,ROR
+HydroTurbine_NOm,NOm,6,0,1,HydroRes
+HydroPump_NOm,NOm,6,5381,108,HydroRes
+WindLand_NOm,NOm,6,1788,1,Wind
+WindSea_NOm,NOm,6,0,1,Wind
+PV_NOm,NOm,6,0,1,Solar
+SolarTh_NOm,NOm,6,0,1,Solar
+OtherRES_NOm,NOm,6,0,1,OtherRes_NO
+OtherNonRES_NOm,NOm,6,20,1,OtherNonRes_NO
+Biofuels_NOm,NOm,6,0,1,Biofuels
+Peat_NOm,NOm,6,0,1,Peat
+DSR_NOm,NOm,6,1424,142,DSR
+Battery_NOm,NOm,6,0,1,Battery
+ReservesNOm,NOm,6,-150,1,RS
+Nuclear_NOn,NOn,7,0,1,Nuclear
+Lignite_NOn,NOn,7,0,1,KulUdland
+Coal_NOn,NOn,7,0,1,KulUdland
+Gas_NOn,NOn,7,0,1,GasUdland
+Oil_NOn,NOn,7,0,1,OlieUdland
+HydroRun_NOn,NOn,7,0,1,ROR
+HydroTurbine_NOn,NOn,7,0,1,HydroRes
+HydroPump_NOn,NOn,7,5900,118,HydroRes
+WindLand_NOn,NOn,7,2000,1,Wind
+WindSea_NOn,NOn,7,0,1,Wind
+PV_NOn,NOn,7,0,1,Solar
+SolarTh_NOn,NOn,7,0,1,Solar
+OtherRES_NOn,NOn,7,40,1,OtherRes_NOn
+OtherNonRES_NOn,NOn,7,195,4,OtherNonRes_NO
+Biofuels_NOn,NOn,7,0,1,Biofuels
+Peat_NOn,NOn,7,0,1,Peat
+DSR_NOn,NOn,7,1296,130,DSR
+Battery_NOn,NOn,7,0,1,Battery
+ReservesNOn,NOn,7,-150,1,RS
+Nuclear_NOs,NOs,8,0,1,Nuclear
+Lignite_NOs,NOs,8,0,1,KulUdland
+Coal_NOs,NOs,8,0,1,KulUdland
+Gas_NOs,NOs,8,0,1,GasUdland
+Oil_NOs,NOs,8,0,1,OlieUdland
+HydroRun_NOs,NOs,8,0,1,ROR
+HydroTurbine_NOs,NOs,8,0,1,HydroRes
+HydroPump_NOs,NOs,8,24780,496,HydroRes
+WindLand_NOs,NOs,8,4324,1,Wind
+WindSea_NOs,NOs,8,0,1,Wind
+PV_NOs,NOs,8,1000,1,Solar
+SolarTh_NOs,NOs,8,0,1,Solar
+OtherRES_NOs,NOs,8,36,1,OtherRes_NO
+OtherNonRES_NOs,NOs,8,50,1,OtherNonRes_NO
+Biofuels_NOs,NOs,8,0,1,Biofuels
+Peat_NOs,NOs,8,0,1,Peat
+DSR_NOs,NOs,8,3584,358,DSR
+Battery_NOs,NOs,8,0,1,Battery
+ReservesNOs,NOs,8,-600,1,RS
+Nuclear_SE1,SE1,9,0,1,NuclearSweden
+Lignite_SE1,SE1,9,0,1,KulUdland
+Coal_SE1,SE1,9,0,1,KulUdland
+Gas_SE1,SE1,9,0,1,GasUdland
+Oil_SE1,SE1,9,0,1,OlieUdland
+HydroRun_SE1,SE1,9,0,1,ROR
+HydroTurbine_SE1,SE1,9,5315,106,HydroRes
+HydroPump_SE1,SE1,9,0,1,HydroPumpOL
+WindLand_SE1,SE1,9,5466,1,Wind
+WindSea_SE1,SE1,9,0,1,Wind
+PV_SE1,SE1,9,20,1,Solar
+SolarTh_SE1,SE1,9,0,1,Solar
+OtherRES_SE1,SE1,9,276,1,MustRun
+OtherNonRES_SE1,SE1,9,0,1,OtherNONRE
+Biofuels_SE1,SE1,9,0,1,Biofuels
+Peat_SE1,SE1,9,0,1,Peat
+DSR_SE1,SE1,9,0,1,DSR
+Battery_SE1,SE1,9,340,34,Battery
+ReservesSE1,SE1,9,-410,1,RS
+Nuclear_SE2,SE2,10,0,1,NuclearSweden
+Lignite_SE2,SE2,10,0,1,KulUdland
+Coal_SE2,SE2,10,0,1,KulUdland
+Gas_SE2,SE2,10,53,1,GasUdland
+Oil_SE2,SE2,10,0,1,OlieUdland
+HydroRun_SE2,SE2,10,0,1,ROR
+HydroTurbine_SE2,SE2,10,8055,161,HydroRes
+HydroPump_SE2,SE2,10,0,1,HydroPumpOL
+WindLand_SE2,SE2,10,7956,1,Wind
+WindSea_SE2,SE2,10,0,1,Wind
+PV_SE2,SE2,10,340,1,Solar
+SolarTh_SE2,SE2,10,0,1,Solar
+OtherRES_SE2,SE2,10,575,1,MustRun
+OtherNonRES_SE2,SE2,10,0,1,OtherNONRE
+Biofuels_SE2,SE2,10,0,1,Biofuels
+Peat_SE2,SE2,10,0,1,Peat
+DSR_SE2,SE2,10,0,1,DSR
+Battery_SE2,SE2,10,591,59,Battery
+ReservesSE2,SE2,10,-1040,1,RS
+Nuclear_SE3,SE3,11,0,1,NuclearSweden
+Lignite_SE3,SE3,11,0,1,KulUdland
+Coal_SE3,SE3,11,0,1,KulUdland
+Gas_SE3,SE3,11,324,3,GasUdland
+Oil_SE3,SE3,11,0,1,OlieUdland
+HydroRun_SE3,SE3,11,0,1,ROR
+HydroTurbine_SE3,SE3,11,2911,58,HydroRes
+HydroPump_SE3,SE3,11,0,1,HydroPumpOL
+WindLand_SE3,SE3,11,5753,1,Wind
+WindSea_SE3,SE3,11,1770,1,Wind
+PV_SE3,SE3,11,5110,1,Solar
+SolarTh_SE3,SE3,11,0,1,Solar
+OtherRES_SE3,SE3,11,2633,1,MustRun
+OtherNonRES_SE3,SE3,11,0,1,OtherNONRE
+Biofuels_SE3,SE3,11,0,1,Biofuels
+Peat_SE3,SE3,11,0,1,Peat
+DSR_SE3,SE3,11,0,1,DSR
+Battery_SE3,SE3,11,2812,281,Battery
+ReservesSE3,SE3,11,-130,1,RS
+Nuclear_SE4,SE4,12,0,1,NuclearSweden
+Lignite_SE4,SE4,12,0,1,KulUdland
+Coal_SE4,SE4,12,0,1,KulUdland
+Gas_SE4,SE4,12,0,1,GasUdland
+Oil_SE4,SE4,12,0,1,OlieUdland
+HydroRun_SE4,SE4,12,0,1,ROR
+HydroTurbine_SE4,SE4,12,349,7,HydroRes
+HydroPump_SE4,SE4,12,0,1,HydroPumpOL
+WindLand_SE4,SE4,12,4091,1,Wind
+WindSea_SE4,SE4,12,760,1,Wind
+PV_SE4,SE4,12,1900,1,Solar
+SolarTh_SE4,SE4,12,0,1,Solar
+OtherRES_SE4,SE4,12,701,1,MustRun
+OtherNonRES_SE4,SE4,12,0,1,OtherNONRE
+Biofuels_SE4,SE4,12,0,1,Biofuels
+Peat_SE4,SE4,12,0,1,Peat
+DSR_SE4,SE4,12,0,1,DSR
+Battery_SE4,SE4,12,756,76,Battery
+ReservesSE4,SE4,12,-50,1,RS
+Nuclear_Finland,Finland,13,3690,4,NuclearFinland
+Lignite_Finland,Finland,13,0,1,KulUdland
+Coal_Finland,Finland,13,737,2,KulUdland
+Gas_Finland,Finland,13,605,6,GasUdland
+Oil_Finland,Finland,13,0,1,OlieUdland
+HydroRun_Finland,Finland,13,0,1,ROR
+HydroTurbine_Finland,Finland,13,3200,64,HydroRes
+HydroPump_Finland,Finland,13,0,1,HydroPumpOL
+WindLand_Finland,Finland,13,14609,1,Wind
+WindSea_Finland,Finland,13,42,1,Wind
+PV_Finland,Finland,13,1600,1,Solar
+SolarTh_Finland,Finland,13,0,1,Solar
+OtherRES_Finland,Finland,13,3043,1,MustRun
+OtherNonRES_Finland,Finland,13,1805,1,MustRun
+Biofuels_Finland,Finland,13,0,1,Biofuels
+Peat_Finland,Finland,13,0,1,Peat
+DSR_Finland,Finland,13,8550,855,DSR
+Battery_Finland,Finland,13,1900,190,Battery
+ReservesFinland,Finland,13,-1700,1,RS
+Nuclear_DELU,DELU,14,0,1,Kernekraft_DE
+Lignite_DELU,DELU,14,0,1,KulUdland
+Coal_DELU,DELU,14,0,1,KulUdland
+Gas_DELU,DELU,14,21176,212,GasUdland
+Oil_DELU,DELU,14,223,4,OlieUdland
+HydroRun_DELU,DELU,14,4082,1,ROR
+HydroTurbine_DELU,DELU,14,2941,59,HydroRes
+HydroPump_DELU,DELU,14,6056,121,HydroPumpCL
+WindLand_DELU,DELU,14,91150,1,Wind
+WindSea_DELU,DELU,14,35551,1,Wind
+PV_DELU,DELU,14,98824,1,Solar
+SolarTh_DELU,DELU,14,0,1,Solar
+OtherRES_DELU,DELU,14,5288,106,OtherRes_DELU
+OtherNonRES_DELU,DELU,14,20599,1,MustRun
+Biofuels_DELU,DELU,14,0,1,Biofuels
+Peat_DELU,DELU,14,0,1,Peat
+DSR_DELU,DELU,14,1824,182,DSR
+Battery_DELU,DELU,14,8394,839,Battery
+ReservesDELU,DELU,14,-5379,1,RS
+Nuclear_Austria,Austria,15,0,1,Nuclear
+Lignite_Austria,Austria,15,0,1,KulUdland
+Coal_Austria,Austria,15,0,1,KulUdland
+Gas_Austria,Austria,15,1623,16,GasUdland
+Oil_Austria,Austria,15,0,1,OlieUdland
+HydroRun_Austria,Austria,15,6292,1,ROR
+HydroTurbine_Austria,Austria,15,7778,156,HydroRes
+HydroPump_Austria,Austria,15,300,6,HydroPumpCL
+WindLand_Austria,Austria,15,13000,1,Wind
+WindSea_Austria,Austria,15,0,1,Wind
+PV_Austria,Austria,15,22000,1,Solar
+SolarTh_Austria,Austria,15,0,1,Solar
+OtherRES_Austria,Austria,15,599,12,OtherRes_AT
+OtherNonRES_Austria,Austria,15,953,19,OtherNonRES_AT
+Biofuels_Austria,Austria,15,0,1,Biofuels
+Peat_Austria,Austria,15,0,1,Peat
+DSR_Austria,Austria,15,0,1,DSR
+Battery_Austria,Austria,15,2469,247,Battery
+ReservesAustria,Austria,15,-544.3173862,1,RS
+Nuclear_Holland,Holland,16,0,1,Borssele
+Lignite_Holland,Holland,16,0,1,KulUdland
+Coal_Holland,Holland,16,3381,8,KulUdland
+Gas_Holland,Holland,16,9293,93,GasUdland
+Oil_Holland,Holland,16,0,1,OlieUdland
+HydroRun_Holland,Holland,16,46,1,ROR
+HydroTurbine_Holland,Holland,16,0,1,HydroRes
+HydroPump_Holland,Holland,16,0,1,HydroPumpCL
+WindLand_Holland,Holland,16,9382,1,Wind
+WindSea_Holland,Holland,16,16151,1,Wind
+PV_Holland,Holland,16,25000,1,Solar
+SolarTh_Holland,Holland,16,0,1,Solar
+OtherRES_Holland,Holland,16,540,11,OtherRES_NL
+OtherNonRES_Holland,Holland,16,3770,75,OtherNonRes_NL
+Biofuels_Holland,Holland,16,0,1,Biofuels
+Peat_Holland,Holland,16,0,1,Peat
+DSR_Holland,Holland,16,700,70,DSR
+Battery_Holland,Holland,16,3475,348,Battery
+ReservesHolland,Holland,16,-1500,1,RS
+Nuclear_GB,GB,17,14290,24,NuclearGB
+Lignite_GB,GB,17,0,1,KulUdland
+Coal_GB,GB,17,3984,10,KulUdland
+Gas_GB,GB,17,37171,372,GasUdland
+Oil_GB,GB,17,371,7,OlieUdland
+HydroRun_GB,GB,17,1969,1,ROR
+HydroTurbine_GB,GB,17,0,1,HydroRes
+HydroPump_GB,GB,17,4004,80,HydroPumpCL
+WindLand_GB,GB,17,15989,1,Wind
+WindSea_GB,GB,17,34995,1,Wind
+PV_GB,GB,17,25890,1,Solar
+SolarTh_GB,GB,17,0,1,Solar
+OtherRES_GB,GB,17,4700,94,OtherRes_GB
+OtherNonRES_GB,GB,17,7432,149,OtherNonRES_GB
+Biofuels_GB,GB,17,0,1,Biofuels
+Peat_GB,GB,17,0,1,Peat
+DSR_GB,GB,17,1823,182,DSR
+Battery_GB,GB,17,4260,426,Battery
+ReservesGB,GB,17,-3409,1,RS
+Nuclear_France,France,18,43129,40,NuclearFR
+Lignite_France,France,18,0,1,KulUdland
+Coal_France,France,18,0,1,KulUdland
+Gas_France,France,18,6944,69,GasUdland
+Oil_France,France,18,0,1,OlieUdland
+HydroRun_France,France,18,13600,1,ROR
+HydroTurbine_France,France,18,9900,198,HydroRes
+HydroPump_France,France,18,1800,36,HydroPumpCL
+WindLand_France,France,18,59599,1,Wind
+WindSea_France,France,18,8363,1,Wind
+PV_France,France,18,57920,1,Solar
+SolarTh_France,France,18,0,1,Solar
+OtherRES_France,France,18,2549,51,OtherRes_FR
+OtherNonRES_France,France,18,6533,1,MustRun
+Biofuels_France,France,18,0,1,Biofuels
+Peat_France,France,18,0,1,Peat
+DSR_France,France,18,3400,340,DSR
+Battery_France,France,18,5900,590,Battery
+ReservesFrance,France,18,-2180,1,RS
+Nuclear_Belgium,Belgium,19,0,1,NuclearBE
+Lignite_Belgium,Belgium,19,0,1,KulUdland
+Coal_Belgium,Belgium,19,540,1,KulUdland
+Gas_Belgium,Belgium,19,8685,87,GasUdland
+Oil_Belgium,Belgium,19,158,3,OlieUdland
+HydroRun_Belgium,Belgium,19,148,1,ROR
+HydroTurbine_Belgium,Belgium,19,0,1,HydroRes
+HydroPump_Belgium,Belgium,19,1395,28,HydroPumpCL
+WindLand_Belgium,Belgium,19,5409,1,Wind
+WindSea_Belgium,Belgium,19,6072,1,Wind
+PV_Belgium,Belgium,19,14295,1,Solar
+SolarTh_Belgium,Belgium,19,0,1,Solar
+OtherRES_Belgium,Belgium,19,206,1,MustRun
+OtherNonRES_Belgium,Belgium,19,1324,26,OtherNonRes_BE
+Biofuels_Belgium,Belgium,19,0,1,Biofuels
+Peat_Belgium,Belgium,19,0,1,Peat
+DSR_Belgium,Belgium,19,1800,180,DSR
+Battery_Belgium,Belgium,19,1841,184,Battery
+ReservesBelgium,Belgium,19,-429.818973,1,RS
+Nuclear_ESPT,ESPT,20,0,1,NuclearES
+Lignite_ESPT,ESPT,20,0,1,KulUdland
+Coal_ESPT,ESPT,20,0,1,KulUdland
+Gas_ESPT,ESPT,20,27337,273,GasUdland
+Oil_ESPT,ESPT,20,0,1,OlieUdland
+HydroRun_ESPT,ESPT,20,4637,1,ROR
+HydroTurbine_ESPT,ESPT,20,21250,425,HydroRes
+HydroPump_ESPT,ESPT,20,7392,148,HydroPumpCL
+WindLand_ESPT,ESPT,20,66435,1,Wind
+WindSea_ESPT,ESPT,20,528,1,Wind
+PV_ESPT,ESPT,20,71981,1,Solar
+SolarTh_ESPT,ESPT,20,7942,1,Solar
+OtherRES_ESPT,ESPT,20,3437,1,MustRun
+OtherNonRES_ESPT,ESPT,20,4521,1,MustRun
+Biofuels_ESPT,ESPT,20,0,1,Biofuels
+Peat_ESPT,ESPT,20,0,1,Peat
+DSR_ESPT,ESPT,20,1600,160,DSR
+Battery_ESPT,ESPT,20,6781,678,Battery
+ReservesESPT,ESPT,20,-2296,1,RS
+Nuclear_Schweiz,Schweiz,21,0,1,NuclearCH
+Lignite_Schweiz,Schweiz,21,0,1,KulUdland
+Coal_Schweiz,Schweiz,21,0,1,KulUdland
+Gas_Schweiz,Schweiz,21,0,1,GasUdland
+Oil_Schweiz,Schweiz,21,0,1,OlieUdland
+HydroRun_Schweiz,Schweiz,21,4113,1,ROR
+HydroTurbine_Schweiz,Schweiz,21,8152,163,HydroRes
+HydroPump_Schweiz,Schweiz,21,3989,80,HydroPumpCL
+WindLand_Schweiz,Schweiz,21,500,1,Wind
+WindSea_Schweiz,Schweiz,21,0,1,Wind
+PV_Schweiz,Schweiz,21,8500,1,Solar
+SolarTh_Schweiz,Schweiz,21,0,1,Solar
+OtherRES_Schweiz,Schweiz,21,1197,24,OtherRes_CH
+OtherNonRES_Schweiz,Schweiz,21,889,18,OtherNonRes_CH
+Biofuels_Schweiz,Schweiz,21,0,1,Biofuels
+Peat_Schweiz,Schweiz,21,0,1,Peat
+DSR_Schweiz,Schweiz,21,0,1,DSR
+Battery_Schweiz,Schweiz,21,1797,180,Battery
+ReservesSchweiz,Schweiz,21,-869,1,RS
+Nuclear_Italy,Italy,22,0,1,Nuclear
+Lignite_Italy,Italy,22,0,1,KulUdland
+Coal_Italy,Italy,22,0,1,KulUdland
+Gas_Italy,Italy,22,44063,441,GasUdland
+Oil_Italy,Italy,22,0,1,OlieUdland
+HydroRun_Italy,Italy,22,5635,1,ROR
+HydroTurbine_Italy,Italy,22,12888,258,HydroRes
+HydroPump_Italy,Italy,22,8577,172,HydroPumpCL
+WindLand_Italy,Italy,22,22140,1,Wind
+WindSea_Italy,Italy,22,900,1,Wind
+PV_Italy,Italy,22,60169,1,Solar
+SolarTh_Italy,Italy,22,880,1,Solar
+OtherRES_Italy,Italy,22,4931,99,OtherRes_IT
+OtherNonRES_Italy,Italy,22,5984,1,MustRun
+Biofuels_Italy,Italy,22,0,1,Biofuels
+Peat_Italy,Italy,22,0,1,Peat
+DSR_Italy,Italy,22,2304,230,DSR
+Battery_Italy,Italy,22,3062,306,Battery
+ReservesItaly,Italy,22,-4500,1,RS
+Nuclear_EELVLT,EELVLT,23,0,1,Nuclear
+Lignite_EELVLT,EELVLT,23,0,1,KulUdland
+Coal_EELVLT,EELVLT,23,0,1,KulUdland
+Gas_EELVLT,EELVLT,23,531,5,GasUdland
+Oil_EELVLT,EELVLT,23,810,16,OlieUdland
+HydroRun_EELVLT,EELVLT,23,1736,1,ROR
+HydroTurbine_EELVLT,EELVLT,23,0,1,HydroRes
+HydroPump_EELVLT,EELVLT,23,1125,23,HydroPumpCL
+WindLand_EELVLT,EELVLT,23,4266,1,Wind
+WindSea_EELVLT,EELVLT,23,1907,1,Wind
+PV_EELVLT,EELVLT,23,3079,1,Solar
+SolarTh_EELVLT,EELVLT,23,50,1,Solar
+OtherRES_EELVLT,EELVLT,23,338,1,MustRun
+OtherNonRES_EELVLT,EELVLT,23,294,6,OtherNonRes_EELVLT
+Biofuels_EELVLT,EELVLT,23,0,1,Biofuels
+Peat_EELVLT,EELVLT,23,0,1,Peat
+DSR_EELVLT,EELVLT,23,211,21,DSR
+Battery_EELVLT,EELVLT,23,917,92,Battery
+ReservesEELVLT,EELVLT,23,-975,1,RS
+Nuclear_Poland,Poland,24,5600,6,Nuclear
+Lignite_Poland,Poland,24,1126,3,KulUdland
+Coal_Poland,Poland,24,6710,17,KulUdland
+Gas_Poland,Poland,24,10001,100,GasUdland
+Oil_Poland,Poland,24,0,1,OlieUdland
+HydroRun_Poland,Poland,24,536,1,ROR
+HydroTurbine_Poland,Poland,24,362,7,HydroRes
+HydroPump_Poland,Poland,24,1322,26,HydroPumpCL
+WindLand_Poland,Poland,24,7700,1,Wind
+WindSea_Poland,Poland,24,10320,1,Wind
+PV_Poland,Poland,24,20156,1,Solar
+SolarTh_Poland,Poland,24,0,1,Solar
+OtherRES_Poland,Poland,24,2332,1,MustRun
+OtherNonRES_Poland,Poland,24,7759,1,MustRun
+Biofuels_Poland,Poland,24,0,1,Biofuels
+Peat_Poland,Poland,24,0,1,Peat
+DSR_Poland,Poland,24,0,1,DSR
+Battery_Poland,Poland,24,2000,200,Battery
+ReservesPoland,Poland,24,-1000,1,RS
+Nuclear_CZSK,CZSK,25,6806,12,NuclearCZSK
+Lignite_CZSK,CZSK,25,2144,5,KulUdland
+Coal_CZSK,CZSK,25,656,2,KulUdland
+Gas_CZSK,CZSK,25,2031,20,GasUdland
+Oil_CZSK,CZSK,25,0,1,OlieUdland
+HydroRun_CZSK,CZSK,25,1942,1,ROR
+HydroTurbine_CZSK,CZSK,25,1446,29,HydroRes
+HydroPump_CZSK,CZSK,25,1336,27,HydroPumpCL
+WindLand_CZSK,CZSK,25,1500,1,Wind
+WindSea_CZSK,CZSK,25,0,1,Wind
+PV_CZSK,CZSK,25,6034,1,Solar
+SolarTh_CZSK,CZSK,25,0,1,Solar
+OtherRES_CZSK,CZSK,25,1382,1,MustRun
+OtherNonRES_CZSK,CZSK,25,1398,1,MustRun
+Biofuels_CZSK,CZSK,25,0,1,Biofuels
+Peat_CZSK,CZSK,25,0,1,Peat
+DSR_CZSK,CZSK,25,0,1,DSR
+Battery_CZSK,CZSK,25,1861,186,Battery
+ReservesCZSK,CZSK,25,-1842.5,1,RS
+Nuclear_Hungary,Hungary,26,2360,5,NuclearHU
+Lignite_Hungary,Hungary,26,0,1,KulUdland
+Coal_Hungary,Hungary,26,0,1,KulUdland
+Gas_Hungary,Hungary,26,427,4,GasUdland
+Oil_Hungary,Hungary,26,0,1,OlieUdland
+HydroRun_Hungary,Hungary,26,57,1,ROR
+HydroTurbine_Hungary,Hungary,26,0,1,HydroRes
+HydroPump_Hungary,Hungary,26,0,1,HydroPumpCL
+WindLand_Hungary,Hungary,26,0,1,Wind
+WindSea_Hungary,Hungary,26,0,1,Wind
+PV_Hungary,Hungary,26,7000,1,Solar
+SolarTh_Hungary,Hungary,26,0,1,Solar
+OtherRES_Hungary,Hungary,26,404,1,MustRun
+OtherNonRES_Hungary,Hungary,26,454,1,MustRun
+Biofuels_Hungary,Hungary,26,0,1,Biofuels
+Peat_Hungary,Hungary,26,0,1,Peat
+DSR_Hungary,Hungary,26,0,1,DSR
+Battery_Hungary,Hungary,26,1261,126,Battery
+ReservesHungary,Hungary,26,-1550,1,RS

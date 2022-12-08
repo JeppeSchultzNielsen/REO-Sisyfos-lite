@@ -34,13 +34,44 @@ class Area:
         self.OtherResProd = 0
         self.OtherNonResProd = 0
 
+        #put productions in list like in DataHolder
+        self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.OtherResProd,self.OtherNonResProd,self.nonTDProd]
+
+        #list of timeSeries in same order as productionList.
+        self.timeSeriesProductionList = [self.PVTimeSeries, self.WSTimeSeries,self.WLTimeSeries, self.CSPTimeSeries,
+            self.HYTimeSeries, self.OtherResProd, self.OtherNonResProd]
+
         self.InitializeFactors()
+
+        if(self.name == "DK1"):
+            print(self.PVprod)
 
     
 
     def InitializeFactors(self):
-        pass
-
+        f = open("data\plantdata"+str(self.simulationYear)+".csv", "r")
+        #iterate over lines to get plant data
+        line = f.readline()
+        while(line):
+            splitted = line.split(",")
+            if(splitted[1] == self.name):
+                if("PV" in splitted[0]):
+                    self.PVprod += float(splitted[3])
+                elif("WindSea" in splitted[0]):
+                    self.WSprod += float(splitted[3])
+                elif("WindLand" in splitted[0]):
+                    self.WSprod += float(splitted[3])
+                elif("SolarTh" in splitted[0]):
+                    self.CSPprod += float(splitted[3])
+                elif("Hydro" in splitted[0]):
+                    self.HYprod += float(splitted[3])
+                elif("OtherRES" in splitted[0]):
+                    self.OtherResProd += float(splitted[3])
+                elif("OtherNonRES" in splitted[0]):
+                    self.OtherNonResProd += float(splitted[3])
+                else:
+                    self.nonTDProd += float(splitted[3])
+            line = f.readline()
 
     def CreateProdNamesList(self):
         demandYear = str(self.simulationYear)[2:]
@@ -100,8 +131,11 @@ class Area:
 
 
     #must be able to return the production for a given type for a given hour
-    def GetProduction(self, hour: int, type: str):
-        return 0
+    def GetProduction(self, hour: int, typeIndex: int):
+        if(typeIndex == len(self.timeSeriesProductionList)):
+            return self.nonTDProd
+        else:
+            return self.timeSeriesProductionList[typeIndex][hour]*self.productionList[typeIndex]
 
 
 
