@@ -207,6 +207,7 @@ class Simulation:
     #Running the simulation
     def RunSimulation(self, beginHour: int, endHour: int):
         for i in range(beginHour, endHour):
+            print("Starting hour " + str(i))
             self.PrepareHour(i)
             self.SolveMaxFlowProblem()
             if(self.saving):

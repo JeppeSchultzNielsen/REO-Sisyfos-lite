@@ -3,6 +3,7 @@ import numpy as np
 class Area:
     def __init__(self, areaName: str, simulationYear: int, climateYear: int):
         self.name = areaName
+        print("Preparing area " + self.name)
 
         self.simulationYear = simulationYear
         self.climateYear = climateYear
@@ -19,32 +20,29 @@ class Area:
 
         self.timeSeriesList = [self.demandTimeSeries, self.PVTimeSeries, 
             self.WLTimeSeries, self.WSTimeSeries, self.CSPTimeSeries, 
-            self.HYTimeSeries, self.OtherResTimeSeries, self.OtherResTimeSeries] #order of this list must be same as the one returned by CreateProdNamesList
+            self.HYTimeSeries, self.OtherResTimeSeries, self.OtherNonResTimeSeries] #order of this list must be same as the one returned by CreateProdNamesList
 
         self.InitializeTimeSeries()
 
         #variables in timeSeries are normalized, need normalizationfactors from SisyfosData, including the non timedependent production (nonTDProd)
-        self.nonTDProd = 0
-        self.Demand = 0
-        self.PVprod = 0
-        self.WSprod = 0
-        self.WLprod = 0
-        self.CSPprod = 0
-        self.HYprod = 0
-        self.OtherResProd = 0
-        self.OtherNonResProd = 0
+        self.nonTDProd = wrap(0)
+        self.Demand = wrap(0)
+        self.PVprod = wrap(0)
+        self.WSprod = wrap(0)
+        self.WLprod = wrap(0)
+        self.CSPprod = wrap(0)
+        self.HYprod = wrap(0)
+        self.OtherResProd = wrap(0)
+        self.OtherNonResProd = wrap(0)
 
         #put productions in list like in DataHolder
         self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.OtherResProd,self.OtherNonResProd,self.nonTDProd]
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = [self.PVTimeSeries, self.WSTimeSeries,self.WLTimeSeries, self.CSPTimeSeries,
-            self.HYTimeSeries, self.OtherResProd, self.OtherNonResProd]
+            self.HYTimeSeries, self.OtherResTimeSeries, self.OtherNonResTimeSeries,1] #1 is for nonTDProd
 
         self.InitializeFactors()
-
-        if(self.name == "DK1"):
-            print(self.PVprod)
 
     
 
@@ -56,21 +54,21 @@ class Area:
             splitted = line.split(",")
             if(splitted[1] == self.name):
                 if("PV" in splitted[0]):
-                    self.PVprod += float(splitted[3])
+                    self.PVprod.v += float(splitted[3])
                 elif("WindSea" in splitted[0]):
-                    self.WSprod += float(splitted[3])
+                    self.WSprod.v += float(splitted[3])
                 elif("WindLand" in splitted[0]):
-                    self.WSprod += float(splitted[3])
+                    self.WSprod.v += float(splitted[3])
                 elif("SolarTh" in splitted[0]):
-                    self.CSPprod += float(splitted[3])
+                    self.CSPprod.v += float(splitted[3])
                 elif("Hydro" in splitted[0]):
-                    self.HYprod += float(splitted[3])
+                    self.HYprod.v += float(splitted[3])
                 elif("OtherRES" in splitted[0]):
-                    self.OtherResProd += float(splitted[3])
+                    self.OtherResProd.v += float(splitted[3])
                 elif("OtherNonRES" in splitted[0]):
-                    self.OtherNonResProd += float(splitted[3])
+                    self.OtherNonResProd.v += float(splitted[3])
                 else:
-                    self.nonTDProd += float(splitted[3])
+                    self.nonTDProd.v += float(splitted[3])
             line = f.readline()
 
     def CreateProdNamesList(self):
@@ -103,10 +101,11 @@ class Area:
             for j in range(len(prodNamesList)):
                 if(splittedHeader[i] == prodNamesList[j]):
                     indexArray[j] = i
-        
-        #for i in range(len(indexArray)):
-        #    if(indexArray[i] == -1):
-        #        print("Warning: did not find " + prodNamesList[i] )
+        '''
+        for i in range(len(indexArray)):
+            if(indexArray[i] == -1):
+                print("Warning: did not find " + prodNamesList[i] )
+                '''
 
         #now read rest of TVAR, loading the data
         for i in range(24*365):
@@ -132,12 +131,17 @@ class Area:
 
     #must be able to return the production for a given type for a given hour
     def GetProduction(self, hour: int, typeIndex: int):
-        if(typeIndex == len(self.timeSeriesProductionList)):
-            return self.nonTDProd
+        if(typeIndex == (len(self.timeSeriesProductionList)-1)):
+            return self.nonTDProd.v 
         else:
-            return self.timeSeriesProductionList[typeIndex][hour]*self.productionList[typeIndex]
+            return self.timeSeriesProductionList[typeIndex][hour]*self.productionList[typeIndex].v
 
 
 
     def GetDemand(self, hour: int):
         return 0
+
+#need pass by reference for ints; wrapper class needed. 
+class wrap:
+    def __init__(self, value):
+         self.v = value
