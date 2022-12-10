@@ -104,7 +104,7 @@ class Simulation:
                 j += 1
 
             self.productionList[i] = totalProduction
-            self.demandList[i] = area.GetDemand(hour)
+            self.demandList[i] = area.GetDemand(hour, currentAreaIndex)
 
             i += 1
 

@@ -7,7 +7,9 @@ class Area:
 
         self.simulationYear = simulationYear
         self.climateYear = climateYear
-
+        
+        self.demandValues = np.zeros(26)
+        
         #initialize arrays to hold timeseries
         self.demandTimeSeries = np.zeros(24*365)
         self.PVTimeSeries = np.zeros(24*365)
@@ -138,8 +140,17 @@ class Area:
 
 
 
-    def GetDemand(self, hour: int):
-        return 0
+    def GetDemand(self, hour: int, currentAreaIndex: int):
+        f = open("data\\areadata"+str(self.simulationYear)+".csv","r") 
+        demand = f.readline() #skip header
+        demand = f.readline() #reads first line
+        for j in range(len(self.demandValues)):
+            splitted = demand.split(",")
+            demand_value = float(splitted[1])
+            self.demandValues[j] = demand_value
+            demand = f.readline()
+        Final_demand = self.demandValues[currentAreaIndex] * self.demandTimeSeries[hour]
+        return Final_demand
 
 #need pass by reference for ints; wrapper class needed. 
 class wrap:
