@@ -1,8 +1,10 @@
 import numpy as np
+import DataHolder as DataHolder
 
 class Area:
-    def __init__(self, areaName: str, simulationYear: int, climateYear: int):
+    def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder):
         self.name = areaName
+        self.nodeIndex = nodeIndex
         print("Preparing area " + self.name)
 
         self.simulationYear = simulationYear
@@ -11,7 +13,7 @@ class Area:
         self.demandValues = np.zeros(26)
         
         #initialize arrays to hold timeseries
-        self.demandTimeSeries = np.zeros(24*365)
+        self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
         self.PVTimeSeries = np.zeros(24*365)
         self.WSTimeSeries = np.zeros(24*365)
         self.WLTimeSeries = np.zeros(24*365)
@@ -24,7 +26,7 @@ class Area:
             self.WLTimeSeries, self.WSTimeSeries, self.CSPTimeSeries, 
             self.HYTimeSeries, self.OtherResTimeSeries, self.OtherNonResTimeSeries] #order of this list must be same as the one returned by CreateProdNamesList
 
-        self.InitializeTimeSeries()
+        #self.InitializeTimeSeries()
 
         #variables in timeSeries are normalized, need normalizationfactors from SisyfosData, including the non timedependent production (nonTDProd)
         self.nonTDProd = wrap(0)
@@ -41,8 +43,9 @@ class Area:
         self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.OtherResProd,self.OtherNonResProd,self.nonTDProd]
 
         #list of timeSeries in same order as productionList.
-        self.timeSeriesProductionList = [self.PVTimeSeries, self.WSTimeSeries,self.WLTimeSeries, self.CSPTimeSeries,
-            self.HYTimeSeries, self.OtherResTimeSeries, self.OtherNonResTimeSeries,1] #1 is for nonTDProd
+        self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
+        #[self.PVTimeSeries, self.WSTimeSeries,self.WLTimeSeries, self.CSPTimeSeries,
+        #    self.HYTimeSeries, self.OtherResTimeSeries, self.OtherNonResTimeSeries,1] #1 is for nonTDProd
 
         self.InitializeFactors()
 

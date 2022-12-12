@@ -6,13 +6,13 @@ from DataHolder import DataHolder
 import random
 
 class Simulation:
-    def __init__(self, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool):
+    def __init__(self, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool, dh: DataHolder):
         self.simulationYear = asimulationYear
         self.climateYear = aclimateYear
         self.saveFilePath = asaveFilePath
         self.saving = asaving
 
-        dh = DataHolder()
+        self.dh = dh
 
         #list of names of all areas
         self.nameList = dh.names
@@ -28,7 +28,7 @@ class Simulation:
 
         #initialize the lists
         for i in range(len(self.nameList)):
-            self.areaList[i] = (Area(self.nameList[i],self.simulationYear,self.climateYear))
+            self.areaList[i] = (Area(self.nameList[i],i,self.simulationYear,self.climateYear,dh))
 
         self.numberOfLines = self.GetNumberOfLines()
 
@@ -212,9 +212,6 @@ class Simulation:
 
         #save line output 
         for i in (range(len(scrambledLines))):
-            print(scrambledLines[i].GetName())
-            print(F_vec[i].name )
-            print(" ")
             for j in range(len(self.linesList)):
                 if(scrambledLines[i].GetName() == self.linesList[j].GetName()):
                     self.transferList[j] = model.variables()[i].value()
