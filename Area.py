@@ -14,19 +14,6 @@ class Area:
         
         #initialize arrays to hold timeseries
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
-        self.PVTimeSeries = np.zeros(24*365)
-        self.WSTimeSeries = np.zeros(24*365)
-        self.WLTimeSeries = np.zeros(24*365)
-        self.CSPTimeSeries = np.zeros(24*365)
-        self.HYTimeSeries = np.zeros(24*365) #there should be some relation between this and HyLimit, but i'm not sure i understand. 
-        self.OtherResTimeSeries = np.zeros(24*365)
-        self.OtherNonResTimeSeries = np.zeros(24*365)
-
-        self.timeSeriesList = [self.demandTimeSeries, self.PVTimeSeries, 
-            self.WLTimeSeries, self.WSTimeSeries, self.CSPTimeSeries, 
-            self.HYTimeSeries, self.OtherResTimeSeries, self.OtherNonResTimeSeries] #order of this list must be same as the one returned by CreateProdNamesList
-
-        #self.InitializeTimeSeries()
 
         #variables in timeSeries are normalized, need normalizationfactors from SisyfosData, including the non timedependent production (nonTDProd)
         self.nonTDProd = wrap(0)
@@ -39,13 +26,8 @@ class Area:
         self.OtherResProd = wrap(0)
         self.OtherNonResProd = wrap(0)
 
-        #put productions in list like in DataHolder
-        self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.OtherResProd,self.OtherNonResProd,self.nonTDProd]
-
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
-        #[self.PVTimeSeries, self.WSTimeSeries,self.WLTimeSeries, self.CSPTimeSeries,
-        #    self.HYTimeSeries, self.OtherResTimeSeries, self.OtherNonResTimeSeries,1] #1 is for nonTDProd
 
         self.InitializeFactors()
 
@@ -92,35 +74,6 @@ class Area:
         OtherNonRESName = "OtherNonRES_" + self.name
 
         return [demandName,PVName,WLName,WSName,CSPName,HYName,OtherRESName,OtherNonRESName]
-
-    def InitializeTimeSeries(self):
-        f = open("data\TVAR.csv","r")
-        line = f.readline() #header
-
-        splittedHeader = line.split(";")
-
-        prodNamesList = self.CreateProdNamesList()
-        indexArray = np.zeros(len(prodNamesList))-1
-
-        for i in range(len(splittedHeader)):
-            for j in range(len(prodNamesList)):
-                if(splittedHeader[i] == prodNamesList[j]):
-                    indexArray[j] = i
-        '''
-        for i in range(len(indexArray)):
-            if(indexArray[i] == -1):
-                print("Warning: did not find " + prodNamesList[i] )
-                '''
-
-        #now read rest of TVAR, loading the data
-        for i in range(24*365):
-            line = f.readline()
-            line = line.replace(",",".")
-            splitted = line.split(";")
-            for j in range(len(indexArray)):
-                if(indexArray[j] == -1): continue
-                self.timeSeriesList[j][i] = splitted[int(indexArray[j])]
-
 
 
 
