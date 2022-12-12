@@ -66,10 +66,26 @@ class Simulation:
         line = f.readline() #skip header
         line = f.readline() #read 1st line
         i = 0
+        usedNames = []
         while(line):
             splitted = line.split(",")
-            self.linesList[i] = (Line(splitted[0],splitted[1],float(splitted[2]),float(splitted[3])))
+            name = splitted[0] + "_to_" + splitted[1]
+            trialName = splitted[0] + "_to_" + splitted[1]
+            
+            uniqueNameNotFound = True
+            noTries = 0
+
+            while(uniqueNameNotFound):
+                if(usedNames.count(trialName) == 0):
+                    uniqueNameNotFound = False
+                    name=trialName
+                else:
+                    noTries += 1
+                    trialName = name + "_" + str(noTries)
+
+            self.linesList[i] = (Line(splitted[0],splitted[1],float(splitted[2]),float(splitted[3]),name))
             line = f.readline() #read next line
+            usedNames.append(name)
             i = i+1
 
     def GetNumberOfLines(self):
@@ -157,7 +173,7 @@ class Simulation:
         F_vec = np.empty(shape=self.numberOfLines, dtype = LpVariable)
     
         for i in range(len(scrambledLines)):
-            F_vec[i] = LpVariable(name="F"+str(i), lowBound=-scrambledLines[i].GetMaxCapBA(), upBound = scrambledLines[i].GetMaxCapAB())
+            F_vec[i] = LpVariable(name=scrambledLines[i].GetName(), lowBound=-scrambledLines[i].GetMaxCapBA(), upBound = scrambledLines[i].GetMaxCapAB())
 
         #create model
         model = LpProblem(name="maxFlow", sense=LpMaximize)
@@ -194,9 +210,11 @@ class Simulation:
         #solve model
         status = model.solve(GLPK_CMD(msg=False))
 
-
         #save line output 
         for i in (range(len(scrambledLines))):
+            print(scrambledLines[i].GetName())
+            print(F_vec[i].name )
+            print(" ")
             for j in range(len(self.linesList)):
                 if(scrambledLines[i].GetName() == self.linesList[j].GetName()):
                     self.transferList[j] = model.variables()[i].value()

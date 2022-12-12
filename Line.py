@@ -1,16 +1,17 @@
 class Line:
-    def __init__(self, a: str, b: str, maxCapAB: float, maxCapBA: float):
+    def __init__(self, a: str, b: str, maxCapAB: float, maxCapBA: float, name: str):
         self.a = a
         self.b = b
         self.maxCapAB = maxCapAB
         self.maxCapBA = maxCapBA
+        self.name = name
 
 
     def PrepareHour(self, hour: int):
         pass
 
     def GetName(self):
-        return self.a + "_to_" + self.b
+        return self.name
 
     def GetA(self):
         return self.a
