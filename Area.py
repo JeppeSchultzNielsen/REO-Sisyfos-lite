@@ -2,7 +2,7 @@ import numpy as np
 import DataHolder as DataHolder
 
 class Area:
-    def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder, productionList):
+    def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder):
         self.name = areaName
         self.nodeIndex = nodeIndex
         print("Preparing area " + self.name)
@@ -11,7 +11,6 @@ class Area:
         self.climateYear = climateYear
         
         self.demandValues = np.zeros(26)
-        self.productionList = productionList
         
         #initialize arrays to hold timeseries
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
@@ -26,6 +25,9 @@ class Area:
         self.HYprod = wrap(0)
         self.OtherResProd = wrap(0)
         self.OtherNonResProd = wrap(0)
+        self.ICHP = wrap(0)
+
+        self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.OtherResProd,self.OtherNonResProd,self.ICHP,self.nonTDProd]
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
@@ -46,7 +48,7 @@ class Area:
                 elif("WindSea" in splitted[0]):
                     self.WSprod.v += float(splitted[3])
                 elif("WindLand" in splitted[0]):
-                    self.WSprod.v += float(splitted[3])
+                    self.WLprod.v += float(splitted[3])
                 elif("SolarTh" in splitted[0]):
                     self.CSPprod.v += float(splitted[3])
                 elif("Hydro" in splitted[0]):
@@ -59,24 +61,6 @@ class Area:
                     self.nonTDProd.v += float(splitted[3])
             line = f.readline()
 
-    def CreateProdNamesList(self):
-        demandYear = str(self.simulationYear)[2:]
-        if(self.simulationYear == 2040):
-            demandYear = "30"
-
-        #first get indeces to read in TVAR
-        demandName = "DNT" + demandYear + "_" + str(self.climateYear) + "_" + self.name
-        PVName = "PV" + str(self.climateYear)+"_30_" + self.name
-        WLName = "WL" + str(self.climateYear)+"_" + str(self.simulationYear)[2:] + "_" + self.name
-        WSName = "WS" + str(self.climateYear)+"_" + str(self.simulationYear)[2:] + "_" + self.name
-        CSPName = "CSP" + str(self.climateYear)+"_30_" + self.name
-        HYName = "HY" + str(self.climateYear)+"_" + self.name
-        OtherRESName = "OtherRES_" + self.name
-        OtherNonRESName = "OtherNonRES_" + self.name
-
-        return [demandName,PVName,WLName,WSName,CSPName,HYName,OtherRESName,OtherNonRESName]
-
-
 
     def PrepareHour(self, hour: int):
         pass
@@ -85,6 +69,7 @@ class Area:
 
     def GetName(self):
         return self.name
+
 
 
     #must be able to return the production for a given type for a given hour

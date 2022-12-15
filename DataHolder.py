@@ -5,7 +5,7 @@ import numpy as np
 class DataHolder:
     def __init__(self, simulationYear: int, climateYear: int):
         self.names = ["DK1", "DK2", "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
-        self.productionTypes = ["PV","WS","WL","CSP","Hy","OtherRes","OtherNonRes","nonTDProd"]
+        self.productionTypes = ["PV","WS","WL","CSP","Hy","OtherRes","OtherNonRes","ICHP","nonTDProd"]
         self.simulationYear = simulationYear
         self.climateYear = climateYear
 
@@ -14,10 +14,6 @@ class DataHolder:
 
         self.InitializeEmptyTimeSeriesArray()
         self.InitializeTimeSeries()
-
-        print(self.demandTimeSeries[0])
-        print(self.prodTimeSeriesArray[0][1])
-        print(self.prodTimeSeriesArray[0][7])
 
     def CreateProdNamesList(self, name):
         demandYear = str(self.simulationYear)[2:]
@@ -34,7 +30,12 @@ class DataHolder:
         OtherRESName = "OtherRES_" + name
         OtherNonRESName = "OtherNonRES_" + name
 
-        return [demandName,PVName,WSName,WLName,CSPName,HYName,OtherRESName,OtherNonRESName]
+        #several exceptions exist to these naming conventions: 
+        if(name == "DK1"):
+            HYName = "HY" + str(self.climateYear)+"_DE"
+
+
+        return [demandName,PVName,WSName,WLName,CSPName,HYName,OtherRESName,OtherNonRESName,"ICHP"]
 
     def InitializeEmptyTimeSeriesArray(self):
         for i in range(len(self.names)):
@@ -51,6 +52,7 @@ class DataHolder:
         f = open("data\TVAR.csv","r")
         line = f.readline() #header
 
+        line.rstrip('\r')
         splittedHeader = line.split(";")
 
         indexArray = []
@@ -61,9 +63,9 @@ class DataHolder:
             areaIndexArray = np.zeros(len(prodNamesList))-1
 
             for k in range(len(splittedHeader)):
-
+                splittedHeader[k] = splittedHeader[k].rstrip()
                 for j in range(len(prodNamesList)):
-                    if(splittedHeader[k] == prodNamesList[j]):
+                    if(splittedHeader[k].__eq__(prodNamesList[j])):
                         areaIndexArray[j] = k
             
             #found the indeces for this area.
@@ -76,7 +78,7 @@ class DataHolder:
                 if(indexArray[i][j] == -1):
                     print("Warning: did not find " + prodNameArray[i][j] )
             
-
+        print("Reading TVAR.csv")
         #now read rest of TVAR, loading the data
         for i in range(24*365):
             line = f.readline()
