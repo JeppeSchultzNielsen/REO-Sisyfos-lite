@@ -30,11 +30,6 @@ class DataHolder:
         OtherRESName = "OtherRES_" + name
         OtherNonRESName = "OtherNonRES_" + name
 
-        #several exceptions exist to these naming conventions: 
-        if(name == "DK1"):
-            HYName = "HY" + str(self.climateYear)+"_DE"
-
-
         return [demandName,PVName,WSName,WLName,CSPName,HYName,OtherRESName,OtherNonRESName,"ICHP"]
 
     def InitializeEmptyTimeSeriesArray(self):
