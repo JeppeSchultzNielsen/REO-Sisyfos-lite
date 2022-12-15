@@ -4,7 +4,7 @@ import numpy as np
 #also reads TVAR.csv only once, so it does not need to be read by all areas as timeseries are initialized.
 class DataHolder:
     def __init__(self, simulationYear: int, climateYear: int):
-        self.names = ["DK1", "DK2", "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT","CZSK","HU"]
+        self.names = ["DK1", "DK2", "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
         self.productionTypes = ["PV","WS","WL","CSP","Hy","OtherRes","OtherNonRes","nonTDProd"]
         self.simulationYear = simulationYear
         self.climateYear = climateYear

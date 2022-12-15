@@ -2,7 +2,7 @@ import numpy as np
 import DataHolder as DataHolder
 
 class Area:
-    def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder):
+    def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder, productionList):
         self.name = areaName
         self.nodeIndex = nodeIndex
         print("Preparing area " + self.name)
@@ -11,6 +11,7 @@ class Area:
         self.climateYear = climateYear
         
         self.demandValues = np.zeros(26)
+        self.productionList = productionList
         
         #initialize arrays to hold timeseries
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
@@ -84,7 +85,6 @@ class Area:
 
     def GetName(self):
         return self.name
-
 
 
     #must be able to return the production for a given type for a given hour
