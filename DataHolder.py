@@ -5,7 +5,16 @@ import numpy as np
 class DataHolder:
     def __init__(self, simulationYear: int, climateYear: int):
         self.names = ["DK1", "DK2", "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
-        self.productionTypes = ["PV","WS","WL","CSP","Hy","OtherRes","OtherNonRes","ICHP","nonTDProd"]
+        self.simpleNames = []
+        self.productionTypes = ["PV","WS","WL","CSP","HY","HYlimit","OtherRes","OtherNonRes","ICHP","nonTDProd"]
+        self.simpleProductionTypes = []
+
+        for name in self.names:
+            self.simpleNames.append(name.lower())
+
+        for prod in self.productionTypes:
+            self.simpleProductionTypes.append(prod.lower())
+
         self.simulationYear = simulationYear
         self.climateYear = climateYear
 
@@ -27,8 +36,8 @@ class DataHolder:
         WSName = "WS" + str(self.climateYear)+"_" + str(self.simulationYear)[2:] + "_" + name
         CSPName = "CSP" + str(self.climateYear)+"_30_" + name
         HYName = "HY" + str(self.climateYear)+"_" + name
-        OtherRESName = "OtherRES_" + name
-        OtherNonRESName = "OtherNonRES_" + name
+        OtherRESName = "OtherRes_" + name
+        OtherNonRESName = "OtherNonRes_" + name
 
         return [demandName,PVName,WSName,WLName,CSPName,HYName,OtherRESName,OtherNonRESName,"ICHP"]
 
@@ -55,10 +64,14 @@ class DataHolder:
         
         for i in range(len(self.names)):
             prodNamesList = self.CreateProdNamesList(self.names[i])
+
+            for j in range(len(prodNamesList)):
+                prodNamesList[j] = prodNamesList[j].lower()
+
             areaIndexArray = np.zeros(len(prodNamesList))-1
 
             for k in range(len(splittedHeader)):
-                splittedHeader[k] = splittedHeader[k].rstrip()
+                splittedHeader[k] = splittedHeader[k].rstrip().lower()
                 for j in range(len(prodNamesList)):
                     if(splittedHeader[k].__eq__(prodNamesList[j])):
                         areaIndexArray[j] = k
@@ -92,3 +105,9 @@ class DataHolder:
     
     def GetDemandTimeSeries(self, nodeIndex: int):
         return self.demandTimeSeries[nodeIndex]
+
+    def GetAreaIndex(self, name: str):
+        return self.simpleNames.index(name, 0, len(self.simpleNames))
+        
+    def GetProductionIndex(self, prod: str):
+        return self.simpleProductionTypes.index(prod, 0, len(self.simpleProductionTypes))

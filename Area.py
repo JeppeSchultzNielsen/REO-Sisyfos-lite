@@ -5,6 +5,7 @@ class Area:
     def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder):
         self.name = areaName
         self.nodeIndex = nodeIndex
+        self.dh = dh
         print("Preparing area " + self.name)
 
         self.simulationYear = simulationYear
@@ -23,11 +24,12 @@ class Area:
         self.WLprod = wrap(0)
         self.CSPprod = wrap(0)
         self.HYprod = wrap(0)
+        self.HYlimitprod = wrap(0)
         self.OtherResProd = wrap(0)
         self.OtherNonResProd = wrap(0)
         self.ICHP = wrap(0)
 
-        self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.OtherResProd,self.OtherNonResProd,self.ICHP,self.nonTDProd]
+        self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.HYlimitprod,self.OtherResProd,self.OtherNonResProd,self.ICHP,self.nonTDProd]
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
@@ -38,28 +40,32 @@ class Area:
 
     def InitializeFactors(self):
         f = open("data\plantdata"+str(self.simulationYear)+".csv", "r")
-        #iterate over lines to get plant data
         line = f.readline()
         while(line):
             splitted = line.split(",")
-            if(splitted[1] == self.name):
-                if("PV" in splitted[0]):
-                    self.PVprod.v += float(splitted[3])
-                elif("WindSea" in splitted[0]):
-                    self.WSprod.v += float(splitted[3])
-                elif("WindLand" in splitted[0]):
-                    self.WLprod.v += float(splitted[3])
-                elif("SolarTh" in splitted[0]):
-                    self.CSPprod.v += float(splitted[3])
-                elif("Hydro" in splitted[0]):
-                    self.HYprod.v += float(splitted[3])
-                elif("OtherRES" in splitted[0]):
-                    self.OtherResProd.v += float(splitted[3])
-                elif("OtherNonRES" in splitted[0]):
-                    self.OtherNonResProd.v += float(splitted[3])
+            if(not splitted[1] == self.name):
+                line = f.readline()
+                continue
+            if(splitted[9] == "-" or splitted[9].rstrip() == "No_RoR"):
+                #currently RoR is always 1, which does not seem right. But that is the implementation in sisyfos.
+                self.nonTDProd.v += float(splitted[3])
+            else:
+                typeArea = splitted[9].split("_")
+                if(len(typeArea) == 1):
+                    type = typeArea[0]
+                    prodIndex = self.dh.productionTypes.index(type, 0, len(self.dh.productionTypes))
+                    self.productionList[prodIndex].v += float(splitted[3])
                 else:
-                    self.nonTDProd.v += float(splitted[3])
+                    type = typeArea[0].rstrip().lower()
+                    area = typeArea[1].rstrip().lower()
+                    prodIndex = self.dh.GetProductionIndex(type)
+                    areaIndex = self.dh.GetAreaIndex(area)
+                    if(not areaIndex == self.nodeIndex):
+                        #the timeseries for this node is the same is the timeseries for a different node; update.
+                        self.timeSeriesProductionList[prodIndex] = self.dh.prodTimeSeriesArray[areaIndex][prodIndex]
+                    self.productionList[prodIndex].v += float(splitted[3])
             line = f.readline()
+
 
 
     def PrepareHour(self, hour: int):
