@@ -141,6 +141,7 @@ class Simulation:
             for prodName in self.productionTypeNames:
                 self.fileOut.write(str(self.productionTypeMatrix[i][j]) + "\t")
                 j += 1
+            i += 1
         i = 0
         for line in self.linesList:
             self.fileOut.write(str(self.transferList[i]) + "\t")

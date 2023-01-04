@@ -11,8 +11,6 @@ class Area:
         self.simulationYear = simulationYear
         self.climateYear = climateYear
         
-        self.demandValues = np.zeros(26)
-        
         #initialize arrays to hold timeseries
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
 
@@ -28,13 +26,15 @@ class Area:
         self.OtherResProd = wrap(0)
         self.OtherNonResProd = wrap(0)
         self.ICHP = wrap(0)
+        self.demand = wrap(0)
 
         self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.HYlimitprod,self.OtherResProd,self.OtherNonResProd,self.ICHP,self.nonTDProd]
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
-
+        
         self.InitializeFactors()
+        self.InitializeDemand()
 
     
 
@@ -86,17 +86,18 @@ class Area:
             return self.timeSeriesProductionList[typeIndex][hour]*self.productionList[typeIndex].v
 
 
-
-    def GetDemand(self, hour: int, currentAreaIndex: int):
+    def InitializeDemand(self):
         f = open("data\\areadata"+str(self.simulationYear)+".csv","r") 
         demand = f.readline() #skip header
         demand = f.readline() #reads first line
-        for j in range(len(self.demandValues)):
+        while(demand):
             splitted = demand.split(",")
-            demand_value = float(splitted[1])
-            self.demandValues[j] = demand_value
+            if(splitted[0].__eq__(self.name)):
+                self.demand.v = float(splitted[1])
             demand = f.readline()
-        Final_demand = self.demandValues[currentAreaIndex] * self.demandTimeSeries[hour]
+
+    def GetDemand(self, hour: int, currentAreaIndex: int):
+        Final_demand = self.demand.v * self.demandTimeSeries[hour]
         return Final_demand
 
 #need pass by reference for ints; wrapper class needed. 

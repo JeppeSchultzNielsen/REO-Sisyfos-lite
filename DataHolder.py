@@ -36,8 +36,18 @@ class DataHolder:
         WSName = "WS" + str(self.climateYear)+"_" + str(self.simulationYear)[2:] + "_" + name
         CSPName = "CSP" + str(self.climateYear)+"_30_" + name
         HYName = "HY" + str(self.climateYear)+"_" + name
+        HYName = "Hylimit" + "_" + name
         OtherRESName = "OtherRes_" + name
         OtherNonRESName = "OtherNonRes_" + name
+
+        if(name == "DKBO"):
+            demandName = "DNT" + demandYear + "_" + str(self.climateYear) + "_" + "DK2"
+
+        if(name == "DKKF"):
+            demandName = "DNT" + demandYear + "_" + str(self.climateYear) + "_" + "DK2"
+
+        if(name == "DKEI"):
+            demandName = "DNT" + demandYear + "_" + str(self.climateYear) + "_" + "DK1"
 
         return [demandName,PVName,WSName,WLName,CSPName,HYName,OtherRESName,OtherNonRESName,"ICHP"]
 
@@ -75,10 +85,11 @@ class DataHolder:
                 for j in range(len(prodNamesList)):
                     if(splittedHeader[k].__eq__(prodNamesList[j])):
                         areaIndexArray[j] = k
-            
+
             #found the indeces for this area.
             indexArray.append(areaIndexArray)
             prodNameArray.append(prodNamesList)
+
 
 
         for i in range(len(indexArray)):
@@ -90,6 +101,7 @@ class DataHolder:
         #now read rest of TVAR, loading the data
         for i in range(24*365):
             line = f.readline()
+            line.rstrip('\r')
             line = line.replace(",",".")
             splitted = line.split(";")
             for j in range(len(indexArray)):
