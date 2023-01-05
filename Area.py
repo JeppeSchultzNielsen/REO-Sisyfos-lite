@@ -33,6 +33,7 @@ class Area:
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
         
+        
         self.InitializeFactors()
         self.InitializeDemand()
 
@@ -55,6 +56,18 @@ class Area:
                     type = typeArea[0]
                     prodIndex = self.dh.productionTypes.index(type, 0, len(self.dh.productionTypes))
                     self.productionList[prodIndex].v += float(splitted[3])
+            if(not splitted[1] == self.name):
+                line = f.readline()
+                continue
+            if(splitted[9] == "-" or splitted[9].rstrip() == "No_RoR"):
+                #currently RoR is always 1, which does not seem right. But that is the implementation in sisyfos.
+                self.nonTDProd.v += float(splitted[3])
+            else:
+                typeArea = splitted[9].split("_")
+                if(len(typeArea) == 1):
+                    type = typeArea[0]
+                    prodIndex = self.dh.productionTypes.index(type, 0, len(self.dh.productionTypes))
+                    self.productionList[prodIndex].v += float(splitted[3])
                 else:
                     type = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
@@ -63,8 +76,10 @@ class Area:
                     if(not areaIndex == self.nodeIndex):
                         #the timeseries for this node is the same is the timeseries for a different node; update.
                         self.timeSeriesProductionList[prodIndex] = self.dh.prodTimeSeriesArray[areaIndex][prodIndex]
+                        print("For production of " + type + " in " + self.name + " using time series from " + area)
                     self.productionList[prodIndex].v += float(splitted[3])
             line = f.readline()
+
 
 
 
@@ -94,7 +109,12 @@ class Area:
             splitted = demand.split(",")
             if(splitted[0].__eq__(self.name)):
                 self.demand.v = float(splitted[1])
+            if(splitted[0].__eq__(self.name)):
+                self.demand.v = float(splitted[1])
             demand = f.readline()
+
+    def GetDemand(self, hour: int, currentAreaIndex: int):
+        Final_demand = self.demand.v * self.demandTimeSeries[hour]
 
     def GetDemand(self, hour: int, currentAreaIndex: int):
         Final_demand = self.demand.v * self.demandTimeSeries[hour]
