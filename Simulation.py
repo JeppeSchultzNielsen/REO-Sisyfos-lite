@@ -52,6 +52,7 @@ class Simulation:
             self.fileOut.write("hour"+"\t")
             for name in self.nameList:
                 self.fileOut.write(name + "_" + "demand" + "\t")
+                self.fileOut.write(name + "_" + "surplus" + "\t")
                 for prodName in self.productionTypeNames:
                     self.fileOut.write(name + "_" + prodName + "\t")
             for line in self.linesList:
@@ -136,15 +137,16 @@ class Simulation:
         self.fileOut.write(str(hour)+"\t")
         i = 0
         for name in self.nameList:
-            self.fileOut.write(str(self.demandList[i]) + "\t")
+            self.fileOut.write(f"{self.demandList[i]:.3f}" + "\t")
+            self.fileOut.write(f"{self.productionList[i]-self.demandList[i]:.3f}" + "\t")
             j = 0
             for prodName in self.productionTypeNames:
-                self.fileOut.write(str(self.productionTypeMatrix[i][j]) + "\t")
+                self.fileOut.write(f"{self.productionTypeMatrix[i][j]:.3f}" + "\t")
                 j += 1
             i += 1
         i = 0
         for line in self.linesList:
-            self.fileOut.write(str(self.transferList[i]) + "\t")
+            self.fileOut.write(f"{self.transferList[i]:.3f}" + "\t")
             i += 1
 
 
@@ -214,7 +216,7 @@ class Simulation:
         #save line output 
         for i in (range(len(scrambledLines))):
             for j in range(len(self.linesList)):
-                if(scrambledLines[i].GetName() == self.linesList[j].GetName()):
+                if(model.variables()[i].name == self.linesList[j].GetName()):
                     self.transferList[j] = model.variables()[i].value()
 
 
