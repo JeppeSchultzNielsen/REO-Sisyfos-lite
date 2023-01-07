@@ -73,7 +73,7 @@ class DataHolder:
             self.prodTimeSeriesArray.append(build)
 
     def InitializeTimeSeries(self):
-        f = open("data\TVAR.csv","r")
+        f = open("data/TVAR.csv","r")
         line = f.readline() #header
 
         line.rstrip('\r')

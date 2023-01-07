@@ -3,3 +3,5 @@ __pycache__/Line.cpython-38.pyc
 __pycache__/Simulation.cpython-38.pyc
 data/TVAR.csv
 data/TVARUNFIXED.csv
+__pycache__
+pythonVenv

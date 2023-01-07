@@ -62,7 +62,7 @@ class Simulation:
 
     #helper function for initializing all lines
     def InitializeLines(self):
-        f = open("data\linedata"+str(self.simulationYear)+".csv","r")
+        f = open("data/linedata"+str(self.simulationYear)+".csv","r")
         line = f.readline() #skip header
         line = f.readline() #read 1st line
         i = 0
@@ -90,7 +90,7 @@ class Simulation:
 
     def GetNumberOfLines(self):
         i = 0
-        f = open("data\linedata"+str(self.simulationYear)+".csv","r")
+        f = open("data/linedata"+str(self.simulationYear)+".csv","r")
         line = f.readline() #skip header
         line = f.readline() #read 1st line
         while(line):

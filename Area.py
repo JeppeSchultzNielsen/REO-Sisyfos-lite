@@ -40,7 +40,7 @@ class Area:
     
 
     def InitializeFactors(self):
-        f = open("data\plantdata"+str(self.simulationYear)+".csv", "r")
+        f = open("data/plantdata"+str(self.simulationYear)+".csv", "r",errors='replace')
         line = f.readline()
         while(line):
             splitted = line.split(",")
@@ -102,7 +102,7 @@ class Area:
 
 
     def InitializeDemand(self):
-        f = open("data\\areadata"+str(self.simulationYear)+".csv","r") 
+        f = open("data/areadata"+str(self.simulationYear)+".csv","r") 
         demand = f.readline() #skip header
         demand = f.readline() #reads first line
         while(demand):
