@@ -109,14 +109,10 @@ class Area:
             splitted = demand.split(",")
             if(splitted[0].__eq__(self.name)):
                 self.demand.v = float(splitted[1])
-            if(splitted[0].__eq__(self.name)):
-                self.demand.v = float(splitted[1])
             demand = f.readline()
 
     def GetDemand(self, hour: int, currentAreaIndex: int):
-        Final_demand = self.demand.v * self.demandTimeSeries[hour]
-
-    def GetDemand(self, hour: int, currentAreaIndex: int):
+        #demand in TVAR is given in units such that it sums to 100TWh over a year. What are the units of the demand factors? 
         Final_demand = self.demand.v * self.demandTimeSeries[hour]
         return Final_demand
 
