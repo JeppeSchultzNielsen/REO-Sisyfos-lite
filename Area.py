@@ -56,18 +56,6 @@ class Area:
                     type = typeArea[0]
                     prodIndex = self.dh.productionTypes.index(type, 0, len(self.dh.productionTypes))
                     self.productionList[prodIndex].v += float(splitted[3])
-            if(not splitted[1] == self.name):
-                line = f.readline()
-                continue
-            if(splitted[9] == "-" or splitted[9].rstrip() == "No_RoR"):
-                #currently RoR is always 1, which does not seem right. But that is the implementation in sisyfos.
-                self.nonTDProd.v += float(splitted[3])
-            else:
-                typeArea = splitted[9].split("_")
-                if(len(typeArea) == 1):
-                    type = typeArea[0]
-                    prodIndex = self.dh.productionTypes.index(type, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].v += float(splitted[3])
                 else:
                     type = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
@@ -112,7 +100,9 @@ class Area:
             demand = f.readline()
 
     def GetDemand(self, hour: int, currentAreaIndex: int):
-        #demand in TVAR is given in units such that it sums to 100TWh over a year. What are the units of the demand factors? 
+        #demand in TVAR is given in units such that it sums to 1TWh over a year. So it is units of MWh. 
+        #the factor is TWh. Means if we just multiply the timeSeries number with the factor, we get the
+        #right total demand.
         Final_demand = self.demand.v * self.demandTimeSeries[hour]
         return Final_demand
 

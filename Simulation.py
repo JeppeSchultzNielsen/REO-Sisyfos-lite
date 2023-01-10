@@ -53,6 +53,7 @@ class Simulation:
             for name in self.nameList:
                 self.fileOut.write(name + "_" + "demand" + "\t")
                 self.fileOut.write(name + "_" + "surplus" + "\t")
+                self.fileOut.write(name + "_" + "EENS" + "\t")
                 for prodName in self.productionTypeNames:
                     self.fileOut.write(name + "_" + prodName + "\t")
             for line in self.linesList:
@@ -139,6 +140,20 @@ class Simulation:
         for name in self.nameList:
             self.fileOut.write(f"{self.demandList[i]:.3f}" + "\t")
             self.fileOut.write(f"{self.productionList[i]-self.demandList[i]:.3f}" + "\t")
+
+            j = 0
+            EENS = self.productionList[i]-self.demandList[i]
+            for j in range(len(self.linesList)):
+                if(name == self.linesList[j].GetA()):
+                    EENS -= self.transferList[j]
+                if(name == self.linesList[j].GetB()):
+                    EENS += self.transferList[j]
+
+            EENS = - EENS
+            if(EENS < 0):
+                EENS = 0
+            self.fileOut.write(f"{EENS:.3f}" + "\t")
+
             j = 0
             for prodName in self.productionTypeNames:
                 self.fileOut.write(f"{self.productionTypeMatrix[i][j]:.3f}" + "\t")
@@ -171,7 +186,7 @@ class Simulation:
             scrambledProductions[i] = (self.productionList[origIndex])
             scrambledDemands[i] = (self.demandList[origIndex])
             i = i + 1
-        
+
         #now, solve Maxflow Problem
         F_vec = np.empty(shape=self.numberOfLines, dtype = LpVariable)
     
@@ -188,6 +203,9 @@ class Simulation:
             surplus = scrambledProductions[i] - scrambledDemands[i]
             if(surplus < 0):
                 hasSurplus = False
+            
+            #print(scrambledNames[i] + " has demand " + str(scrambledDemands[i]) + " and production " + str(scrambledProductions[i]) + " so surplus " + str(surplus) + " it has surplus " + str(hasSurplus))
+
             build = 0
             #find lines relevant to this node. If they are in index 0, they represent flow out, if they are in index 1, they
             #represent flow in.
@@ -205,7 +223,17 @@ class Simulation:
                         #if node does not have surplus, should maximize flow into node
                         obj_func += F_vec[j]
 
-            model += (-build <= surplus, "constraint_demand" + str(i))
+            if(hasSurplus):
+                #if there is surplus, the flow out of the node should not be greater than the surplus.
+                model += (-build <= surplus, "constraint_demand" + str(i))
+                #also, the flow into the node should not be greater than 0.
+                model += (build <= 0, "constraint_demand_0" + str(i))
+            else:
+                #if there is not surplus, the flow into the node should not be greater than the demand.
+                #i think that these conditions are the same but this is clearer.
+                model += (build <= -surplus, "constraint_demand" + str(i))
+                #also, the flow out of the node should not be greater than 0.
+                model += (-build <= 0, "constraint_demand_0" + str(i))
     
         #create objective for model
         model += obj_func
@@ -214,7 +242,7 @@ class Simulation:
         status = model.solve(GLPK_CMD(msg=False))
 
         #save line output 
-        for i in (range(len(scrambledLines))):
+        for i in (range(len(model.variables()))):
             for j in range(len(self.linesList)):
                 if(model.variables()[i].name == self.linesList[j].GetName()):
                     self.transferList[j] = model.variables()[i].value()
