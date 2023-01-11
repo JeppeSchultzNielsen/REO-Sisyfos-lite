@@ -26,6 +26,9 @@ class Simulation:
         #list of productions in all areas
         self.productionList = np.zeros(len(self.nameList))
 
+        #list of sum flow in all areas
+        self.sumFlowList = np.zeros(len(self.nameList))
+
         #initialize the lists
         for i in range(len(self.nameList)):
             self.areaList[i] = (Area(self.nameList[i],i,self.simulationYear,self.climateYear,dh))
@@ -34,6 +37,7 @@ class Simulation:
 
         #list of all lines
         self.linesList = np.empty(shape=self.numberOfLines, dtype = Line)
+
 
         #initialize the lines
         self.InitializeLines()
@@ -169,45 +173,32 @@ class Simulation:
 
     #solves the MaxFlow problem under current conditions. 
     def SolveMaxFlowProblem(self):
-
-        #first, create a scrambled list of area names
-        scrambledNames = self.nameList.copy()
-        random.shuffle(scrambledNames)
-        scrambledProductions = np.zeros(len(self.productionList))
-        scrambledDemands = np.zeros(len(self.demandList))
-
-        scrambledLines = self.linesList.copy()
-        random.shuffle(scrambledLines)
-
-        #create equally shuffled lists of productions and demands
-        i = 0
-        for name in scrambledNames:
-            origIndex = self.GetOriginalAreaIndex(name)
-            scrambledProductions[i] = (self.productionList[origIndex])
-            scrambledDemands[i] = (self.demandList[origIndex])
-            i = i + 1
-
         #now, solve Maxflow Problem. I suspect that Pulp likes to minimize all variables from the start, and then adjusts the model until
         #solution is found. Therefore there is assymmetry in the way it is currently defined, as the "direction" of a line impacts the
         #results. Therefore all lines should be seperated, such that for the "DK1_to_DK2" line have both "DK1_to_DK2" and "DK2_to_DK1".
         F_vec = np.empty(shape=2*self.numberOfLines, dtype = LpVariable)
-        toVec = []
-        fromVec = []
+        toVec = np.empty(2*self.numberOfLines, dtype='<U15')
+        fromVec = np.empty(2*self.numberOfLines, dtype='<U15')
     
-
         F_index = 0
-        for i in range(len(scrambledLines)):
+
+        indexMapNonRev = np.empty(self.numberOfLines, dtype='<U31')
+        indexMapRev = np.empty(self.numberOfLines, dtype='<U31')
+
+        for i in range(len(self.linesList)):
             #the variables are stored in pulp alphabetically, therefore should randomize first 3 letters of name. 
             #the "a" is necessary because pulp gets confused if variable names start with numbers
-            varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + scrambledLines[i].GetName()
-            F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = scrambledLines[i].GetMaxCapAB())
-            toVec.append(scrambledLines[i].GetA())
-            fromVec.append(scrambledLines[i].GetB())
+            varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName()
+            F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapAB())
+            toVec[F_index]=self.linesList[i].GetB()
+            fromVec[F_index]=self.linesList[i].GetA()
+            indexMapNonRev[i] = varname
 
-            varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + scrambledLines[i].GetName() + "_rev"
-            F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = scrambledLines[i].GetMaxCapBA())
-            toVec.append(scrambledLines[i].GetB())
-            fromVec.append(scrambledLines[i].GetA())
+            varname = "b" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName() + "_rev"
+            F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapBA())
+            toVec[F_index+1]=self.linesList[i].GetA()
+            fromVec[F_index+1]=self.linesList[i].GetB()
+            indexMapRev[i] = varname
             F_index += 2
 
 
@@ -216,9 +207,9 @@ class Simulation:
         obj_func = 0
 
         #find demand and production in each node. 
-        for i in range(len(scrambledDemands)):
+        for i in range(len(self.demandList)):
             hasSurplus = True
-            surplus = scrambledProductions[i] - scrambledDemands[i]
+            surplus = self.productionList[i] - self.demandList[i]
             if(surplus < 0):
                 hasSurplus = False
             
@@ -226,46 +217,53 @@ class Simulation:
 
 
             for j in range(len(F_vec)):
-                if(scrambledNames[i] == toVec[j]):
+                if(self.nameList[i] == toVec[j]):
                     #flow is into node
                     build += F_vec[j]
-                if(scrambledNames[i] == fromVec[j]):
+                if(self.nameList[i] == fromVec[j]):
                     #flow is out of node
                     build += -F_vec[j]
 
             if(hasSurplus):
                 #if there is surplus, the flow out of the node should not be greater than the surplus.
-                model += (-build <= surplus, "constraint_demand_" + scrambledNames[i])
+                model += (-build <= surplus, "constraint_demand_" + self.nameList[i])
                 #also, the flow into the node should not be greater than 0.
-                model += (build <= 0, "constraint_demand_0_" + scrambledNames[i])
+                model += (build <= 0, "constraint_demand_0_" + self.nameList[i])
             else:
-                print(scrambledNames[i])
-                print(surplus)
-                print(obj_func)
                 #if there is not surplus, the flow into the node should not be greater than the demand.
-                model += (build <= -surplus, "constraint_demand_" + scrambledNames[i])
+                model += (build <= -surplus, "constraint_demand_" + self.nameList[i])
                 #also, the flow out of the node should not be greater than 0.
-                model += (-build <= 0, "constraint_demand_0_" + scrambledNames[i])
+                model += (-build <= 0, "constraint_demand_0_" + self.nameList[i])
 
                 #also the total flow into the node should be maximized
                 obj_func += build
-                print(obj_func)
     
         #create objective for model
         model += obj_func
 
-        print(model)
-
         #solve model
         status = model.solve(GLPK_CMD(msg=False))
 
+        for i in range(len(self.transferList)):
+            #reset transferlist
+            self.transferList[i] = 0
+
         #save line output 
         for i in (range(len(model.variables()))):
-            for j in range(len(self.linesList)):
-                if(model.variables()[i].name[4:] == self.linesList[j].GetName()):
-                    self.transferList[j] = model.variables()[i].value()
+            if(model.variables()[i].value() == 0):
+                continue
 
+            print(model.variables()[i].value())
+            print(model.variables()[i].name)
 
+            if(model.variables()[i].name[0] == "a"):
+                index = np.where(indexMapNonRev == model.variables()[i].name)[0]
+                self.transferList[index] += model.variables()[i].value()
+                print("assigned index " + str(index))
+
+            else:
+                index = np.where(indexMapRev == model.variables()[i].name)[0]
+                self.transferList[index] -= model.variables()[i].value()
 
 
     #Running the simulation
