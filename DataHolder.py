@@ -58,6 +58,13 @@ class DataHolder:
 
         if(name == "DKEI"):
             demandName = "DNT" + demandYear + "_" + str(self.climateYear) + "_" + "DK1"
+            
+        if(name == "DELU"):
+            HYName = "HY" + str(self.climateYear)+"_" + "DE"
+            HylimitName = "Hylimit" + "_" + "DE"
+        
+        if(name == "EELVLT"):
+            HYName = "HY" + str(self.climateYear)+"_" + "LVLT"
 
         return [demandName,PVName,WSName,WLName,CSPName,HYName,HylimitName,OtherRESName,OtherNonRESName,"ICHP"]
 
