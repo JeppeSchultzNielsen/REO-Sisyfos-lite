@@ -187,14 +187,29 @@ class Simulation:
             scrambledDemands[i] = (self.demandList[origIndex])
             i = i + 1
 
-        #now, solve Maxflow Problem
-        F_vec = np.empty(shape=self.numberOfLines, dtype = LpVariable)
+        #now, solve Maxflow Problem. I suspect that Pulp likes to minimize all variables from the start, and then adjusts the model until
+        #solution is found. Therefore there is assymmetry in the way it is currently defined, as the "direction" of a line impacts the
+        #results. Therefore all lines should be seperated, such that for the "DK1_to_DK2" line have both "DK1_to_DK2" and "DK2_to_DK1".
+        F_vec = np.empty(shape=2*self.numberOfLines, dtype = LpVariable)
+        toVec = []
+        fromVec = []
     
+
+        F_index = 0
         for i in range(len(scrambledLines)):
             #the variables are stored in pulp alphabetically, therefore should randomize first 3 letters of name. 
             #the "a" is necessary because pulp gets confused if variable names start with numbers
             varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + scrambledLines[i].GetName()
-            F_vec[i] = LpVariable(name= varname, lowBound=-scrambledLines[i].GetMaxCapBA(), upBound = scrambledLines[i].GetMaxCapAB())
+            F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = scrambledLines[i].GetMaxCapAB())
+            toVec.append(scrambledLines[i].GetA())
+            fromVec.append(scrambledLines[i].GetB())
+
+            varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + scrambledLines[i].GetName() + "_rev"
+            F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = scrambledLines[i].GetMaxCapBA())
+            toVec.append(scrambledLines[i].GetB())
+            fromVec.append(scrambledLines[i].GetA())
+            F_index += 2
+
 
         #create model
         model = LpProblem(name="maxFlow", sense=LpMaximize)
@@ -208,36 +223,31 @@ class Simulation:
                 hasSurplus = False
             
             build = 0
-            #find lines relevant to this node. If they are in index 0, they represent flow out, if they are in index 1, they
-            #represent flow in.
-            for j in range(len(scrambledLines)):
-                if(scrambledNames[i] == scrambledLines[j].GetA()):
-                    #positive flow corresponds to flow out of node
-                    build -= F_vec[j]
-                    if(not hasSurplus):
-                        #if node does not have surplus, should maximize flow into node
-                        obj_func -= F_vec[j]
-                if(scrambledNames[i] == scrambledLines[j].GetB()):
-                    #positive flow corresponds to flow into node
-                    build += F_vec[j]
-                    if(not hasSurplus):
-                        #if node does not have surplus, should maximize flow into node
-                        obj_func += F_vec[j]
+            for j in range(len(F_vec)):
+                if(scrambledNames[i] == toVec[j]):
+                    #flow is into node
+                    build = F_vec[j]
+                if(scrambledNames[i] == fromVec[j]):
+                    #flow is out of node
+                    build = -F_vec[j]
 
             if(hasSurplus):
                 #if there is surplus, the flow out of the node should not be greater than the surplus.
-                model += (-build <= surplus, "constraint_demand" + str(i))
+                model += (-build <= surplus, "constraint_demand_" + scrambledNames[i])
                 #also, the flow into the node should not be greater than 0.
-                model += (build <= 0, "constraint_demand_0" + str(i))
+                model += (build <= 0, "constraint_demand_0_" + scrambledNames[i])
             else:
                 #if there is not surplus, the flow into the node should not be greater than the demand.
-                #i think that these conditions are the same but this is clearer.
-                model += (build <= -surplus, "constraint_demand" + str(i))
+                model += (build <= -surplus, "constraint_demand_" + scrambledNames[i])
                 #also, the flow out of the node should not be greater than 0.
-                model += (-build <= 0, "constraint_demand_0" + str(i))
+                model += (-build <= 0, "constraint_demand_0_" + scrambledNames[i])
+
+                #also the total flow into the node should be maximized
+                obj_func += build
     
         #create objective for model
         model += obj_func
+
         print(model)
 
         #solve model
