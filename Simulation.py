@@ -191,7 +191,10 @@ class Simulation:
         F_vec = np.empty(shape=self.numberOfLines, dtype = LpVariable)
     
         for i in range(len(scrambledLines)):
-            F_vec[i] = LpVariable(name=scrambledLines[i].GetName(), lowBound=-scrambledLines[i].GetMaxCapBA(), upBound = scrambledLines[i].GetMaxCapAB())
+            #the variables are stored in pulp alphabetically, therefore should randomize first 3 letters of name. 
+            #the "a" is necessary because pulp gets confused if variable names start with numbers
+            varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + scrambledLines[i].GetName()
+            F_vec[i] = LpVariable(name= varname, lowBound=-scrambledLines[i].GetMaxCapBA(), upBound = scrambledLines[i].GetMaxCapAB())
 
         #create model
         model = LpProblem(name="maxFlow", sense=LpMaximize)
@@ -204,8 +207,6 @@ class Simulation:
             if(surplus < 0):
                 hasSurplus = False
             
-            #print(scrambledNames[i] + " has demand " + str(scrambledDemands[i]) + " and production " + str(scrambledProductions[i]) + " so surplus " + str(surplus) + " it has surplus " + str(hasSurplus))
-
             build = 0
             #find lines relevant to this node. If they are in index 0, they represent flow out, if they are in index 1, they
             #represent flow in.
@@ -237,6 +238,7 @@ class Simulation:
     
         #create objective for model
         model += obj_func
+        print(model)
 
         #solve model
         status = model.solve(GLPK_CMD(msg=False))
@@ -244,7 +246,7 @@ class Simulation:
         #save line output 
         for i in (range(len(model.variables()))):
             for j in range(len(self.linesList)):
-                if(model.variables()[i].name == self.linesList[j].GetName()):
+                if(model.variables()[i].name[4:] == self.linesList[j].GetName()):
                     self.transferList[j] = model.variables()[i].value()
 
 
