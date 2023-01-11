@@ -223,13 +223,15 @@ class Simulation:
                 hasSurplus = False
             
             build = 0
+
+
             for j in range(len(F_vec)):
                 if(scrambledNames[i] == toVec[j]):
                     #flow is into node
-                    build = F_vec[j]
+                    build += F_vec[j]
                 if(scrambledNames[i] == fromVec[j]):
                     #flow is out of node
-                    build = -F_vec[j]
+                    build += -F_vec[j]
 
             if(hasSurplus):
                 #if there is surplus, the flow out of the node should not be greater than the surplus.
@@ -237,6 +239,9 @@ class Simulation:
                 #also, the flow into the node should not be greater than 0.
                 model += (build <= 0, "constraint_demand_0_" + scrambledNames[i])
             else:
+                print(scrambledNames[i])
+                print(surplus)
+                print(obj_func)
                 #if there is not surplus, the flow into the node should not be greater than the demand.
                 model += (build <= -surplus, "constraint_demand_" + scrambledNames[i])
                 #also, the flow out of the node should not be greater than 0.
@@ -244,6 +249,7 @@ class Simulation:
 
                 #also the total flow into the node should be maximized
                 obj_func += build
+                print(obj_func)
     
         #create objective for model
         model += obj_func
