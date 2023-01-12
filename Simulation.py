@@ -194,7 +194,7 @@ class Simulation:
             fromVec[F_index]=self.linesList[i].GetA()
             indexMapNonRev[i] = varname
 
-            varname = "b" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName() + "_rev"
+            varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName() + "_rev"
             F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapBA())
             toVec[F_index+1]=self.linesList[i].GetA()
             fromVec[F_index+1]=self.linesList[i].GetB()
@@ -234,7 +234,6 @@ class Simulation:
                 model += (build <= -surplus, "constraint_demand_" + self.nameList[i])
                 #also, the flow out of the node should not be greater than 0.
                 model += (-build <= 0, "constraint_demand_0_" + self.nameList[i])
-
                 #also the total flow into the node should be maximized
                 obj_func += build
     
@@ -250,20 +249,17 @@ class Simulation:
 
         #save line output 
         for i in (range(len(model.variables()))):
+        
             if(model.variables()[i].value() == 0):
                 continue
 
-            print(model.variables()[i].value())
-            print(model.variables()[i].name)
-
-            if(model.variables()[i].name[0] == "a"):
-                index = np.where(indexMapNonRev == model.variables()[i].name)[0]
-                self.transferList[index] += model.variables()[i].value()
-                print("assigned index " + str(index))
-
-            else:
+            if(model.variables()[i].name[-4:] == "_rev"):
                 index = np.where(indexMapRev == model.variables()[i].name)[0]
                 self.transferList[index] -= model.variables()[i].value()
+
+            else:
+                index = np.where(indexMapNonRev == model.variables()[i].name)[0]
+                self.transferList[index] += model.variables()[i].value()
 
 
     #Running the simulation
