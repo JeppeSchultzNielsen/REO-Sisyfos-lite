@@ -33,12 +33,67 @@ class Area:
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
-        
+
+        self.nonTDProdTimeseries = np.zeros(8670)
         
         self.InitializeFactors()
         self.InitializeDemand()
 
-    
+        self.CreateOutagePlan()
+
+
+    def CreateOutagePlan(self):
+        print("Creating outage plan for " + self.name)
+        #When creating an outage plan, we're creating a pseudo time series for the non-time dependent productions. So what i want is to
+        #create an array with the dimensions of number of plants * number of hours.
+        noPlants = self.nonTDProd.GetNumberOfPlants()
+
+        capacities = self.nonTDProd.GetCapacityArray()
+        noUnits = self.nonTDProd.GetNoUnitsArray()
+        plannedOutages = self.nonTDProd.GetPlannedOutageArray()
+
+        unitCapacity = capacities/noUnits
+
+        #the matrix that i'm creating should countain how many units of each plant is on in each hour.
+        onMatrix = np.zeros([noPlants, 8670])
+        for i in range(8670):
+            for j in range(noPlants):
+                onMatrix[j][i] = noUnits[j]
+
+        demandCopy = self.demand.GetCurrentValue() * self.demandTimeSeries
+
+        #now i will iterate over all units. 
+        for i in range(noPlants):
+            #first place the units with highest capacities.
+            indexMax = int(np.argmax(unitCapacity))
+            outageHours = int(plannedOutages[indexMax] + 0.5)
+            for j in range(noUnits[indexMax]):
+                #now find the hours in demandCopy where this does least damage; this is where the sum over 
+                #the outage hours is smallest (least demand)
+                smallestIndex = 0
+                smallest = 10e9
+                for k in range(8670 - outageHours):
+                    currentSum = sum( demandCopy[k:k+outageHours] )
+                    if( currentSum < smallest ):
+                        smallest = currentSum
+                        smallestIndex = k
+                
+                #adjust the on-matrix accordingly. 
+                for k in range(outageHours):
+                        onMatrix[indexMax][outageHours+k] -= 1
+                        #adjust the demandCopy accordingly - surplus demand falls because a unit is off now - equivalent to demand rising. 
+                        demandCopy[outageHours+k] += unitCapacity[indexMax]
+            #having solved the problem for this unitCapacity, we can set it to zero and do it over again with next highest unit capacity. 
+            unitCapacity[indexMax] = -10e9
+
+
+        #we can now create a time series for the nonTDProd
+        unitCapacity = capacities/noUnits
+        for i in range(8670):
+            for j in range(noPlants):
+                self.nonTDProdTimeseries[i] += onMatrix[j][i] * unitCapacity[j]        
+
+
 
     def InitializeFactors(self):
         f = open("data/plantdata"+str(self.simulationYear)+".csv", "r",errors='replace')
@@ -50,13 +105,13 @@ class Area:
                 continue
             if(splitted[9] == "-" or splitted[9].rstrip() == "No_RoR"):
                 #currently RoR is always 1, which does not seem right. But that is the implementation in sisyfos.
-                self.nonTDProd.AddProducer(float(splitted[3]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
+                self.nonTDProd.AddProducer(float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
             else:
                 typeArea = splitted[9].split("_")
                 if(len(typeArea) == 1):
                     type = typeArea[0]
                     prodIndex = self.dh.productionTypes.index(type, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(float(splitted[3]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
+                    self.productionList[prodIndex].AddProducer(float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
                 else:
                     type = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
@@ -66,7 +121,7 @@ class Area:
                         #the timeseries for this node is the same is the timeseries for a different node; update.
                         self.timeSeriesProductionList[prodIndex] = self.dh.prodTimeSeriesArray[areaIndex][prodIndex]
                         print("For production of " + type + " in " + self.name + " using time series from " + area)
-                    self.productionList[prodIndex].AddProducer(float(splitted[3]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
+                    self.productionList[prodIndex].AddProducer(float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
             line = f.readline()
 
         for prod in self.productionList:
@@ -88,7 +143,7 @@ class Area:
     #must be able to return the production for a given type for a given hour
     def GetProduction(self, hour: int, typeIndex: int):
         if(typeIndex == (len(self.timeSeriesProductionList)-1)):
-            return self.nonTDProd.GetCurrentValue()
+            return self.nonTDProdTimeseries[hour]
         else:
             return self.timeSeriesProductionList[typeIndex][hour]*self.productionList[typeIndex].GetCurrentValue()
 
@@ -100,7 +155,7 @@ class Area:
         while(demand):
             splitted = demand.split(",")
             if(splitted[0].__eq__(self.name)):
-                self.demand.AddProducer(float(splitted[1]) , 0, 0, 0, 0)
+                self.demand.AddProducer(float(splitted[1]), 1, 0, 0, 0, 0)
             demand = f.readline()
         
         self.demand.CreateArrays()

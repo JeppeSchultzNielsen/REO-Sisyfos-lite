@@ -4,4 +4,4 @@ from DataHolder import DataHolder
 dh = DataHolder(2040,2009)
 
 sim = Simulation(2040,2009,"results/FirstSim.txt", True, dh)
-sim.RunSimulation(42,44)
+sim.RunSimulation(0,8759)
