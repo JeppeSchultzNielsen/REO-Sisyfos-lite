@@ -1,13 +1,16 @@
 import numpy as np
+import os as os
 
 #class for holding global data for use in the other classes 
 #also reads TVAR.csv only once, so it does not need to be read by all areas as timeseries are initialized.
 class DataHolder:
-    def __init__(self, simulationYear: int, climateYear: int):
-        self.names = ["DK1", "DK2", "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
+    def __init__(self, simulationYear: int, climateYear: int, outagePlanPath: str):
+        self.names = ["DK1", "DK2","DELU"]#, "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
         self.simpleNames = []
         self.productionTypes = ["PV","WS","WL","CSP","HY","HYlimit","OtherRes","OtherNonRes","ICHP","nonTDProd"]
         self.simpleProductionTypes = []
+
+        self.outagePlanPath = outagePlanPath
 
         for name in self.names:
             self.simpleNames.append(name.lower())
@@ -33,6 +36,33 @@ class DataHolder:
 
         self.InitializeEmptyTimeSeriesArray()
         self.InitializeTimeSeries()
+        self.LoadOutagePlan(outagePlanPath)
+
+        self.outagePlanLoaded = False
+
+    def LoadOutagePlan(self, outagePlanPath: str):
+        if( os.path.isfile(outagePlanPath) ):
+            #load the plans 
+            self.outagePlanLoaded = True
+            pass
+        else: 
+            print("Outage plan not found! New outage plans will be created in " + str(outagePlanPath) + ", expect long wait")
+            write = open(outagePlanPath, "w+")
+            write.write("Names" + "\n")
+            for i in range(8759):
+                write.write(str(i) + "\n")
+
+    def GetOutagePlanPath(self):
+        return self.outagePlanPath
+
+        
+    def GetOutagePlan(self, areaName: str):
+        if(self.outagePlanLoaded):
+            #return the outageplan
+            pass
+        else:
+            return np.array([])
+
 
     def CreateProdNamesList(self, name):
         demandYear = str(self.simulationYear)[2:]

@@ -1,6 +1,9 @@
 import numpy as np
 from Production import Production
 from DataHolder import DataHolder
+from tempfile import mkstemp
+from shutil import move, copymode
+from os import fdopen, remove
 
 class Area:
     def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder):
@@ -16,30 +19,29 @@ class Area:
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
 
         #variables in timeSeries are normalized, need normalizationfactors from SisyfosData, including the non timedependent production (nonTDProd)
-        self.nonTDProd = Production()
-        self.Demand = Production()
-        self.PVprod = Production()
-        self.WSprod = Production()
-        self.WLprod = Production()
-        self.CSPprod = Production()
-        self.HYprod = Production()
-        self.HYlimitprod = Production()
-        self.OtherResProd = Production()
-        self.OtherNonResProd = Production()
-        self.ICHP = Production()
-        self.demand = Production()
+        self.nonTDProd = Production("nonTDProd"+self.name)
+        self.PVprod = Production("PVProd"+self.name)
+        self.WSprod = Production("WSProd"+self.name)
+        self.WLprod = Production("WLProd"+self.name)
+        self.CSPprod = Production("CSPProd"+self.name)
+        self.HYprod = Production("HYProd"+self.name)
+        self.HYlimitprod = Production("HYlimitProd"+self.name)
+        self.OtherResProd = Production("OtherResProd"+self.name)
+        self.OtherNonResProd = Production("OtherNonResProd"+self.name)
+        self.ICHP = Production("ICHPProd"+self.name)
+        self.demand = Production("nonTDProd"+self.name)
 
         self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.HYlimitprod,self.OtherResProd,self.OtherNonResProd,self.ICHP,self.nonTDProd]
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
 
-        self.nonTDProdTimeseries = np.zeros(8670)
+        self.nonTDProdTimeseries = np.zeros(8760)
         
         self.InitializeFactors()
         self.InitializeDemand()
 
-        self.CreateOutagePlan()
+        self.LoadOrCreateOutagePlan()
 
 
     def CreateOutagePlan(self):
@@ -50,13 +52,14 @@ class Area:
 
         capacities = self.nonTDProd.GetCapacityArray()
         noUnits = self.nonTDProd.GetNoUnitsArray()
+        plantNames = self.nonTDProd.GetNamesList()
         plannedOutages = self.nonTDProd.GetPlannedOutageArray()
 
         unitCapacity = capacities/noUnits
 
         #the matrix that i'm creating should countain how many units of each plant is on in each hour.
-        onMatrix = np.zeros([noPlants, 8670])
-        for i in range(8670):
+        onMatrix = np.zeros([noPlants, 8760])
+        for i in range(8760):
             for j in range(noPlants):
                 onMatrix[j][i] = noUnits[j]
 
@@ -66,13 +69,13 @@ class Area:
         for i in range(noPlants):
             #first place the units with highest capacities.
             indexMax = int(np.argmax(unitCapacity))
-            outageHours = int(plannedOutages[indexMax] + 0.5)
+            outageHours = int(plannedOutages[indexMax]*8760 + 0.5)
             for j in range(noUnits[indexMax]):
                 #now find the hours in demandCopy where this does least damage; this is where the sum over 
                 #the outage hours is smallest (least demand)
                 smallestIndex = 0
                 smallest = 10e9
-                for k in range(8670 - outageHours):
+                for k in range(8760 - outageHours):
                     currentSum = sum( demandCopy[k:k+outageHours] )
                     if( currentSum < smallest ):
                         smallest = currentSum
@@ -80,18 +83,62 @@ class Area:
                 
                 #adjust the on-matrix accordingly. 
                 for k in range(outageHours):
-                        onMatrix[indexMax][outageHours+k] -= 1
+                        onMatrix[indexMax][smallestIndex+k] -= 1
                         #adjust the demandCopy accordingly - surplus demand falls because a unit is off now - equivalent to demand rising. 
-                        demandCopy[outageHours+k] += unitCapacity[indexMax]
+                        demandCopy[smallestIndex+k] += unitCapacity[indexMax]
             #having solved the problem for this unitCapacity, we can set it to zero and do it over again with next highest unit capacity. 
             unitCapacity[indexMax] = -10e9
 
-
         #we can now create a time series for the nonTDProd
         unitCapacity = capacities/noUnits
-        for i in range(8670):
+        for i in range(8760):
             for j in range(noPlants):
-                self.nonTDProdTimeseries[i] += onMatrix[j][i] * unitCapacity[j]        
+                self.nonTDProdTimeseries[i] += onMatrix[j][i] * unitCapacity[j]
+
+        #save this outage plan for future use. 
+        outagePlanPath = self.dh.GetOutagePlanPath()
+        #create temporary file to write to. 2nd answer in https://stackoverflow.com/questions/39086/search-and-replace-a-line-in-a-file-in-python
+        fh, abs_path = mkstemp()
+
+        i = 0
+        with fdopen(fh,'w') as new_file:
+            with open(outagePlanPath) as old_file:
+                for line in old_file:
+                    if(i == 0):
+                        #line is header. Add header so far with additions:
+                        newLine = line.rstrip() + "\t" + self.name
+                        for j in range(noPlants):  
+                            newLine += "\t" + plantNames[j]
+                        new_file.write(newLine )
+                    else:
+                        newLine = line.rstrip() + "\t-"
+                        for j in range(noPlants): 
+                            newLine += "\t" + str(onMatrix[j][i-1])
+                        new_file.write(newLine )
+                    i += 1
+
+        copymode(outagePlanPath, abs_path)
+        #Remove original file
+        remove(outagePlanPath)
+        #Move new file
+        move(abs_path, outagePlanPath)
+
+
+    def LoadOrCreateOutagePlan(self):
+        if( len(self.dh.GetOutagePlan(self.name) ) == 0):
+            self.CreateOutagePlan()
+        else: 
+            capacities = self.nonTDProd.GetCapacityArray()
+            noUnits = self.nonTDProd.GetNoUnitsArray()
+            noPlants = self.nonTDProd.GetNumberOfPlants()
+            unitCapacity = capacities/noUnits
+            outagePlan = self.dh.GetOutagePlan(self.name)
+            for i in range(8760):
+                for j in range(noPlants):
+                    self.nonTDProdTimeseries[i] += outagePlan[j][i] * unitCapacity[j]
+
+
+
 
 
 
@@ -105,13 +152,13 @@ class Area:
                 continue
             if(splitted[9] == "-" or splitted[9].rstrip() == "No_RoR"):
                 #currently RoR is always 1, which does not seem right. But that is the implementation in sisyfos.
-                self.nonTDProd.AddProducer(float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
+                self.nonTDProd.AddProducer(splitted[0], float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
             else:
                 typeArea = splitted[9].split("_")
                 if(len(typeArea) == 1):
                     type = typeArea[0]
                     prodIndex = self.dh.productionTypes.index(type, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
+                    self.productionList[prodIndex].AddProducer(splitted[0], float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
                 else:
                     type = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
@@ -121,7 +168,7 @@ class Area:
                         #the timeseries for this node is the same is the timeseries for a different node; update.
                         self.timeSeriesProductionList[prodIndex] = self.dh.prodTimeSeriesArray[areaIndex][prodIndex]
                         print("For production of " + type + " in " + self.name + " using time series from " + area)
-                    self.productionList[prodIndex].AddProducer(float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
+                    self.productionList[prodIndex].AddProducer(splitted[0], float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
             line = f.readline()
 
         for prod in self.productionList:
@@ -155,7 +202,7 @@ class Area:
         while(demand):
             splitted = demand.split(",")
             if(splitted[0].__eq__(self.name)):
-                self.demand.AddProducer(float(splitted[1]), 1, 0, 0, 0, 0)
+                self.demand.AddProducer("demand" + self.name, float(splitted[1]), 1, 0, 0, 0, 0)
             demand = f.readline()
         
         self.demand.CreateArrays()

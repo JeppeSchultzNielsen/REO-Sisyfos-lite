@@ -1,8 +1,9 @@
 import numpy as np
 
 class Production:
-    def __init__(self):
-        pass
+    def __init__(self, name: str):
+        self.name = name
+
         self.maxValue = 0
         self.currentValue = 0
         self.capacityList = []
@@ -11,6 +12,7 @@ class Production:
         self.plannedOutageList = []
         self.outageTimeList = []
         self.heatDependenceList = []
+        self.nameList = []
 
         self.capacityArray = 0
         self.unplannedOutageArray = 0
@@ -35,7 +37,12 @@ class Production:
     def GetPlannedOutageArray(self):
         return np.copy(self.plannedOutageArray)
 
-    def AddProducer(self,capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float):
+    def GetNamesList(self):
+        return self.nameList
+    
+
+    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float):
+        self.nameList.append(name)
         self.capacityList.append(capacity)
         self.unplannedOutageList.append(unplannedOutage)
         self.plannedOutageList.append(plannedOutage)
