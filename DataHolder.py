@@ -5,7 +5,7 @@ import os as os
 #also reads TVAR.csv only once, so it does not need to be read by all areas as timeseries are initialized.
 class DataHolder:
     def __init__(self, simulationYear: int, climateYear: int, outagePlanPath: str):
-        self.names = ["DK1", "DK2","DELU"]#, "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
+        self.names = ["DK1", "DK2", "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
         self.simpleNames = []
         self.productionTypes = ["PV","WS","WL","CSP","HY","HYlimit","OtherRes","OtherNonRes","ICHP","nonTDProd"]
         self.simpleProductionTypes = []
@@ -34,35 +34,90 @@ class DataHolder:
         self.prodTimeSeriesArray = []
         self.demandTimeSeries = []
 
+        self.outageHeaderList = []
+        self.outagePlanMatrix = []
+
         self.InitializeEmptyTimeSeriesArray()
         self.InitializeTimeSeries()
-        self.LoadOutagePlan(outagePlanPath)
 
         self.outagePlanLoaded = False
+        self.LoadOutagePlan(outagePlanPath)
+
+
 
     def LoadOutagePlan(self, outagePlanPath: str):
         if( os.path.isfile(outagePlanPath) ):
-            #load the plans 
+            print("Reading " + outagePlanPath)
+            #read header
+            read = open(outagePlanPath, "r+")
+            line = read.readline()
+            line = line.replace("\n","")
+            splitted = line.split("\t")
+
+            startIndeces = []
+            stopIndeces = []
+
+
+            #find start and stop indeces for each area
+            for name in self.names:
+                startIndex = splitted.index(name)
+                startIndeces.append(startIndex)
+
+            startIndeces = np.array(startIndeces)
+
+            #can find stop indeces
+            for i in range(len(self.names)):
+                startIndex = startIndeces[i]
+                startIndecesCopy = np.copy(startIndeces)
+                for j in range(len(startIndecesCopy)):
+                    if(startIndecesCopy[j] <= startIndex):
+                        #all these can be discounted
+                        startIndecesCopy[j] = 1e7
+                stopIndex = np.min(startIndecesCopy)
+                stopIndeces.append(stopIndex)
+
+            #largest stopIndex should be the end of the array
+            stopIndeces[stopIndeces.index(max(stopIndeces))] = len(splitted)
+
+            #add 1 to start indeces to discard country names
+            startIndeces += 1
+
+            #i can now add the names of the factories to a headerlist. 
+            for i in range(len(self.names)):
+                headerArray = []
+                for j in range(stopIndeces[i] - startIndeces[i]):
+                    if(j + startIndeces[i] < len(splitted)):
+                        headerArray.append( splitted[j+int(startIndeces[i])] )
+                self.outageHeaderList.append(headerArray)
+
+            #and i can construct a matrix storing the outage plans. 
+            for i in range(len(self.names)):
+                self.outagePlanMatrix.append(np.zeros([len(self.outageHeaderList[i]),8760]))
+
+            #now i can fill the matrix with the remaining lines 
+            k=0
+            line = read.readline()
+            while(line):
+                line = line.replace("\n","")
+                splitted = line.split("\t")
+                for i in range(len(self.names)):
+                    for j in range(stopIndeces[i] - startIndeces[i]):
+                        if(k > 8700):
+                            int(float(splitted[j + int(startIndeces[i])]))
+                        self.outagePlanMatrix[i][j][k] = int(float(splitted[j + int(startIndeces[i])]))
+                k = k+1
+                line = read.readline()
+
             self.outagePlanLoaded = True
-            pass
         else: 
             print("Outage plan not found! New outage plans will be created in " + str(outagePlanPath) + ", expect long wait")
             write = open(outagePlanPath, "w+")
             write.write("Names" + "\n")
-            for i in range(8759):
+            for i in range(8760):
                 write.write(str(i) + "\n")
 
     def GetOutagePlanPath(self):
         return self.outagePlanPath
-
-        
-    def GetOutagePlan(self, areaName: str):
-        if(self.outagePlanLoaded):
-            #return the outageplan
-            pass
-        else:
-            return np.array([])
-
 
     def CreateProdNamesList(self, name):
         demandYear = str(self.simulationYear)[2:]
@@ -177,3 +232,11 @@ class DataHolder:
         
     def GetProductionIndex(self, prod: str):
         return self.simpleProductionTypes.index(prod, 0, len(self.simpleProductionTypes))
+
+    def GetOutagePlan(self, areaName: str):
+        if(self.outagePlanLoaded):
+            nameIndex = self.names.index(areaName)
+            factoryIndex = self.outageHeaderList[nameIndex]
+            return self.outagePlanMatrix[nameIndex]
+        else:
+            return np.array([])

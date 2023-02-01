@@ -111,7 +111,7 @@ class Area:
                             newLine += "\t" + plantNames[j]
                         new_file.write(newLine )
                     else:
-                        newLine = line.rstrip() + "\t-"
+                        newLine = "\r" + line.rstrip() + "\t-"
                         for j in range(noPlants): 
                             newLine += "\t" + str(onMatrix[j][i-1])
                         new_file.write(newLine )
@@ -125,7 +125,8 @@ class Area:
 
 
     def LoadOrCreateOutagePlan(self):
-        if( len(self.dh.GetOutagePlan(self.name) ) == 0):
+        if(not self.dh.outagePlanLoaded):
+            print("Outage plan not loaded")
             self.CreateOutagePlan()
         else: 
             capacities = self.nonTDProd.GetCapacityArray()
@@ -136,9 +137,6 @@ class Area:
             for i in range(8760):
                 for j in range(noPlants):
                     self.nonTDProdTimeseries[i] += outagePlan[j][i] * unitCapacity[j]
-
-
-
 
 
 

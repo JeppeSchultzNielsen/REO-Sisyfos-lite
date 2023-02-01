@@ -249,6 +249,9 @@ class Simulation:
 
         #save line output 
         for i in (range(len(model.variables()))):
+
+            if("dummy" in model.variables()[i].name):
+                continue
         
             if(model.variables()[i].value() == 0):
                 continue
