@@ -160,7 +160,7 @@ class Area:
                         self.nonTDProdTimeseries[i] += (outagePlan[j][i] - failedUnits[j]) * unitCapacity[j]
 
                         #now allow failed units to regenerate. The odds are
-                        regenOdds = 1 / unplannedOutage[j]
+                        regenOdds = 1 / outageDuration[j]
                         newRegens = 0
                         for k in range(int(failedUnits[j])):
                             rand = random.random()
