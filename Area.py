@@ -4,6 +4,7 @@ from DataHolder import DataHolder
 from tempfile import mkstemp
 from shutil import move, copymode
 from os import fdopen, remove
+import random
 
 class Area:
     def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder):
@@ -134,9 +135,39 @@ class Area:
             noPlants = self.nonTDProd.GetNumberOfPlants()
             unitCapacity = capacities/noUnits
             outagePlan = self.dh.GetOutagePlan(self.name)
+
+            #also simulate spontaneous failure of plants. 
+            failedUnits = np.zeros(noPlants)
+            unplannedOutage = self.nonTDProd.GetUnplannedOutageArray()
+            outageDuration = self.nonTDProd.GetOutageTimeArray()
+
             for i in range(8760):
                 for j in range(noPlants):
-                    self.nonTDProdTimeseries[i] += outagePlan[j][i] * unitCapacity[j]
+                    if(unplannedOutage[j] == 0 or outageDuration[j] == 0):
+                        self.nonTDProdTimeseries[i] += (outagePlan[j][i] - failedUnits[j]) * unitCapacity[j]
+                    else:
+                        #allow units to fail
+                        #the odds of going from working to failed (given on page 6 in baggrundsrapport) is
+                        failureOdds = unplannedOutage[j]/(outageDuration[j]*(1-unplannedOutage[j]))
+                        newFails = 0
+                        for k in range(int(noUnits[j]) - int(failedUnits[j])):
+                            #generate number between 0 and 1 - if below failure odds, unit fails. 
+                            rand = random.random()
+                            if(rand < failureOdds):
+                                newFails += 1
+                        failedUnits[j] += newFails
+
+                        self.nonTDProdTimeseries[i] += (outagePlan[j][i] - failedUnits[j]) * unitCapacity[j]
+
+                        #now allow failed units to regenerate. The odds are
+                        regenOdds = 1 / unplannedOutage[j]
+                        newRegens = 0
+                        for k in range(int(failedUnits[j])):
+                            rand = random.random()
+                            if(rand < regenOdds):
+                                newRegens += 1
+                        failedUnits[j] -= newRegens
+
 
 
 

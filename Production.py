@@ -37,6 +37,12 @@ class Production:
     def GetPlannedOutageArray(self):
         return np.copy(self.plannedOutageArray)
 
+    def GetUnplannedOutageArray(self):
+        return np.copy(self.unplannedOutageArray)
+
+    def GetOutageTimeArray(self):
+        return np.copy(self.outageTimeArray)
+
     def GetNamesList(self):
         return self.nameList
     
@@ -52,7 +58,7 @@ class Production:
 
     def CreateArrays(self):
         self.capacityArray = np.array(self.capacityList)
-        self.unplannedOutageArray = np.array(self.unplannedOutageArray)
+        self.unplannedOutageArray = np.array(self.unplannedOutageList)
         self.plannedOutageArray = np.array(self.plannedOutageList)
         self.outageTimeArray = np.array(self.outageTimeList)
         self.heatDependenceArray = np.array(self.heatDependenceList)
