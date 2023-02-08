@@ -37,6 +37,8 @@ class DataHolder:
         self.outageHeaderList = []
         self.outagePlanMatrix = []
 
+        self.temperatureArray = np.zeros(24*365)
+
         self.InitializeEmptyTimeSeriesArray()
         self.InitializeTimeSeries()
 
@@ -191,8 +193,7 @@ class DataHolder:
             indexArray.append(areaIndexArray)
             prodNameArray.append(prodNamesList)
 
-
-
+        tempIndex = splittedHeader.index("temperature")
 
         for i in range(len(indexArray)):
             for j in range(len(indexArray[i])):
@@ -207,6 +208,7 @@ class DataHolder:
             line.rstrip('\r')
             line = line.replace(",",".")
             splitted = line.split(";")
+            self.temperatureArray[i] = splitted[tempIndex]
             for j in range(len(indexArray)):
                 for k in range(len(indexArray[j])):
                     if(indexArray[j][k] == -1): continue
@@ -232,6 +234,9 @@ class DataHolder:
         
     def GetProductionIndex(self, prod: str):
         return self.simpleProductionTypes.index(prod, 0, len(self.simpleProductionTypes))
+
+    def GetTemperatureArray(self):
+        return self.temperatureArray
 
     def GetOutagePlan(self, areaName: str):
         if(self.outagePlanLoaded):

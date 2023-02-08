@@ -5,6 +5,7 @@ from tempfile import mkstemp
 from shutil import move, copymode
 from os import fdopen, remove
 import random
+from NonTDProduction import NonTDProduction
 
 class Area:
     def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder):
@@ -20,7 +21,7 @@ class Area:
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
 
         #variables in timeSeries are normalized, need normalizationfactors from SisyfosData, including the non timedependent production (nonTDProd)
-        self.nonTDProd = Production("nonTDProd"+self.name)
+        self.nonTDProd = NonTDProduction("nonTDProd"+self.name)
         self.PVprod = Production("PVProd"+self.name)
         self.WSprod = Production("WSProd"+self.name)
         self.WLprod = Production("WLProd"+self.name)
@@ -123,51 +124,15 @@ class Area:
         remove(outagePlanPath)
         #Move new file
         move(abs_path, outagePlanPath)
+        return onMatrix
 
 
     def LoadOrCreateOutagePlan(self):
         if(not self.dh.outagePlanLoaded):
             print("Outage plan not loaded")
-            self.CreateOutagePlan()
-        else: 
-            capacities = self.nonTDProd.GetCapacityArray()
-            noUnits = self.nonTDProd.GetNoUnitsArray()
-            noPlants = self.nonTDProd.GetNumberOfPlants()
-            unitCapacity = capacities/noUnits
-            outagePlan = self.dh.GetOutagePlan(self.name)
-
-            #also simulate spontaneous failure of plants. 
-            failedUnits = np.zeros(noPlants)
-            unplannedOutage = self.nonTDProd.GetUnplannedOutageArray()
-            outageDuration = self.nonTDProd.GetOutageTimeArray()
-
-            for i in range(8760):
-                for j in range(noPlants):
-                    if(unplannedOutage[j] == 0 or outageDuration[j] == 0):
-                        self.nonTDProdTimeseries[i] += (outagePlan[j][i] - failedUnits[j]) * unitCapacity[j]
-                    else:
-                        #allow units to fail
-                        #the odds of going from working to failed (given on page 6 in baggrundsrapport) is
-                        failureOdds = unplannedOutage[j]/(outageDuration[j]*(1-unplannedOutage[j]))
-                        newFails = 0
-                        for k in range(int(noUnits[j]) - int(failedUnits[j])):
-                            #generate number between 0 and 1 - if below failure odds, unit fails. 
-                            rand = random.random()
-                            if(rand < failureOdds):
-                                newFails += 1
-                        failedUnits[j] += newFails
-
-                        self.nonTDProdTimeseries[i] += (outagePlan[j][i] - failedUnits[j]) * unitCapacity[j]
-
-                        #now allow failed units to regenerate. The odds are
-                        regenOdds = 1 / outageDuration[j]
-                        newRegens = 0
-                        for k in range(int(failedUnits[j])):
-                            rand = random.random()
-                            if(rand < regenOdds):
-                                newRegens += 1
-                        failedUnits[j] -= newRegens
-
+            self.nonTDProd.SetOutagePlan(self.CreateOutagePlan())
+        else:
+            self.nonTDProd.SetOutagePlan(self.dh.GetOutagePlan(self.name))
 
 
 
@@ -200,6 +165,8 @@ class Area:
                     self.productionList[prodIndex].AddProducer(splitted[0], float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
             line = f.readline()
 
+        self.nonTDProd.SetHeatBinding(self.dh.GetTemperatureArray())
+
         for prod in self.productionList:
             prod.CreateArrays()
 
@@ -207,7 +174,7 @@ class Area:
 
 
     def PrepareHour(self, hour: int):
-        pass
+        self.nonTDProd.PrepareHour(hour)
     
 
 
@@ -219,7 +186,7 @@ class Area:
     #must be able to return the production for a given type for a given hour
     def GetProduction(self, hour: int, typeIndex: int):
         if(typeIndex == (len(self.timeSeriesProductionList)-1)):
-            return self.nonTDProdTimeseries[hour]
+            return self.nonTDProd.currentValue
         else:
             return self.timeSeriesProductionList[typeIndex][hour]*self.productionList[typeIndex].GetCurrentValue()
 
