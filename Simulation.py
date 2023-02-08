@@ -89,7 +89,7 @@ class Simulation:
                     noTries += 1
                     trialName = name + "_" + str(noTries)
 
-            self.linesList[i] = (Line(splitted[0],splitted[1],float(splitted[2]),float(splitted[3]),name))
+            self.linesList[i] = (Line(splitted[0],splitted[1],float(splitted[2]),float(splitted[3]),name, int(splitted[4]), float(splitted[5]), int(splitted[6])))
             line = f.readline() #read next line
             usedNames.append(name)
             i = i+1
