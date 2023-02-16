@@ -3,10 +3,11 @@ from Area import Area
 from Line import Line
 from pulp import LpMaximize, LpProblem, LpStatus, lpSum, LpVariable, LpMinimize, GLPK_CMD
 from DataHolder import DataHolder
+from Options import Options
 import random
 
 class Simulation:
-    def __init__(self, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool, dh: DataHolder):
+    def __init__(self, options: Options, dh: DataHolder, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool):
         self.simulationYear = asimulationYear
         self.climateYear = aclimateYear
         self.saveFilePath = asaveFilePath
@@ -31,7 +32,7 @@ class Simulation:
 
         #initialize the lists
         for i in range(len(self.nameList)):
-            self.areaList[i] = (Area(self.nameList[i],i,self.simulationYear,self.climateYear,dh))
+            self.areaList[i] = (Area(options, dh, self.nameList[i],i,self.simulationYear,self.climateYear))
 
         self.numberOfLines = self.GetNumberOfLines()
 
@@ -60,6 +61,8 @@ class Simulation:
                 self.fileOut.write(name + "_" + "EENS" + "\t")
                 for prodName in self.productionTypeNames:
                     self.fileOut.write(name + "_" + prodName + "\t")
+                self.fileOut.write(name + "_"+"plannedOutage" + "\t")
+                self.fileOut.write(name + "_"+"unplannedOutage" + "\t")
             for line in self.linesList:
                 self.fileOut.write(line.GetName() + "\t")
 
@@ -162,6 +165,9 @@ class Simulation:
             for prodName in self.productionTypeNames:
                 self.fileOut.write(f"{self.productionTypeMatrix[i][j]:.3f}" + "\t")
                 j += 1
+
+            self.fileOut.write(f"{self.areaList[i].nonTDProd.GetCurrentPlannedOutage():.3f}" + "\t")
+            self.fileOut.write(f"{self.areaList[i].nonTDProd.GetCurrentUnplannedOutage():.3f}" + "\t")
             i += 1
         i = 0
         for line in self.linesList:

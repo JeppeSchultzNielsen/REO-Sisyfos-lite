@@ -1,9 +1,11 @@
 import numpy as np
 from Production import Production
 import random
+from Options import Options
 
 class NonTDProduction(Production):
-    def __init__(self, name: str):
+    def __init__(self, options: Options, name: str):
+        self.options = options
         self.name = name
 
         self.maxValue = 0
@@ -27,8 +29,18 @@ class NonTDProduction(Production):
         self.outagePlan = 0
         self.failedUnits = 0
 
+        self.currentPlannedOutage = 0
+        self.currentUnplannedOutage = 0
+
+        self.failedUnitsInitialized = False
+
     def SetOutagePlan(self, outagePlan):
         self.outagePlan = outagePlan
+        if(not self.options.usePlannedDownTime):
+            #outageMatrix should just be full at all times. 
+            for i in range(len(self.capacityArray)):
+                for j in range(len(self.outagePlan[i])):
+                    outagePlan[i][j] = self.noUnitsArray[i]
 
     def SetHeatBinding(self, heatBinding):
         self.heatBinding = heatBinding
@@ -37,9 +49,36 @@ class NonTDProduction(Production):
         super().CreateArrays()
         self.failedUnits = np.zeros(self.GetNumberOfPlants())
 
+    def GetCurrentPlannedOutage(self):
+        return self.currentPlannedOutage
+    
+    def GetCurrentUnplannedOutage(self):
+        return self.currentUnplannedOutage
+    
+    def InitializeFailedUnits(self, startingHour: int):
+        #at the start of the simulation, all units should by some probability be failed; assume the odds that they are failed
+        #is their %downtime.
+        if(self.options.useUnplannedDownTime):
+            for i in range(len(self.capacityArray)):
+                    newFails = 0
+                    for j in range(int(self.outagePlan[i][startingHour])):
+                        rand = random.random()
+                        if(rand < self.unplannedOutageArray[i]):
+                            newFails += 1
+                    self.failedUnits[i] = newFails
+
+        self.failedUnitsInitialized = True
+
     def PrepareHour(self, hour: int):
+        #if this is the first hour, initialize failedUnits
+        if(not self.failedUnitsInitialized):
+            self.InitializeFailedUnits(hour)
+
         #iterate over all plants to get the total production in this hour
         self.currentValue = 0; 
+        self.currentPlannedOutage = 0
+        self.currentUnplannedOutage = 0
+
         noPlants = len(self.capacityArray)
         for j in range(noPlants):
                 if(self.unplannedOutageArray[j] == 0 or self.outageTimeArray[j] == 0):
@@ -47,11 +86,22 @@ class NonTDProduction(Production):
                     prod = self.outagePlan[j][hour] / self.noUnitsArray[j] * self.capacityArray[j]
                     self.currentValue += prod*(1-self.heatDependenceArray[j]) + self.heatDependenceArray[j]*self.heatBinding[j]*prod
                 else:
+                    #allow failed units to regenerate. The odds are
+                    regenOdds = 1 / self.outageTimeArray[j]
+                    newRegens = 0
+                    for k in range(int(self.failedUnits[j])):
+                        rand = random.random()
+                        if(rand < regenOdds):
+                            newRegens += 1
+                    self.failedUnits[j] -= newRegens
+
                     #allow units to fail
                     #the odds of going from working to failed (given on page 6 in baggrundsrapport) is
                     failureOdds = self.unplannedOutageArray[j]/(self.outageTimeArray[j]*(1-self.unplannedOutageArray[j]))
+                    if(not self.options.useUnplannedDownTime):
+                        failureOdds = 0
                     newFails = 0
-                    for k in range(int(self.noUnitsArray[j]) - int(self.failedUnits[j])):
+                    for k in range(int(self.outagePlan[j][hour]) - int(self.failedUnits[j])):
                         #generate number between 0 and 1 - if below failure odds, unit fails. 
                         rand = random.random()
                         if(rand < failureOdds):
@@ -62,12 +112,9 @@ class NonTDProduction(Production):
                     prod = (self.outagePlan[j][hour] - self.failedUnits[j])/ self.noUnitsArray[j] * self.capacityArray[j]
                     self.currentValue += prod*(1-self.heatDependenceArray[j]) + self.heatDependenceArray[j]*self.heatBinding[j]*prod
 
-                    #now allow failed units to regenerate. The odds are
-                    regenOdds = 1 / self.outageTimeArray[j]
-                    newRegens = 0
-                    for k in range(int(self.failedUnits[j])):
-                        rand = random.random()
-                        if(rand < regenOdds):
-                            newRegens += 1
-                    self.failedUnits[j] -= newRegens
+                    prod = (self.noUnitsArray[j]-self.outagePlan[j][hour])/ self.noUnitsArray[j] * self.capacityArray[j]
+                    self.currentPlannedOutage += prod*(1-self.heatDependenceArray[j]) + self.heatDependenceArray[j]*self.heatBinding[j]*prod
+
+                    prod = (self.failedUnits[j])/ self.noUnitsArray[j] * self.capacityArray[j]
+                    self.currentUnplannedOutage += prod*(1-self.heatDependenceArray[j]) + self.heatDependenceArray[j]*self.heatBinding[j]*prod
     

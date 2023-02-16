@@ -4,14 +4,15 @@ from DataHolder import DataHolder
 from tempfile import mkstemp
 from shutil import move, copymode
 from os import fdopen, remove
-import random
 from NonTDProduction import NonTDProduction
+from Options import Options
 
 class Area:
-    def __init__(self, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int, dh: DataHolder):
+    def __init__(self, options: Options, dh: DataHolder, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int):
         self.name = areaName
         self.nodeIndex = nodeIndex
         self.dh = dh
+        self.options = options
         print("Preparing area " + self.name)
 
         self.simulationYear = simulationYear
@@ -21,17 +22,17 @@ class Area:
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
 
         #variables in timeSeries are normalized, need normalizationfactors from SisyfosData, including the non timedependent production (nonTDProd)
-        self.nonTDProd = NonTDProduction("nonTDProd"+self.name)
-        self.PVprod = Production("PVProd"+self.name)
-        self.WSprod = Production("WSProd"+self.name)
-        self.WLprod = Production("WLProd"+self.name)
-        self.CSPprod = Production("CSPProd"+self.name)
-        self.HYprod = Production("HYProd"+self.name)
-        self.HYlimitprod = Production("HYlimitProd"+self.name)
-        self.OtherResProd = Production("OtherResProd"+self.name)
-        self.OtherNonResProd = Production("OtherNonResProd"+self.name)
-        self.ICHP = Production("ICHPProd"+self.name)
-        self.demand = Production("nonTDProd"+self.name)
+        self.nonTDProd = NonTDProduction(self.options, "nonTDProd"+self.name)
+        self.PVprod = Production(self.options,"PVProd"+self.name)
+        self.WSprod = Production(self.options,"WSProd"+self.name)
+        self.WLprod = Production(self.options,"WLProd"+self.name)
+        self.CSPprod = Production(self.options,"CSPProd"+self.name)
+        self.HYprod = Production(self.options,"HYProd"+self.name)
+        self.HYlimitprod = Production(self.options,"HYlimitProd"+self.name)
+        self.OtherResProd = Production(self.options,"OtherResProd"+self.name)
+        self.OtherNonResProd = Production(self.options,"OtherNonResProd"+self.name)
+        self.ICHP = Production(self.options,"ICHPProd"+self.name)
+        self.demand = Production(self.options,"nonTDProd"+self.name)
 
         self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.HYlimitprod,self.OtherResProd,self.OtherNonResProd,self.ICHP,self.nonTDProd]
 

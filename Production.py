@@ -1,7 +1,9 @@
 import numpy as np
+from Options import Options
 
 class Production:
-    def __init__(self, name: str):
+    def __init__(self, options: Options, name: str):
+        self.options = options
         self.name = name
 
         self.maxValue = 0
