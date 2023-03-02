@@ -31,6 +31,9 @@ class DataHolder:
         self.simulationYear = simulationYear
         self.climateYear = climateYear
 
+        self.productionDict = {}
+        self.LoadProductionDict()
+
         self.prodTimeSeriesArray = []
         self.demandTimeSeries = []
 
@@ -39,11 +42,49 @@ class DataHolder:
 
         self.temperatureArray = np.zeros(24*365)
 
+        self.outageDict = {}
+        self.LoadOutageDict()
+
         self.InitializeEmptyTimeSeriesArray()
         self.InitializeTimeSeries()
 
+
         self.outagePlanLoaded = False
         self.LoadOutagePlan(outagePlanPath)
+
+
+
+    def LoadOutageDict(self):
+        f = open("data/outageParams.txt","r")
+        line = f.readline() #header
+        line = f.readline()
+        while(line):
+            line = line.replace("\n","")
+            splitted = line.split()
+
+            if(splitted[3] == "-"):
+                splitted[3] = 5 #don't know why they did not give a value here - does not matter as its unitsize is hardcoded. 
+
+            self.outageDict[splitted[0]] = OutageParams(splitted[0], float(splitted[1]), float(splitted[2]), float(splitted[3]), float(splitted[4]), float(splitted[5]))
+            line = f.readline()
+
+    def LoadProductionDict(self):
+        f = open("data/capacities.txt","r")
+        line = f.readline() #header
+        line = f.readline()
+        #the index of the year is going to be
+        yearIndex = self.simulationYear-2020 +1
+        while(line):
+            splitted = line.split()
+            if(len(splitted) == 26):
+                #index 23 is nodename. 
+                if(not (splitted[23] in self.productionDict)):
+                    self.productionDict[splitted[23]] = []
+                    self.productionDict[splitted[23]].append(ProductionParams(splitted[0],splitted[yearIndex],splitted[22],splitted[23],splitted[24], splitted[25]))
+                else:
+                    self.productionDict[splitted[23]].append(ProductionParams(splitted[0],splitted[yearIndex],splitted[22],splitted[23],splitted[24], splitted[25]))     
+            line = f.readline()   
+
 
 
 
@@ -245,3 +286,21 @@ class DataHolder:
             return self.outagePlanMatrix[nameIndex]
         else:
             return np.array([])
+        
+class OutageParams:
+    def __init__(self, name, unplanned, planned, unitSize, heatDep, outageTime):
+        self.name = name.rstrip()
+        self.planned = planned
+        self.unplanned = unplanned
+        self.unitSize = unitSize
+        self.heatDep = heatDep
+        self.outageTime = outageTime
+
+class ProductionParams:
+    def __init__(self, name, capacity, type, node, noUnits, variation):
+        self.name = name.rstrip()
+        self.capacity = capacity.rstrip()
+        self.type = type.rstrip()
+        self.node = node.rstrip()
+        self.noUnits = noUnits.rstrip()
+        self.variation = variation.rstrip()

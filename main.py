@@ -8,5 +8,5 @@ options.usePlannedDownTime = True
 options.useUnplannedDownTime = False
 
 
-sim = Simulation(options, dh, 2040,2009,"results/SimTest.txt", True)
+sim = Simulation(options, dh, 2040,2009,"results/NewDemand.txt", True)
 sim.RunSimulation(0,10)

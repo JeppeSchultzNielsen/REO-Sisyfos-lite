@@ -49,7 +49,7 @@ class Production:
         return self.nameList
     
 
-    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float):
+    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str):
         self.nameList.append(name)
         self.capacityList.append(capacity)
         self.unplannedOutageList.append(unplannedOutage)

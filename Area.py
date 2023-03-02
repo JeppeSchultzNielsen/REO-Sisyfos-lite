@@ -138,34 +138,45 @@ class Area:
 
 
     def InitializeFactors(self):
-        f = open("data/plantdata"+str(self.simulationYear)+".csv", "r",errors='replace')
-        line = f.readline()
-        while(line):
-            splitted = line.split(",")
-            if(not splitted[1] == self.name):
-                line = f.readline()
-                continue
-            if(splitted[9] == "-" or splitted[9].rstrip() == "No_RoR"):
-                #currently RoR is always 1, which does not seem right. But that is the implementation in sisyfos.
-                self.nonTDProd.AddProducer(splitted[0], float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
-            else:
-                typeArea = splitted[9].split("_")
-                if(len(typeArea) == 1):
-                    type = typeArea[0]
-                    prodIndex = self.dh.productionTypes.index(type, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(splitted[0], float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
+        factories = self.dh.productionDict[self.name]
+        for i in range(len(factories)):
+            name = factories[i].name
+            cap = float(factories[i].capacity)
+            noUnits = 1
+            type = factories[i].type
+            if(factories[i].noUnits == "-"):
+                if(self.dh.outageDict[type].unitSize < 0.0000001):
+                    noUnits = 1 #avoid division by zero
                 else:
-                    type = typeArea[0].rstrip().lower()
+                    noUnits = max(1 , int(cap/self.dh.outageDict[type].unitSize) )
+            else:
+                noUnits = int(factories[i].noUnits)
+            unplanned = self.dh.outageDict[type].unplanned
+            planned = self.dh.outageDict[type].planned
+            outageTime = self.dh.outageDict[type].outageTime
+            heatDep = self.dh.outageDict[type].heatDep
+
+            if(factories[i].variation == "-" or factories[i].variation == "No_RoR"):
+                self.nonTDProd.AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type)
+            else: 
+                typeArea = factories[i].variation.split("_")
+                if(len(typeArea) == 1):
+                    prodType = typeArea[0]
+                    prodIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
+                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type)
+                else: 
+                    prodType = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
-                    prodIndex = self.dh.GetProductionIndex(type)
+                    prodIndex = self.dh.GetProductionIndex(prodType)
                     areaIndex = self.dh.GetAreaIndex(area)
                     if(not areaIndex == self.nodeIndex):
                         #the timeseries for this node is the same is the timeseries for a different node; update.
                         self.timeSeriesProductionList[prodIndex] = self.dh.prodTimeSeriesArray[areaIndex][prodIndex]
-                        print("For production of " + type + " in " + self.name + " using time series from " + area)
-                    self.productionList[prodIndex].AddProducer(splitted[0], float(splitted[3]), int(splitted[4]) , float(splitted[6]), float(splitted[7]), int(splitted[8]), float(splitted[10]) )
-            line = f.readline()
-
+                        print("For production of " + prodType + " in " + self.name + " using time series from " + area)
+                    prodType = typeArea[0].rstrip()
+                    prodIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
+                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type)
+                    
         self.nonTDProd.SetHeatBinding(self.dh.GetTemperatureArray())
 
         for prod in self.productionList:
@@ -193,15 +204,48 @@ class Area:
 
 
     def InitializeDemand(self):
-        f = open("data/areadata"+str(self.simulationYear)+".csv","r") 
-        demand = f.readline() #skip header
-        demand = f.readline() #reads first line
-        while(demand):
-            splitted = demand.split(",")
-            if(splitted[0].__eq__(self.name)):
-                self.demand.AddProducer("demand" + self.name, float(splitted[1]), 1, 0, 0, 0, 0)
-            demand = f.readline()
-        
+        #first find demandfactor for this year. 
+        f = open("data/demands.txt","r")
+        line = f.readline() #skip header
+        line = f.readline() #reads first line
+        splitted = line.split()
+        #find index of current area
+        index = 0
+        demandFactor = 0
+        for i in range(len(splitted)):
+            if(splitted[i] == self.name):
+                index = i
+        while(line):
+            splitted = line.split()
+            if(not splitted[0].isnumeric()):
+                line = f.readline() #reads first line
+                continue
+            if(int(splitted[0]) == self.simulationYear):
+                demandFactor = float(splitted[index])
+            line = f.readline() #reads first line
+
+        #find relativeFactor
+        relativeFactor = 0
+        f = open("data/relativeDemands.txt","r")
+        line = f.readline() #reads first line
+        splitted = line.split()
+        index = 0
+        for i in range(len(splitted)):
+            if(splitted[i] == self.name):
+                index = i
+        while(line):
+            splitted = line.split()
+            if(not splitted[0].isnumeric()):
+                line = f.readline() #reads first line
+                continue
+            if(int(splitted[0]) == self.climateYear):
+                relativeFactor = float(splitted[index])
+            line = f.readline() #reads first line
+
+        demand = demandFactor * relativeFactor
+
+        self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand")
+
         self.demand.CreateArrays()
 
     def GetDemand(self, hour: int, currentAreaIndex: int):
