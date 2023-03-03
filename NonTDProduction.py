@@ -112,7 +112,7 @@ class NonTDProduction(Production):
                     prod = (self.outagePlan[j][hour] - self.failedUnits[j])/ self.noUnitsArray[j] * self.capacityArray[j]
                     self.currentValue += prod*(1-self.heatDependenceArray[j]) + self.heatDependenceArray[j]*self.heatBinding[j]*prod
 
-                    prod = (self.noUnitsArray[j]-self.outagePlan[j][hour])/ self.noUnitsArray[j] * self.capacityArray[j]
+                    prod = -(self.noUnitsArray[j]-self.outagePlan[j][hour])/ self.noUnitsArray[j] * self.capacityArray[j]
                     self.currentPlannedOutage += prod*(1-self.heatDependenceArray[j]) + self.heatDependenceArray[j]*self.heatBinding[j]*prod
 
                     prod = (self.failedUnits[j])/ self.noUnitsArray[j] * self.capacityArray[j]

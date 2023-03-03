@@ -40,9 +40,9 @@ class Area:
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
 
         self.nonTDProdTimeseries = np.zeros(8760)
-        
-        self.InitializeFactors()
+
         self.InitializeDemand()
+        self.InitializeFactors()
 
         self.LoadOrCreateOutagePlan()
 
@@ -178,11 +178,8 @@ class Area:
                     self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type)
                     
         self.nonTDProd.SetHeatBinding(self.dh.GetTemperatureArray())
-
         for prod in self.productionList:
             prod.CreateArrays()
-
-
 
 
     def PrepareHour(self, hour: int):
@@ -245,7 +242,6 @@ class Area:
         demand = demandFactor * relativeFactor
 
         self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand")
-
         self.demand.CreateArrays()
 
     def GetDemand(self, hour: int, currentAreaIndex: int):

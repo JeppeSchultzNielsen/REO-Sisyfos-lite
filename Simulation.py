@@ -1,5 +1,6 @@
 import numpy as np
 from Area import Area
+from AreaDK import AreaDK
 from Line import Line
 from pulp import LpMaximize, LpProblem, LpStatus, lpSum, LpVariable, LpMinimize, GLPK_CMD
 from DataHolder import DataHolder
@@ -32,7 +33,10 @@ class Simulation:
 
         #initialize the lists
         for i in range(len(self.nameList)):
-            self.areaList[i] = (Area(options, dh, self.nameList[i],i,self.simulationYear,self.climateYear))
+            if(self.nameList[i] == "DK1" or self.nameList[i] == "DK2"):
+                self.areaList[i] = (AreaDK(options, dh, self.nameList[i],i,self.simulationYear,self.climateYear))
+            else:
+                self.areaList[i] = (Area(options, dh, self.nameList[i],i,self.simulationYear,self.climateYear))
 
         self.numberOfLines = self.GetNumberOfLines()
 
