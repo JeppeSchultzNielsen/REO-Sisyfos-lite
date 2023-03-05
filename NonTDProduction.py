@@ -17,6 +17,7 @@ class NonTDProduction(Production):
         self.outageTimeList = []
         self.heatDependenceList = []
         self.nameList = []
+        self.typesList = []
 
         self.capacityArray = 0
         self.unplannedOutageArray = 0
@@ -32,10 +33,20 @@ class NonTDProduction(Production):
         self.currentPlannedOutage = 0
         self.currentUnplannedOutage = 0
 
+        self.outagePlanHeader = 0
+
         self.failedUnitsInitialized = False
 
-    def SetOutagePlan(self, outagePlan):
-        self.outagePlan = outagePlan
+    def SetOutagePlan(self, outagePlan, outagePlanHeader):
+        self.outagePlanHeader = outagePlanHeader
+        self.outagePlan = np.zeros([len(self.capacityArray),8760])
+        for i in range(len(self.capacityArray)):
+            if(outagePlanHeader.count(self.nameList[i])):
+                ind = outagePlanHeader.index(self.nameList[i])
+                self.outagePlan[i] = outagePlan[ind]
+            else:
+                print("Warning: no outage plan found for " + self.nameList[i] + " defaulting to always on.")
+                self.outagePlan[i] = self.outagePlan[i]+self.noUnitsArray[i]
         if(not self.options.usePlannedDownTime):
             #outageMatrix should just be full at all times. 
             for i in range(len(self.capacityArray)):
@@ -68,6 +79,17 @@ class NonTDProduction(Production):
                     self.failedUnits[i] = newFails
 
         self.failedUnitsInitialized = True
+
+    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str):
+        self.nameList.append(name)
+        self.capacityList.append(capacity)
+        self.unplannedOutageList.append(unplannedOutage)
+        self.plannedOutageList.append(plannedOutage)
+        self.outageTimeList.append(outageTime)
+        self.heatDependenceList.append(heatDependence)
+        self.noUnitsList.append(noUnits)
+        self.typesList.append(type)
+
 
     def PrepareHour(self, hour: int):
         #if this is the first hour, initialize failedUnits
@@ -111,10 +133,9 @@ class NonTDProduction(Production):
                     #add production with heatbinding
                     prod = (self.outagePlan[j][hour] - self.failedUnits[j])/ self.noUnitsArray[j] * self.capacityArray[j]
                     self.currentValue += prod*(1-self.heatDependenceArray[j]) + self.heatDependenceArray[j]*self.heatBinding[j]*prod
-
-                    prod = -(self.noUnitsArray[j]-self.outagePlan[j][hour])/ self.noUnitsArray[j] * self.capacityArray[j]
+                    
+                    prod = (self.noUnitsArray[j]-self.outagePlan[j][hour])/ self.noUnitsArray[j] * self.capacityArray[j]
                     self.currentPlannedOutage += prod*(1-self.heatDependenceArray[j]) + self.heatDependenceArray[j]*self.heatBinding[j]*prod
 
                     prod = (self.failedUnits[j])/ self.noUnitsArray[j] * self.capacityArray[j]
                     self.currentUnplannedOutage += prod*(1-self.heatDependenceArray[j]) + self.heatDependenceArray[j]*self.heatBinding[j]*prod
-    

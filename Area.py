@@ -131,9 +131,9 @@ class Area:
     def LoadOrCreateOutagePlan(self):
         if(not self.dh.outagePlanLoaded):
             print("Outage plan not loaded")
-            self.nonTDProd.SetOutagePlan(self.CreateOutagePlan())
+            self.nonTDProd.SetOutagePlan(self.CreateOutagePlan(),["Warning: not implemented, after finished creating outageplan, rerun code."])
         else:
-            self.nonTDProd.SetOutagePlan(self.dh.GetOutagePlan(self.name))
+            self.nonTDProd.SetOutagePlan(self.dh.GetOutagePlan(self.name),self.dh.GetOutagePlanHeader(self.name))
 
 
 

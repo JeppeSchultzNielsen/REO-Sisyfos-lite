@@ -97,8 +97,19 @@ class DataHolder:
             line = line.replace("\n","")
             splitted = line.split("\t")
 
+            line2 = read.readline()
+            line2 = line2.replace("\n","")
+            splitted2 = line2.split("\t")
+
             startIndeces = []
             stopIndeces = []
+            potStopIndeces = []
+
+            for i in range(len(splitted2)):
+                if(splitted2[i] == "-"):
+                    potStopIndeces.append(i)
+                    
+            potStopIndeces = np.array(potStopIndeces)
 
 
             #find start and stop indeces for each area
@@ -111,19 +122,24 @@ class DataHolder:
             #can find stop indeces
             for i in range(len(self.names)):
                 startIndex = startIndeces[i]
-                startIndecesCopy = np.copy(startIndeces)
-                for j in range(len(startIndecesCopy)):
-                    if(startIndecesCopy[j] <= startIndex):
+                for j in range(len(potStopIndeces)):
+                    if(potStopIndeces[j] <= startIndex):
                         #all these can be discounted
-                        startIndecesCopy[j] = 1e7
-                stopIndex = np.min(startIndecesCopy)
+                        potStopIndeces[j] = 1e7
+                stopIndex = np.min(potStopIndeces)
                 stopIndeces.append(stopIndex)
 
             #largest stopIndex should be the end of the array
-            stopIndeces[stopIndeces.index(max(stopIndeces))] = len(splitted)
+            if( np.max(np.array(stopIndeces)) > 1e6):
+                stopIndeces[stopIndeces.index(max(stopIndeces))] = len(splitted)
+                stopIndeces = np.array(stopIndeces)
+
+            print(startIndeces)
+            print(stopIndeces)
 
             #add 1 to start indeces to discard country names
             startIndeces += 1
+
 
             #i can now add the names of the factories to a headerlist. 
             for i in range(len(self.names)):
@@ -139,14 +155,12 @@ class DataHolder:
 
             #now i can fill the matrix with the remaining lines 
             k=0
-            line = read.readline()
+            line = line2
             while(line):
                 line = line.replace("\n","")
                 splitted = line.split("\t")
                 for i in range(len(self.names)):
                     for j in range(stopIndeces[i] - startIndeces[i]):
-                        if(k > 8700):
-                            int(float(splitted[j + int(startIndeces[i])]))
                         self.outagePlanMatrix[i][j][k] = int(float(splitted[j + int(startIndeces[i])]))
                 k = k+1
                 line = read.readline()
@@ -284,6 +298,13 @@ class DataHolder:
             nameIndex = self.names.index(areaName)
             factoryIndex = self.outageHeaderList[nameIndex]
             return self.outagePlanMatrix[nameIndex]
+        else:
+            return np.array([])
+        
+    def GetOutagePlanHeader(self, areaName: str):
+        if(self.outagePlanLoaded):
+            nameIndex = self.names.index(areaName)
+            return self.outageHeaderList[nameIndex]
         else:
             return np.array([])
         

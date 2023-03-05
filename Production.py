@@ -15,6 +15,7 @@ class Production:
         self.outageTimeList = []
         self.heatDependenceList = []
         self.nameList = []
+        self.typesList = []
 
         self.capacityArray = 0
         self.unplannedOutageArray = 0
@@ -57,6 +58,7 @@ class Production:
         self.outageTimeList.append(outageTime)
         self.heatDependenceList.append(heatDependence)
         self.noUnitsList.append(noUnits)
+        self.typesList.append(type)
 
     def CreateArrays(self):
         self.capacityArray = np.array(self.capacityList)
