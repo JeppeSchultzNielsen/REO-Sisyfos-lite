@@ -9,6 +9,10 @@ class Options:
         self.demFlexCVP = 0.9
         self.demFlexPtX = 1
         self.demFlexTransport = 0.1
+        self.storebaelt2 = False
+        self.oresundOpen = False
+        self.energyIslandEast = False
+        self.energyIslandWest = False 
 
     def setFlex(self, klassisk, cvp, ptx, transport):
         self.userSetFlexDems = True

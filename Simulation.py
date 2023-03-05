@@ -15,6 +15,7 @@ class Simulation:
         self.saving = asaving
 
         self.dh = dh
+        self.options = options
 
         #list of names of all areas
         self.nameList = dh.names
@@ -75,15 +76,16 @@ class Simulation:
 
     #helper function for initializing all lines
     def InitializeLines(self):
-        f = open("data/linedata"+str(self.simulationYear)+".csv","r")
+        f = open("data/linedata2040.csv","r")
         line = f.readline() #skip header
         line = f.readline() #read 1st line
         i = 0
         usedNames = []
         while(line):
-            splitted = line.split(",")
-            name = splitted[0] + "_to_" + splitted[1]
-            trialName = splitted[0] + "_to_" + splitted[1]
+            splitted = line.rstrip().split(",")
+            linename = splitted[0]
+            name = splitted[1] + "_to_" + splitted[2]
+            trialName = splitted[1] + "_to_" + splitted[2]
             
             uniqueNameNotFound = True
             noTries = 0
@@ -96,7 +98,40 @@ class Simulation:
                     noTries += 1
                     trialName = name + "_" + str(noTries)
 
-            self.linesList[i] = (Line(splitted[0],splitted[1],float(splitted[2]),float(splitted[3]),name, int(splitted[4]), float(splitted[5]), int(splitted[6])))
+            #all sorts of conditions according to the Sisyfos5Data lines sheet.
+            if(self.options.storebaelt2 and linename == "Storebaelt"):
+                self.linesList[i] = (Line(splitted[1],splitted[2],float(splitted[3])*2,float(splitted[4])*2,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+            elif(linename == "oeresund1-2"):
+                if(self.options.oresundOpen):
+                    self.linesList[i] = (Line(splitted[1],splitted[2],1500*2/3,1300*2/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                else:
+                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+            elif(linename == "oeresund3-4"):
+                if(self.options.oresundOpen):
+                    self.linesList[i] = (Line(splitted[1],splitted[2],1500/3,1300*1/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                else:
+                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+            elif(linename == "oeresund1"):
+                if(self.options.oresundOpen):
+                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                else:
+                    self.linesList[i] = (Line(splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+            elif(linename == "oeresund1"):
+                if(self.options.oresundOpen):
+                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                else:
+                    self.linesList[i] = (Line(splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+            elif(self.options.energyIslandWest and linename == "EnergyIsland-DK1"):
+                self.linesList[i] = (Line(splitted[1],splitted[2],1400,1400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+            elif(self.options.energyIslandWest and linename == "EnergyIsland-BE"):
+                self.linesList[i] = (Line(splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+            elif(self.options.energyIslandEast and linename == "Bornholm-DK2"):
+                self.linesList[i] = (Line(splitted[1],splitted[2],1200,1200,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+            elif(self.options.energyIslandEast and linename == "Bornholm-DE"):
+                    self.linesList[i] = (Line(splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+            else:
+                #default; for hardcoded lines that have same value independent of year
+                self.linesList[i] = (Line(splitted[1],splitted[2],float(splitted[3]),float(splitted[4]),name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             line = f.readline() #read next line
             usedNames.append(name)
             i = i+1

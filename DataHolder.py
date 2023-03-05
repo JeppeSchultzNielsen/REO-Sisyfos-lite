@@ -134,9 +134,6 @@ class DataHolder:
                 stopIndeces[stopIndeces.index(max(stopIndeces))] = len(splitted)
                 stopIndeces = np.array(stopIndeces)
 
-            print(startIndeces)
-            print(stopIndeces)
-
             #add 1 to start indeces to discard country names
             startIndeces += 1
 

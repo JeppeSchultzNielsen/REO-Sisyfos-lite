@@ -142,6 +142,12 @@ class Area:
         for i in range(len(factories)):
             name = factories[i].name
             cap = float(factories[i].capacity)
+            if(not self.options.energyIslandWest):
+                if(name == "EnergioeVest"):
+                    cap = 0
+            if(not self.options.energyIslandEast):
+                if(name == "EnergioeEast"):
+                    cap = 0
             noUnits = 1
             type = factories[i].type
             if(factories[i].noUnits == "-"):
