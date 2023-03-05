@@ -10,8 +10,8 @@ options.demFlexTransport = 0.3 #these numbers are taken from the tabels at A189 
 options.demFlexCVP = 1
 options.demFlexPtX = 1
 options.demFlexKlassisk = 0.
-options.energyIslandEast = True
-options.energyIslandWest = True
+options.energyIslandEast = False
+options.energyIslandWest = False
 
 
 sim = Simulation(options, dh, 2040,1985,"results/NewDemand40YesEI.txt", True)
