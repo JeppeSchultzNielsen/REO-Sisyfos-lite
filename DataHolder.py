@@ -4,13 +4,14 @@ import os as os
 #class for holding global data for use in the other classes 
 #also reads TVAR.csv only once, so it does not need to be read by all areas as timeseries are initialized.
 class DataHolder:
-    def __init__(self, simulationYear: int, climateYear: int, outagePlanPath: str):
+    def __init__(self, simulationYear: int, climateYear: int, demandYear: int, outagePlanPath: str):
         self.names = ["DK1", "DK2", "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
         self.simpleNames = []
         self.productionTypes = ["PV","WS","WL","CSP","HY","HYlimit","OtherRes","OtherNonRes","ICHP","nonTDProd"]
         self.simpleProductionTypes = []
 
         self.outagePlanPath = outagePlanPath
+        self.demandYear = demandYear
 
         for name in self.names:
             self.simpleNames.append(name.lower())
@@ -174,15 +175,18 @@ class DataHolder:
         return self.outagePlanPath
 
     def CreateProdNamesList(self, name):
-        demandYear = str(self.simulationYear)[2:]
-        if(self.simulationYear == 2040):
-            demandYear = "30"
-
-        #first get indeces to read in TVAR
-        demandName = "DNT" + demandYear + "_" + str(self.climateYear) + "_" + name
+        demandName = "DNT"+str(self.demandYear)[2:]+"_" + str(self.climateYear) + "_" + name
         PVName = "PV" + str(self.climateYear)+"_30_" + name
-        WLName = "WL" + str(self.climateYear)+"_" + str(self.simulationYear)[2:] + "_" + name
-        WSName = "WS" + str(self.climateYear)+"_" + str(self.simulationYear)[2:] + "_" + name
+        if(self.simulationYear <= 2034):
+            WSName = "WS" + str(self.climateYear)+"_25_" + name
+        else:
+            WSName = "WS" + str(self.climateYear)+"_40_" + name
+        if(self.simulationYear <= 2029):
+            WLName = "WL" + str(self.climateYear)+"_25_" + name
+        if(self.simulationYear > 2029 and self.simulationYear <= 2034):
+            WLName = "WL" + str(self.climateYear)+"_30_" + name
+        if(self.simulationYear > 2034):
+            WLName = "WL" + str(self.climateYear)+"_40_" + name
         CSPName = "CSP" + str(self.climateYear)+"_30_" + name
         HYName = "HY" + str(self.climateYear)+"_" + name
         HylimitName = "Hylimit" + "_" + name
@@ -190,13 +194,13 @@ class DataHolder:
         OtherNonRESName = "OtherNonRes_" + name
 
         if(name == "DKBO"):
-            demandName = "DNT" + demandYear + "_" + str(self.climateYear) + "_" + "DK2"
+            demandName = demandName = "DNT"+str(self.demandYear)[2:]+"_" + str(self.climateYear) + "_" + "DK2"
 
         if(name == "DKKF"):
-            demandName = "DNT" + demandYear + "_" + str(self.climateYear) + "_" + "DK2"
+            demandName = demandName = "DNT"+str(self.demandYear)[2:]+"_" + str(self.climateYear) + "_" + "DK2"
 
         if(name == "DKEI"):
-            demandName = "DNT" + demandYear + "_" + str(self.climateYear) + "_" + "DK1"
+            demandName = demandName = "DNT"+str(self.demandYear)[2:]+"_" + str(self.climateYear) + "_" + "DK1"
 
         return [demandName,PVName,WSName,WLName,CSPName,HYName,HylimitName,OtherRESName,OtherNonRESName,"ICHP"]
 

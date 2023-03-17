@@ -26,8 +26,6 @@ class AreaDK(Area):
                  flexibleShares = splitted[1:]
             line = f.readline()
 
-        print(self.name)
-
         nonConstDemand = 0
         flatDemand = 0
         for i in range(4): #first 4 is klassiskDemand
@@ -51,10 +49,30 @@ class AreaDK(Area):
         if(self.name == "DK2"):
             #remove DKBO's contribution
             nonConstDemand -= 0.23
+
+        #find relativeFactor
+        relativeFactor = 0
+        f = open("data/relativeDemands"+str(self.dh.demandYear)+".txt","r")
+        line = f.readline() #reads first line
+        splitted = line.split()
+        index = 0
+        for i in range(len(splitted)):
+            if(splitted[i] == self.name):
+                index = i
+        while(line):
+            splitted = line.split()
+            if(not splitted[0].isnumeric()):
+                line = f.readline() #reads first line
+                continue
+            if(int(splitted[0]) == self.climateYear):
+                relativeFactor = float(splitted[index])
+            line = f.readline() #reads first line
+
+        nonConstDemand = nonConstDemand * relativeFactor
             
         self.demand.AddProducer("demand" + self.name, nonConstDemand, 1, 0, 0, 0, 0, "demand")
 
-        self.nonTDProd.AddProducer("flatDemand"+self.name, -1-flatDemand/0.00876, 1, 0, 0, 0, 0, "flatDemand")
+        self.nonTDProd.AddProducer("flatDemand"+self.name, -1*flatDemand/0.00876, 1, 0, 0, 0, 0, "flatDemand")
 
         self.demand.CreateArrays()
 

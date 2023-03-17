@@ -206,6 +206,8 @@ class Area:
             return self.timeSeriesProductionList[typeIndex][hour]*self.productionList[typeIndex].GetCurrentValue()
 
 
+
+
     def InitializeDemand(self):
         #first find demandfactor for this year. 
         f = open("data/demands.txt","r")
@@ -229,7 +231,7 @@ class Area:
 
         #find relativeFactor
         relativeFactor = 0
-        f = open("data/relativeDemands.txt","r")
+        f = open("data/relativeDemands"+str(self.dh.demandYear)+".txt","r")
         line = f.readline() #reads first line
         splitted = line.split()
         index = 0
