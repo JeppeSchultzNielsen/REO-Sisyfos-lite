@@ -8,7 +8,7 @@ from Options import Options
 import random
 
 class Simulation:
-    def __init__(self, options: Options, dh: DataHolder, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool):
+    def __init__(self, options: Options, dh: DataHolder, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool, saveDiagnosticsFile: bool = True):
         self.simulationYear = asimulationYear
         self.climateYear = aclimateYear
         self.saveFilePath = asaveFilePath
@@ -70,6 +70,29 @@ class Simulation:
                 self.fileOut.write(name + "_"+"unplannedOutage" + "\t")
             for line in self.linesList:
                 self.fileOut.write(line.GetName() + "\t")
+        
+        if(saveDiagnosticsFile):
+            print(self.saveFilePath[:-4]+"Diag.txt")
+            diagFile = open(self.saveFilePath[:-4]+"Diag.txt", "w+")
+            diagFile.write("Information about parameters in run for file " + self.saveFilePath+"\n")
+            diagFile.write("Options: \n")
+            diagFile.write("Simulation year: " + str(asimulationYear) + "\n")
+            diagFile.write("Climate year: " + str(aclimateYear) + "\n")
+            diagFile.write("TYNDP report: " + str(dh.demandYear) + "\n")
+            diagFile.write("UsePlannedDownTime: " + str(options.usePlannedDownTime) + "\n")
+            diagFile.write("UsePlannedDownTime: " + str(options.usePlannedDownTime) + "\n")
+
+
+            for i in range(len(self.areaList)):
+                diagFile.write(self.areaList[i].name+"\n")
+
+                diagFile.write("\n")
+
+            diagFile.write("Lines: \n")
+            diagFile.write("Name\tCapAB\tcapBA")
+            for i in range(len(self.linesList)):
+                diagFile.write(str(self.linesList[i].name) +"\t"+str(self.linesList[i].maxCapAB)+"\t"+str(self.linesList[i].maxCapBA)+"\n")
+                
 
 
 
