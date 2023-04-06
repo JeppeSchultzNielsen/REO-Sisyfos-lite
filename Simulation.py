@@ -80,18 +80,29 @@ class Simulation:
             diagFile.write("Climate year: " + str(aclimateYear) + "\n")
             diagFile.write("TYNDP report: " + str(dh.demandYear) + "\n")
             diagFile.write("UsePlannedDownTime: " + str(options.usePlannedDownTime) + "\n")
-            diagFile.write("UsePlannedDownTime: " + str(options.usePlannedDownTime) + "\n")
+            diagFile.write("UseUnplannedDownTime: " + str(options.useUnplannedDownTime) + "\n")
+            diagFile.write("demFlexKlassisk: " + str(options.demFlexKlassisk) + "\n")
+            diagFile.write("demFlexCVP: " + str(options.demFlexCVP) + "\n")
+            diagFile.write("demFlexPtX: " + str(options.demFlexPtX) + "\n")
+            diagFile.write("demFlexTransport: " + str(options.demFlexTransport) + "\n")
+            diagFile.write("Storebaelt2: " + str(options.storebaelt2) + "\n")
+            diagFile.write("oresundOpen: " + str(options.oresundOpen) + "\n")
+            diagFile.write("EnergyIslandEast: " + str(options.energyIslandEast) + "\n")
+            diagFile.write("EnergyIslandWest: " + str(options.energyIslandWest) + "\n")
 
 
             for i in range(len(self.areaList)):
                 diagFile.write(self.areaList[i].name+"\n")
+                diagFile.write(self.areaList[i].GetDiagString()+"\n")
 
                 diagFile.write("\n")
 
             diagFile.write("Lines: \n")
-            diagFile.write("Name\tCapAB\tcapBA")
+            diagFile.write("Name\tCapAB\tcapBA\tnoUnits\tDowntime\tDowntimeDuration\n")
             for i in range(len(self.linesList)):
-                diagFile.write(str(self.linesList[i].name) +"\t"+str(self.linesList[i].maxCapAB)+"\t"+str(self.linesList[i].maxCapBA)+"\n")
+                diagFile.write(str(self.linesList[i].name) +"\t"+str(self.linesList[i].maxCapAB)+"\t"+str(self.linesList[i].maxCapBA)+
+                               "\t"+str(self.linesList[i].noUnits)+"\t"+str(self.linesList[i].failureProb)
+                               +"\t"+str(self.linesList[i].avgDowntime)+"\n")
                 
 
 

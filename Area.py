@@ -32,7 +32,7 @@ class Area:
         self.OtherResProd = Production(self.options,"OtherResProd"+self.name)
         self.OtherNonResProd = Production(self.options,"OtherNonResProd"+self.name)
         self.ICHP = Production(self.options,"ICHPProd"+self.name)
-        self.demand = Production(self.options,"nonTDProd"+self.name)
+        self.demand = Production(self.options,"demand"+self.name)
 
         self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.HYlimitprod,self.OtherResProd,self.OtherNonResProd,self.ICHP,self.nonTDProd]
 
@@ -45,6 +45,24 @@ class Area:
         self.InitializeFactors()
 
         self.LoadOrCreateOutagePlan()
+
+    def GetDiagString(self):
+        build = "Name\tType\tCapacity\tNoUnits\tPlannedOutage\tUnplannedOutage\tOutageTime\tHeatDep\tVariation\n"
+        printList = self.productionList.copy()
+        printList.append(self.demand)
+        for i in range(len(printList)):
+            for j in range(len(printList[i].nameList)):
+                build += printList[i].nameList[j] + "\t"
+                build += printList[i].name + "\t"
+                build += str(printList[i].capacityArray[j]) + "\t"
+                build += str(printList[i].noUnitsArray[j]) + "\t"
+                build += str(printList[i].plannedOutageArray[j]) + "\t"
+                build += str(printList[i].unplannedOutageArray[j]) + "\t"
+                build += str(printList[i].outageTimeArray[j]) + "\t"
+                build += str(printList[i].heatDependenceArray[j]) + "\t"
+                build += str(printList[i].variationList[j]) + "\n"
+
+        return build
 
 
     def CreateOutagePlan(self):
@@ -163,13 +181,13 @@ class Area:
             heatDep = self.dh.outageDict[type].heatDep
 
             if(factories[i].variation == "-" or factories[i].variation == "No_RoR"):
-                self.nonTDProd.AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type)
+                self.nonTDProd.AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation)
             else: 
                 typeArea = factories[i].variation.split("_")
                 if(len(typeArea) == 1):
                     prodType = typeArea[0]
                     prodIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type)
+                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation)
                 else: 
                     prodType = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
@@ -181,7 +199,7 @@ class Area:
                         print("For production of " + prodType + " in " + self.name + " using time series from " + area)
                     prodType = typeArea[0].rstrip()
                     prodIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type)
+                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation)
                     
         self.nonTDProd.SetHeatBinding(self.dh.GetTemperatureArray())
         for prod in self.productionList:
@@ -249,7 +267,7 @@ class Area:
 
         demand = demandFactor * relativeFactor
 
-        self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand")
+        self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand", self.name + "demand")
         self.demand.CreateArrays()
 
     def GetDemand(self, hour: int, currentAreaIndex: int):
