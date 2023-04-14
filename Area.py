@@ -38,6 +38,8 @@ class Area:
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
+        self.averages = np.zeros(len(self.timeSeriesProductionList))
+        self.createAverages()
 
         self.nonTDProdTimeseries = np.zeros(8760)
 
@@ -84,7 +86,14 @@ class Area:
             for j in range(noPlants):
                 onMatrix[j][i] = noUnits[j]
 
-        demandCopy = self.demand.GetCurrentValue() * self.demandTimeSeries
+        demandCopy = np.zeros(8760)
+        for i in range(8760):
+            demandCopy[i] += self.demand.GetCurrentValue(i)
+
+        if(self.options.useVariations):
+            for i in range(len(self.productionList)-1):
+                for j in range(8760):
+                    demandCopy[j] -= self.productionList[i].GetCurrentValue(j)
 
         #now i will iterate over all units. 
         for i in range(noPlants):
@@ -145,6 +154,12 @@ class Area:
         move(abs_path, outagePlanPath)
         return onMatrix
 
+    def createAverages(self):
+        for i in range(len(self.timeSeriesProductionList)):
+            self.averages[i] = np.mean(self.timeSeriesProductionList[i])
+            if(self.averages[i] == 0):
+                self.averages[i] = 1 #avoid division with zero
+
 
     def LoadOrCreateOutagePlan(self):
         if(not self.dh.outagePlanLoaded):
@@ -181,13 +196,13 @@ class Area:
             heatDep = self.dh.outageDict[type].heatDep
 
             if(factories[i].variation == "-" or factories[i].variation == "No_RoR"):
-                self.nonTDProd.AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation)
+                self.nonTDProd.AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
             else: 
                 typeArea = factories[i].variation.split("_")
                 if(len(typeArea) == 1):
                     prodType = typeArea[0]
                     prodIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation)
+                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.timeSeriesProductionList[prodIndex])
                 else: 
                     prodType = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
@@ -195,11 +210,9 @@ class Area:
                     areaIndex = self.dh.GetAreaIndex(area)
                     if(not areaIndex == self.nodeIndex):
                         #the timeseries for this node is the same is the timeseries for a different node; update.
-                        self.timeSeriesProductionList[prodIndex] = self.dh.prodTimeSeriesArray[areaIndex][prodIndex]
-                        print("For production of " + prodType + " in " + self.name + " using time series from " + area)
+                        print("For production of " + name + " in " + self.name + " using time series from " + area)
                     prodType = typeArea[0].rstrip()
-                    prodIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation)
+                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.dh.prodTimeSeriesArray[areaIndex][prodIndex])
                     
         self.nonTDProd.SetHeatBinding(self.dh.GetTemperatureArray())
         for prod in self.productionList:
@@ -221,7 +234,7 @@ class Area:
         if(typeIndex == (len(self.timeSeriesProductionList)-1)):
             return self.nonTDProd.currentValue
         else:
-            return self.timeSeriesProductionList[typeIndex][hour]*self.productionList[typeIndex].GetCurrentValue()
+            return self.productionList[typeIndex].GetCurrentValue(hour)#/self.averages[typeIndex]
 
 
 
@@ -267,12 +280,12 @@ class Area:
 
         demand = demandFactor * relativeFactor
 
-        self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand", self.name + "demand")
+        self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand", self.name + "demand", self.demandTimeSeries)
         self.demand.CreateArrays()
 
     def GetDemand(self, hour: int, currentAreaIndex: int):
         #demand in TVAR is given in units such that it sums to 1TWh over a year. So it is units of MWh. 
         #the factor is TWh. Means if we just multiply the timeSeries number with the factor, we get the
         #right total demand.
-        Final_demand = self.demand.GetCurrentValue() * self.demandTimeSeries[hour]
+        Final_demand = self.demand.GetCurrentValue(hour)
         return Final_demand

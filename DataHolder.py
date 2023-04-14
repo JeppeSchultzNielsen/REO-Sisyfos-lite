@@ -49,6 +49,8 @@ class DataHolder:
         self.InitializeEmptyTimeSeriesArray()
         self.InitializeTimeSeries()
 
+        self.constantTimeSeries = np.zeros(8760)+1
+
 
         self.outagePlanLoaded = False
         self.LoadOutagePlan(outagePlanPath)

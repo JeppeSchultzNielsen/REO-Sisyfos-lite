@@ -19,6 +19,7 @@ class NonTDProduction(Production):
         self.nameList = []
         self.typesList = []
         self.variationList = []
+        self.variationColList = []
 
         self.capacityArray = 0
         self.unplannedOutageArray = 0
@@ -81,7 +82,7 @@ class NonTDProduction(Production):
 
         self.failedUnitsInitialized = True
 
-    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str, variation: str):
+    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str, variation: str, variationCol: np.array):
         self.nameList.append(name)
         self.capacityList.append(capacity)
         self.unplannedOutageList.append(unplannedOutage)
@@ -91,6 +92,7 @@ class NonTDProduction(Production):
         self.noUnitsList.append(noUnits)
         self.typesList.append(type)
         self.variationList.append(variation)
+        self.variationColList.append(variationCol)
 
 
     def PrepareHour(self, hour: int):

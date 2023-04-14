@@ -70,9 +70,9 @@ class AreaDK(Area):
 
         nonConstDemand = nonConstDemand * relativeFactor
             
-        self.demand.AddProducer("demand" + self.name, nonConstDemand, 1, 0, 0, 0, 0, "demand", self.name + "demand")
+        self.demand.AddProducer("demand" + self.name, nonConstDemand, 1, 0, 0, 0, 0, "demand", self.name + "demand", self.demandTimeSeries)
 
-        self.nonTDProd.AddProducer("flatDemand"+self.name, -1*flatDemand/0.00876, 1, 0, 0, 0, 0, "flatDemand","-")
+        self.nonTDProd.AddProducer("flatDemand"+self.name, -1*flatDemand/0.00876, 1, 0, 0, 0, 0, "flatDemand","-", self.dh.constantTimeSeries)
 
         self.demand.CreateArrays()
 

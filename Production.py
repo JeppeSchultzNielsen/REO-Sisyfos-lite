@@ -17,6 +17,7 @@ class Production:
         self.nameList = []
         self.typesList = []
         self.variationList = []
+        self.variationColList = []
 
         self.capacityArray = 0
         self.unplannedOutageArray = 0
@@ -26,8 +27,11 @@ class Production:
         self.noUnitsArray = 0
         self.noFunctioningUnitsArray = 0
 
-    def GetCurrentValue(self):
-        return np.sum(self.capacityArray * self.noFunctioningUnitsArray / self.noUnitsArray)
+    def GetCurrentValue(self, hour):
+        sum = 0
+        for i in range(len(self.capacityArray)):
+            sum += self.capacityArray[i] * self.noFunctioningUnitsArray[i] / self.noUnitsArray[i] * self.variationColList[i][hour]
+        return sum
 
     def GetNumberOfPlants(self):
         return len(self.capacityArray)
@@ -51,7 +55,7 @@ class Production:
         return self.nameList
     
 
-    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str, variation: str):
+    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str, variation: str,variationCol: np.array):
         self.nameList.append(name)
         self.capacityList.append(capacity)
         self.unplannedOutageList.append(unplannedOutage)
@@ -61,6 +65,7 @@ class Production:
         self.noUnitsList.append(noUnits)
         self.typesList.append(type)
         self.variationList.append(variation)
+        self.variationColList.append(variationCol)
 
     def CreateArrays(self):
         self.capacityArray = np.array(self.capacityList)

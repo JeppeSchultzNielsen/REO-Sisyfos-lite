@@ -11,10 +11,11 @@ options.demFlexPtX = 1  #altid 1
 options.demFlexKlassisk = 0 #0 for 2025, 0 for 2030, 0.25 for 2035, 0.5 for 2040
 options.energyIslandEast = False
 options.energyIslandWest = False
+options.useVariations = True
 
-dh = DataHolder(2030,1985,2030,"data/outage/Plan2030_1985.csv")
-sim = Simulation(options, dh, 2030,1985,"results/test.txt", True)
-sim.RunSimulation(0,10)
+dh = DataHolder(2030,1985,2030,"data/outage/Plan2030_1985_variations.csv")
+sim = Simulation(options, dh, 2030,1985,"results/2030_1985_test_averages.txt", True)
+sim.RunSimulation(0,100)
 
 '''
 #run 2030 scenario for all climateyears
