@@ -54,6 +54,9 @@ class Production:
     def GetNamesList(self):
         return self.nameList
     
+    def PrepareHour(self, hour):
+        pass
+    
 
     def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str, variation: str,variationCol: np.array):
         self.nameList.append(name)

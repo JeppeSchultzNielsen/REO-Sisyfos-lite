@@ -22,19 +22,12 @@ class Area:
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
 
         #variables in timeSeries are normalized, need normalizationfactors from SisyfosData, including the non timedependent production (nonTDProd)
-        self.nonTDProd = NonTDProduction(self.options, "nonTDProd"+self.name)
-        self.PVprod = Production(self.options,"PVProd"+self.name)
-        self.WSprod = Production(self.options,"WSProd"+self.name)
-        self.WLprod = Production(self.options,"WLProd"+self.name)
-        self.CSPprod = Production(self.options,"CSPProd"+self.name)
-        self.HYprod = Production(self.options,"HYProd"+self.name)
-        self.HYlimitprod = Production(self.options,"HYlimitProd"+self.name)
-        self.OtherResProd = Production(self.options,"OtherResProd"+self.name)
-        self.OtherNonResProd = Production(self.options,"OtherNonResProd"+self.name)
-        self.ICHP = Production(self.options,"ICHPProd"+self.name)
         self.demand = Production(self.options,"demand"+self.name)
 
-        self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.HYlimitprod,self.OtherResProd,self.OtherNonResProd,self.ICHP,self.nonTDProd]
+        self.productionList = []
+        self.productionNames = []
+        self.nonTDProductionList = []
+        self.nonTDProductionNames = []
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
@@ -47,6 +40,10 @@ class Area:
         self.InitializeFactors()
 
         self.LoadOrCreateOutagePlan()
+
+        self.productionList = self.productionList+self.nonTDProductionList
+        self.productionNames = self.productionNames+self.nonTDProductionNames
+        print(self.productionNames)
 
     def GetDiagString(self):
         build = "Name\tType\tCapacity\tNoUnits\tPlannedOutage\tUnplannedOutage\tOutageTime\tHeatDep\tVariation\n"
@@ -71,12 +68,21 @@ class Area:
         print("Creating outage plan for " + self.name)
         #When creating an outage plan, we're creating a pseudo time series for the non-time dependent productions. So what i want is to
         #create an array with the dimensions of number of plants * number of hours.
-        noPlants = self.nonTDProd.GetNumberOfPlants()
+        
 
-        capacities = self.nonTDProd.GetCapacityArray()
-        noUnits = self.nonTDProd.GetNoUnitsArray()
-        plantNames = self.nonTDProd.GetNamesList()
-        plannedOutages = self.nonTDProd.GetPlannedOutageArray()
+        noPlants = self.nonTDProductionList[0].GetNumberOfPlants()
+
+        capacities = self.nonTDProductionList[0].GetCapacityArray()
+        noUnits = self.nonTDProductionList[0].GetNoUnitsArray()
+        plantNames = self.nonTDProductionList[0].GetNamesList()
+        plannedOutages = self.nonTDProductionList[0].GetPlannedOutageArray()
+
+        for i in range(len(self.nonTDProductionList)-1):
+            i = i+1
+            noPlants = np.concatenate([noPlants,self.nonTDProductionList[i].GetNumberOfPlants()])
+            noUnits = np.concatenate([noUnits,self.nonTDProductionList[i].GetNoUnitsArray()])
+            plantNames = np.concatenate([plantNames,self.nonTDProductionList[i].GetNamesList()])
+            plannedOutages = np.concatenate([plannedOutages,self.nonTDProductionList[i].GetPlannedOutageArray()])
 
         unitCapacity = capacities/noUnits
 
@@ -164,9 +170,10 @@ class Area:
     def LoadOrCreateOutagePlan(self):
         if(not self.dh.outagePlanLoaded):
             print("Outage plan not loaded")
-            self.nonTDProd.SetOutagePlan(self.CreateOutagePlan(),["Warning: not implemented, after finished creating outageplan, rerun code."])
-        else:
-            self.nonTDProd.SetOutagePlan(self.dh.GetOutagePlan(self.name),self.dh.GetOutagePlanHeader(self.name))
+            self.CreateOutagePlan()
+            print("Warning: not implemented, after finished creating outageplan, rerun code.")
+        for i in range(len(self.nonTDProductionList)):
+            self.nonTDProductionList[i].SetOutagePlan(self.dh.GetOutagePlan(self.name),self.dh.GetOutagePlanHeader(self.name))
 
 
 
@@ -195,32 +202,51 @@ class Area:
             outageTime = self.dh.outageDict[type].outageTime
             heatDep = self.dh.outageDict[type].heatDep
 
+            type = type
+
             if(factories[i].variation == "-" or factories[i].variation == "No_RoR"):
-                self.nonTDProd.AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
+                if(not type+"_"+self.name in self.nonTDProductionNames):
+                        #create new productiontype with this name.
+                        self.nonTDProductionList.append(NonTDProduction(self.options,type+"_"+self.name))
+                        self.nonTDProductionList[-1].SetHeatBinding(self.dh.GetTemperatureArray())
+                        self.nonTDProductionNames.append(type+"_"+self.name)
+                prodListIndex = self.nonTDProductionNames.index(type+"_"+self.name,0,len(self.nonTDProductionNames))
+                self.nonTDProductionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
             else: 
                 typeArea = factories[i].variation.split("_")
                 if(len(typeArea) == 1):
                     prodType = typeArea[0]
-                    prodIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.timeSeriesProductionList[prodIndex])
+                    varIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
+                    if(not type+"_"+self.name in self.productionNames):
+                        #create new productiontype with this name.
+                        self.productionList.append(Production(self.options,type+"_"+self.name))
+                        self.productionNames.append(type+"_"+self.name)
+                    prodListIndex = self.productionNames.index(type+"_"+self.name,0,len(self.productionNames))
+                    self.productionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.timeSeriesProductionList[varIndex])
                 else: 
                     prodType = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
-                    prodIndex = self.dh.GetProductionIndex(prodType)
+                    varIndex = self.dh.GetProductionIndex(prodType)
                     areaIndex = self.dh.GetAreaIndex(area)
                     if(not areaIndex == self.nodeIndex):
                         #the timeseries for this node is the same is the timeseries for a different node; update.
                         print("For production of " + name + " in " + self.name + " using time series from " + area)
-                    prodType = typeArea[0].rstrip()
-                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.dh.prodTimeSeriesArray[areaIndex][prodIndex])
-                    
-        self.nonTDProd.SetHeatBinding(self.dh.GetTemperatureArray())
+                    if(not type+"_"+self.name in self.productionNames):
+                        #create new productiontype with this name.
+                        self.productionList.append(Production(self.options,type+"_"+self.name))
+                        self.productionNames.append(type+"_"+self.name)
+                    prodListIndex = self.productionNames.index(type+"_"+self.name,0,len(self.productionNames))
+                    self.productionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.dh.prodTimeSeriesArray[areaIndex][varIndex])
+
         for prod in self.productionList:
+            prod.CreateArrays()
+        for prod in self.nonTDProductionList:
             prod.CreateArrays()
 
 
     def PrepareHour(self, hour: int):
-        self.nonTDProd.PrepareHour(hour)
+        for prod in self.productionList:
+            prod.PrepareHour(hour)
     
 
 
@@ -283,7 +309,7 @@ class Area:
         self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand", self.name + "demand", self.demandTimeSeries)
         self.demand.CreateArrays()
 
-    def GetDemand(self, hour: int, currentAreaIndex: int):
+    def GetDemand(self, hour: int):
         #demand in TVAR is given in units such that it sums to 1TWh over a year. So it is units of MWh. 
         #the factor is TWh. Means if we just multiply the timeSeries number with the factor, we get the
         #right total demand.
