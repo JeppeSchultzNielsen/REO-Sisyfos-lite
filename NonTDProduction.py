@@ -68,6 +68,9 @@ class NonTDProduction(Production):
     def GetCurrentUnplannedOutage(self):
         return self.currentUnplannedOutage
     
+    def GetCurrentValue(self, hour):
+        return self.currentValue
+    
     def InitializeFailedUnits(self, startingHour: int):
         #at the start of the simulation, all units should by some probability be failed; assume the odds that they are failed
         #is their %downtime.
@@ -99,6 +102,7 @@ class NonTDProduction(Production):
         #if this is the first hour, initialize failedUnits
         if(not self.failedUnitsInitialized):
             self.InitializeFailedUnits(hour)
+        
 
         #iterate over all plants to get the total production in this hour
         self.currentValue = 0; 

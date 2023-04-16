@@ -52,20 +52,26 @@ class Simulation:
         self.transferList = np.zeros(self.numberOfLines)
 
         #we wish to know how much production there is of each type in each node.
-        self.productionTypeNames = dh.productionTypes
-        self.productionTypeMatrix = np.zeros([len(self.nameList), len(self.productionTypeNames)])
+        self.productionTypeNames = []
+        longestProd = 0
+        for area in self.areaList:
+            self.productionTypeNames.append(area.productionNames)
+            if(len(area.productionNames) > longestProd):
+                longestProd = len(area.productionNames)
+        self.productionTypeMatrix = np.zeros([len(self.areaList),longestProd])
 
         #create file for saving output
         if(self.saving):
             self.fileOut = open(self.saveFilePath, "w+")
             #create header
             self.fileOut.write("hour"+"\t")
-            for name in self.nameList:
+            for i in range(len(self.nameList)):
+                name = self.nameList[i]
                 self.fileOut.write(name + "_" + "demand" + "\t")
                 self.fileOut.write(name + "_" + "surplus" + "\t")
                 self.fileOut.write(name + "_" + "EENS" + "\t")
-                for prodName in self.productionTypeNames:
-                    self.fileOut.write(name + "_" + prodName + "\t")
+                for prodname in self.productionTypeNames[i]:
+                    self.fileOut.write(prodname + "\t")
                 self.fileOut.write(name + "_"+"plannedOutage" + "\t")
                 self.fileOut.write(name + "_"+"unplannedOutage" + "\t")
             for line in self.linesList:
@@ -189,24 +195,19 @@ class Simulation:
 
 
     def PrepareHour(self, hour: int):
-        i = 0
-        for area in self.areaList:
+        for i in range(len(self.areaList)):
+            area = self.areaList[i]
             area.PrepareHour(hour)
-            currentAreaIndex = i
             totalProduction = 0
-            j = 0
-            for prodType in self.productionTypeNames:
+
+            for j in range(len(self.productionTypeNames[i])):
                 prod = area.GetProduction(hour, j)
                 totalProduction += prod
                 self.productionTypeMatrix[i][j] = prod
-                j += 1
 
             self.productionList[i] = totalProduction
-            self.demandList[i] = area.GetDemand(hour, currentAreaIndex)
+            self.demandList[i] = area.GetDemand(hour)
 
-            i += 1
-
-        i = 0
         for line in self.linesList:
             line.PrepareHour(hour)
 
@@ -221,7 +222,6 @@ class Simulation:
             self.fileOut.write(f"{self.demandList[i]:.3f}" + "\t")
             self.fileOut.write(f"{self.productionList[i]-self.demandList[i]:.3f}" + "\t")
 
-            j = 0
             EENS = self.productionList[i]-self.demandList[i]
             for j in range(len(self.linesList)):
                 if(name == self.linesList[j].GetA()):
@@ -234,13 +234,16 @@ class Simulation:
                 EENS = 0
             self.fileOut.write(f"{EENS:.3f}" + "\t")
 
-            j = 0
-            for prodName in self.productionTypeNames:
+            currentPlanned = 0
+            currentUnplanned = 0
+            for j in range(len(self.productionTypeNames[i])):
                 self.fileOut.write(f"{self.productionTypeMatrix[i][j]:.3f}" + "\t")
-                j += 1
+                currentPlanned += self.areaList[i].productionList[j].GetCurrentPlannedOutage()
+                currentUnplanned += self.areaList[i].productionList[j].GetCurrentUnplannedOutage()
 
-            self.fileOut.write(f"{self.areaList[i].nonTDProd.GetCurrentPlannedOutage():.3f}" + "\t")
-            self.fileOut.write(f"{self.areaList[i].nonTDProd.GetCurrentUnplannedOutage():.3f}" + "\t")
+
+            self.fileOut.write(f"{currentPlanned}" + "\t")
+            self.fileOut.write(f"{currentUnplanned}" + "\t")
             i += 1
         i = 0
         for line in self.linesList:

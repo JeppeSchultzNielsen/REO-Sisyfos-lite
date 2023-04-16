@@ -56,6 +56,12 @@ class Production:
     
     def PrepareHour(self, hour):
         pass
+
+    def GetCurrentPlannedOutage(self):
+        return 0
+    
+    def GetCurrentUnplannedOutage(self):
+        return 0
     
 
     def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str, variation: str,variationCol: np.array):

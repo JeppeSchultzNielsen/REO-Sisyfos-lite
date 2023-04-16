@@ -13,9 +13,9 @@ options.energyIslandEast = False
 options.energyIslandWest = False
 options.useVariations = True
 
-dh = DataHolder(2030,1985,2030,"data/outage/Plan2030_1985_variations.csv")
+dh = DataHolder(2030,1985,2030,"data/outage/Plan2030_1985.csv")
 sim = Simulation(options, dh, 2030,1985,"results/2030_1985_test_averages.txt", True)
-sim.RunSimulation(0,100)
+sim.RunSimulation(0,10)
 
 '''
 #run 2030 scenario for all climateyears

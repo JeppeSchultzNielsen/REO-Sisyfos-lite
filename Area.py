@@ -34,8 +34,6 @@ class Area:
         self.averages = np.zeros(len(self.timeSeriesProductionList))
         self.createAverages()
 
-        self.nonTDProdTimeseries = np.zeros(8760)
-
         self.InitializeDemand()
         self.InitializeFactors()
 
@@ -43,7 +41,6 @@ class Area:
 
         self.productionList = self.productionList+self.nonTDProductionList
         self.productionNames = self.productionNames+self.nonTDProductionNames
-        print(self.productionNames)
 
     def GetDiagString(self):
         build = "Name\tType\tCapacity\tNoUnits\tPlannedOutage\tUnplannedOutage\tOutageTime\tHeatDep\tVariation\n"
@@ -66,70 +63,63 @@ class Area:
 
     def CreateOutagePlan(self):
         print("Creating outage plan for " + self.name)
-        #When creating an outage plan, we're creating a pseudo time series for the non-time dependent productions. So what i want is to
-        #create an array with the dimensions of number of plants * number of hours.
-        
-
-        noPlants = self.nonTDProductionList[0].GetNumberOfPlants()
-
-        capacities = self.nonTDProductionList[0].GetCapacityArray()
-        noUnits = self.nonTDProductionList[0].GetNoUnitsArray()
-        plantNames = self.nonTDProductionList[0].GetNamesList()
-        plannedOutages = self.nonTDProductionList[0].GetPlannedOutageArray()
-
-        for i in range(len(self.nonTDProductionList)-1):
-            i = i+1
-            noPlants = np.concatenate([noPlants,self.nonTDProductionList[i].GetNumberOfPlants()])
-            noUnits = np.concatenate([noUnits,self.nonTDProductionList[i].GetNoUnitsArray()])
-            plantNames = np.concatenate([plantNames,self.nonTDProductionList[i].GetNamesList()])
-            plannedOutages = np.concatenate([plannedOutages,self.nonTDProductionList[i].GetPlannedOutageArray()])
-
-        unitCapacity = capacities/noUnits
-
-        #the matrix that i'm creating should countain how many units of each plant is on in each hour.
+        noPlants = 0
         onMatrix = np.zeros([noPlants, 8760])
-        for i in range(8760):
-            for j in range(noPlants):
-                onMatrix[j][i] = noUnits[j]
+        if(len(self.nonTDProductionList[0]) > 0):
+            noPlants = self.nonTDProductionList[0].GetNumberOfPlants()
+            capacities = self.nonTDProductionList[0].GetCapacityArray()
+            noUnits = self.nonTDProductionList[0].GetNoUnitsArray()
+            plantNames = self.nonTDProductionList[0].GetNamesList()
+            plannedOutages = self.nonTDProductionList[0].GetPlannedOutageArray()
 
-        demandCopy = np.zeros(8760)
-        for i in range(8760):
-            demandCopy[i] += self.demand.GetCurrentValue(i)
+            for i in range(len(self.nonTDProductionList)-1):
+                i = i+1
+                noPlants = noPlants + self.nonTDProductionList[i].GetNumberOfPlants()
+                noUnits = np.concatenate([noUnits,self.nonTDProductionList[i].GetNoUnitsArray()])
+                plantNames = np.concatenate([plantNames,self.nonTDProductionList[i].GetNamesList()])
+                plannedOutages = np.concatenate([plannedOutages,self.nonTDProductionList[i].GetPlannedOutageArray()])
 
-        if(self.options.useVariations):
-            for i in range(len(self.productionList)-1):
-                for j in range(8760):
-                    demandCopy[j] -= self.productionList[i].GetCurrentValue(j)
+            unitCapacity = capacities/noUnits
 
-        #now i will iterate over all units. 
-        for i in range(noPlants):
-            #first place the units with highest capacities.
-            indexMax = int(np.argmax(unitCapacity))
-            outageHours = int(plannedOutages[indexMax]*8760 + 0.5)
-            for j in range(noUnits[indexMax]):
-                #now find the hours in demandCopy where this does least damage; this is where the sum over 
-                #the outage hours is smallest (least demand)
-                smallestIndex = 0
-                smallest = 10e9
-                for k in range(8760 - outageHours):
-                    currentSum = sum( demandCopy[k:k+outageHours] )
-                    if( currentSum < smallest ):
-                        smallest = currentSum
-                        smallestIndex = k
-                
-                #adjust the on-matrix accordingly. 
-                for k in range(outageHours):
-                        onMatrix[indexMax][smallestIndex+k] -= 1
-                        #adjust the demandCopy accordingly - surplus demand falls because a unit is off now - equivalent to demand rising. 
-                        demandCopy[smallestIndex+k] += unitCapacity[indexMax]
-            #having solved the problem for this unitCapacity, we can set it to zero and do it over again with next highest unit capacity. 
-            unitCapacity[indexMax] = -10e9
+            #the matrix that i'm creating should countain how many units of each plant is on in each hour.
+            onMatrix = np.zeros([noPlants, 8760])
+            for i in range(8760):
+                for j in range(noPlants):
+                    onMatrix[j][i] = noUnits[j]
 
-        #we can now create a time series for the nonTDProd
-        unitCapacity = capacities/noUnits
-        for i in range(8760):
-            for j in range(noPlants):
-                self.nonTDProdTimeseries[i] += onMatrix[j][i] * unitCapacity[j]
+            demandCopy = np.zeros(8760)
+            for i in range(8760):
+                demandCopy[i] += self.demand.GetCurrentValue(i)
+
+            if(self.options.useVariations):
+                for i in range(len(self.productionList)-1):
+                    for j in range(8760):
+                        demandCopy[j] -= self.productionList[i].GetCurrentValue(j)
+            print(demandCopy)
+
+            #now i will iterate over all units. 
+            for i in range(noPlants):
+                #first place the units with highest capacities.
+                indexMax = int(np.argmax(unitCapacity))
+                outageHours = int(plannedOutages[indexMax]*8760 + 0.5)
+                for j in range(noUnits[indexMax]):
+                    #now find the hours in demandCopy where this does least damage; this is where the sum over 
+                    #the outage hours is smallest (least demand)
+                    smallestIndex = 0
+                    smallest = 10e9
+                    for k in range(8760 - outageHours):
+                        currentSum = sum( demandCopy[k:k+outageHours] )
+                        if( currentSum < smallest ):
+                            smallest = currentSum
+                            smallestIndex = k
+                    
+                    #adjust the on-matrix accordingly. 
+                    for k in range(outageHours):
+                            onMatrix[indexMax][smallestIndex+k] -= 1
+                            #adjust the demandCopy accordingly - surplus demand falls because a unit is off now - equivalent to demand rising. 
+                            demandCopy[smallestIndex+k] += unitCapacity[indexMax]
+                #having solved the problem for this unitCapacity, we can set it to zero and do it over again with next highest unit capacity. 
+                unitCapacity[indexMax] = -10e9
 
         #save this outage plan for future use. 
         outagePlanPath = self.dh.GetOutagePlanPath()
@@ -172,8 +162,9 @@ class Area:
             print("Outage plan not loaded")
             self.CreateOutagePlan()
             print("Warning: not implemented, after finished creating outageplan, rerun code.")
-        for i in range(len(self.nonTDProductionList)):
-            self.nonTDProductionList[i].SetOutagePlan(self.dh.GetOutagePlan(self.name),self.dh.GetOutagePlanHeader(self.name))
+        else:
+            for i in range(len(self.nonTDProductionList)):
+                self.nonTDProductionList[i].SetOutagePlan(self.dh.GetOutagePlan(self.name),self.dh.GetOutagePlanHeader(self.name))
 
 
 
@@ -190,6 +181,8 @@ class Area:
                     cap = 0
             noUnits = 1
             type = factories[i].type
+            if(cap == 0):
+                continue
             if(factories[i].noUnits == "-"):
                 if(self.dh.outageDict[type].unitSize < 0.0000001):
                     noUnits = 1 #avoid division by zero
@@ -257,10 +250,7 @@ class Area:
 
     #must be able to return the production for a given type for a given hour
     def GetProduction(self, hour: int, typeIndex: int):
-        if(typeIndex == (len(self.timeSeriesProductionList)-1)):
-            return self.nonTDProd.currentValue
-        else:
-            return self.productionList[typeIndex].GetCurrentValue(hour)#/self.averages[typeIndex]
+        return self.productionList[typeIndex].GetCurrentValue(hour)
 
 
 
