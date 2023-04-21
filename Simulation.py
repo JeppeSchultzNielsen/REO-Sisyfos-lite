@@ -8,9 +8,9 @@ from Options import Options
 import random
 
 class Simulation:
-    def __init__(self, options: Options, dh: DataHolder, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool, saveDiagnosticsFile: bool = True):
-        self.simulationYear = asimulationYear
-        self.climateYear = aclimateYear
+    def __init__(self, options: Options, dh: DataHolder, asaveFilePath: str, asaving: bool, saveDiagnosticsFile: bool = True):
+        self.simulationYear = options.simulationYear
+        self.climateYear = options.climateYear
         self.saveFilePath = asaveFilePath
         self.saving = asaving
 
@@ -82,8 +82,8 @@ class Simulation:
             diagFile = open(self.saveFilePath[:-4]+"Diag.txt", "w+")
             diagFile.write("Information about parameters in run for file " + self.saveFilePath+"\n")
             diagFile.write("Options: \n")
-            diagFile.write("Simulation year: " + str(asimulationYear) + "\n")
-            diagFile.write("Climate year: " + str(aclimateYear) + "\n")
+            diagFile.write("Simulation year: " + str(self.simulationYear) + "\n")
+            diagFile.write("Climate year: " + str(self.climateYear) + "\n")
             diagFile.write("TYNDP report: " + str(dh.demandYear) + "\n")
             diagFile.write("UsePlannedDownTime: " + str(options.usePlannedDownTime) + "\n")
             diagFile.write("UseUnplannedDownTime: " + str(options.useUnplannedDownTime) + "\n")

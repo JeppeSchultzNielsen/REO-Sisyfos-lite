@@ -1,57 +1,44 @@
 import numpy as np
 import os as os
+from Options import Options
 
 #class for holding global data for use in the other classes 
 #also reads TVAR.csv only once, so it does not need to be read by all areas as timeseries are initialized.
 class DataHolder:
-    def __init__(self, simulationYear: int, climateYear: int, demandYear: int, outagePlanPath: str):
+    def __init__(self, op: Options, outagePlanPath: str):
         self.names = ["DK1", "DK2", "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
         self.simpleNames = []
         self.productionTypes = ["PV","WS","WL","CSP","HY","HYlimit","OtherRes","OtherNonRes","ICHP","nonTDProd"]
         self.simpleProductionTypes = []
+        
+        for name in self.names:
+            self.simpleNames.append(name.lower())
+
+        for prod in self.productionTypes:
+            self.simpleProductionTypes.append(prod.lower())
 
         self.outagePlanPath = outagePlanPath
-        self.demandYear = demandYear
+        self.demandYear = op.tyndpYear
 
-        for name in self.names:
-            self.simpleNames.append(name.lower())
-
-        for prod in self.productionTypes:
-            self.simpleProductionTypes.append(prod.lower())
-
-        self.simpleNames = []
-        self.productionTypes = ["PV","WS","WL","CSP","HY","HYlimit","OtherRes","OtherNonRes","ICHP","nonTDProd"]
-        self.simpleProductionTypes = []
-
-        for name in self.names:
-            self.simpleNames.append(name.lower())
-
-        for prod in self.productionTypes:
-            self.simpleProductionTypes.append(prod.lower())
-
-        self.simulationYear = simulationYear
-        self.climateYear = climateYear
+        self.simulationYear = op.simulationYear
+        self.climateYear = op.climateYear
 
         self.productionDict = {}
         self.LoadProductionDict()
 
-        self.prodTimeSeriesArray = []
-        self.demandTimeSeries = []
-
-        self.outageHeaderList = []
-        self.outagePlanMatrix = []
-
-        self.temperatureArray = np.zeros(24*365)
-
         self.outageDict = {}
         self.LoadOutageDict()
 
+        self.temperatureArray = np.zeros(24*365)
+        self.prodTimeSeriesArray = []
+        self.demandTimeSeries = []
         self.InitializeEmptyTimeSeriesArray()
         self.InitializeTimeSeries()
 
         self.constantTimeSeries = np.zeros(8760)+1
 
-
+        self.outageHeaderList = []
+        self.outagePlanMatrix = []
         self.outagePlanLoaded = False
         self.LoadOutagePlan(outagePlanPath)
 
@@ -214,7 +201,6 @@ class DataHolder:
             for j in range(len(self.productionTypes)-1):
                 build.append(np.zeros(24*365))
 
-            build.append(1) #for nonTDprod
             self.prodTimeSeriesArray.append(build)
 
     def InitializeTimeSeries(self):

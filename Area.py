@@ -65,7 +65,7 @@ class Area:
         print("Creating outage plan for " + self.name)
         noPlants = 0
         onMatrix = np.zeros([noPlants, 8760])
-        if(len(self.nonTDProductionList[0]) > 0):
+        if(len(self.nonTDProductionList) > 0):
             noPlants = self.nonTDProductionList[0].GetNumberOfPlants()
             capacities = self.nonTDProductionList[0].GetCapacityArray()
             noUnits = self.nonTDProductionList[0].GetNoUnitsArray()
@@ -75,6 +75,7 @@ class Area:
             for i in range(len(self.nonTDProductionList)-1):
                 i = i+1
                 noPlants = noPlants + self.nonTDProductionList[i].GetNumberOfPlants()
+                capacities = np.concatenate([capacities,self.nonTDProductionList[i].GetCapacityArray()])
                 noUnits = np.concatenate([noUnits,self.nonTDProductionList[i].GetNoUnitsArray()])
                 plantNames = np.concatenate([plantNames,self.nonTDProductionList[i].GetNamesList()])
                 plannedOutages = np.concatenate([plannedOutages,self.nonTDProductionList[i].GetPlannedOutageArray()])
@@ -95,12 +96,12 @@ class Area:
                 for i in range(len(self.productionList)-1):
                     for j in range(8760):
                         demandCopy[j] -= self.productionList[i].GetCurrentValue(j)
-            print(demandCopy)
 
             #now i will iterate over all units. 
             for i in range(noPlants):
                 #first place the units with highest capacities.
                 indexMax = int(np.argmax(unitCapacity))
+
                 outageHours = int(plannedOutages[indexMax]*8760 + 0.5)
                 for j in range(noUnits[indexMax]):
                     #now find the hours in demandCopy where this does least damage; this is where the sum over 
