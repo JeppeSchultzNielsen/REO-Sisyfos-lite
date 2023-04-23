@@ -285,7 +285,6 @@ class DataHolder:
     def GetOutagePlan(self, areaName: str):
         if(self.outagePlanLoaded):
             nameIndex = self.names.index(areaName)
-            factoryIndex = self.outageHeaderList[nameIndex]
             return self.outagePlanMatrix[nameIndex]
         else:
             return np.array([])

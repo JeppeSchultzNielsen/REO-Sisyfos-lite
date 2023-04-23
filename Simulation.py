@@ -8,7 +8,7 @@ from Options import Options
 import random
 
 class Simulation:
-    def __init__(self, options: Options, dh: DataHolder, asaveFilePath: str, asaving: bool, saveDiagnosticsFile: bool = True):
+    def __init__(self, options: Options, dh: DataHolder, asaveFilePath: str, asaving: bool = True, saveDiagnosticsFile: bool = True):
         self.simulationYear = options.simulationYear
         self.climateYear = options.climateYear
         self.saveFilePath = asaveFilePath
@@ -29,15 +29,12 @@ class Simulation:
         #list of productions in all areas
         self.productionList = np.zeros(len(self.nameList))
 
-        #list of sum flow in all areas
-        self.sumFlowList = np.zeros(len(self.nameList))
-
         #initialize the lists
         for i in range(len(self.nameList)):
             if(self.nameList[i] == "DK1" or self.nameList[i] == "DK2"):
-                self.areaList[i] = (AreaDK(options, dh, self.nameList[i],i,self.simulationYear,self.climateYear))
+                self.areaList[i] = (AreaDK(options, dh, self.nameList[i],i))
             else:
-                self.areaList[i] = (Area(options, dh, self.nameList[i],i,self.simulationYear,self.climateYear))
+                self.areaList[i] = (Area(options, dh, self.nameList[i],i))
 
         self.numberOfLines = self.GetNumberOfLines()
 

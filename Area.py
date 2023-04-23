@@ -8,15 +8,15 @@ from NonTDProduction import NonTDProduction
 from Options import Options
 
 class Area:
-    def __init__(self, options: Options, dh: DataHolder, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int):
+    def __init__(self, options: Options, dh: DataHolder, areaName: str, nodeIndex: int):
         self.name = areaName
         self.nodeIndex = nodeIndex
         self.dh = dh
         self.options = options
         print("Preparing area " + self.name)
 
-        self.simulationYear = simulationYear
-        self.climateYear = climateYear
+        self.simulationYear = options.simulationYear
+        self.climateYear = options.climateYear
         
         #initialize arrays to hold timeseries
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
@@ -65,6 +65,8 @@ class Area:
         print("Creating outage plan for " + self.name)
         noPlants = 0
         onMatrix = np.zeros([noPlants, 8760])
+        plantNames = np.array([])
+
         if(len(self.nonTDProductionList) > 0):
             noPlants = self.nonTDProductionList[0].GetNumberOfPlants()
             capacities = self.nonTDProductionList[0].GetCapacityArray()
@@ -149,7 +151,7 @@ class Area:
         remove(outagePlanPath)
         #Move new file
         move(abs_path, outagePlanPath)
-        return onMatrix
+        return (plantNames, onMatrix)
 
     def createAverages(self):
         for i in range(len(self.timeSeriesProductionList)):
@@ -161,8 +163,9 @@ class Area:
     def LoadOrCreateOutagePlan(self):
         if(not self.dh.outagePlanLoaded):
             print("Outage plan not loaded")
-            self.CreateOutagePlan()
-            print("Warning: not implemented, after finished creating outageplan, rerun code.")
+            (header, outagePlan) = self.CreateOutagePlan()
+            for i in range(len(self.nonTDProductionList)):
+                self.nonTDProductionList[i].SetOutagePlan(outagePlan,header.tolist())
         else:
             for i in range(len(self.nonTDProductionList)):
                 self.nonTDProductionList[i].SetOutagePlan(self.dh.GetOutagePlan(self.name),self.dh.GetOutagePlanHeader(self.name))
