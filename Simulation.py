@@ -43,6 +43,12 @@ class Simulation:
 
 
         #initialize the lines
+        self.fromIndeces = 0
+        self.toIndeces = 0
+        self.fromLength = 0
+        self.toLength = 0
+        self.toVec = 0
+        self.fromVec = 0
         self.InitializeLines()
 
         #list to store the value transfered on each line
@@ -137,41 +143,67 @@ class Simulation:
 
             #all sorts of conditions according to the Sisyfos5Data lines sheet.
             if(self.options.storebaelt2 and linename == "Storebaelt"):
-                self.linesList[i] = (Line(splitted[1],splitted[2],float(splitted[3])*2,float(splitted[4])*2,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],float(splitted[3])*2,float(splitted[4])*2,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(linename == "oeresund1-2"):
                 if(self.options.oresundOpen):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],1500*2/3,1300*2/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],1500*2/3,1300*2/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
                 else:
-                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(linename == "oeresund3-4"):
                 if(self.options.oresundOpen):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],1500/3,1300*1/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],1500/3,1300*1/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
                 else:
-                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(linename == "oeresund1"):
                 if(self.options.oresundOpen):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
                 else:
-                    self.linesList[i] = (Line(splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(linename == "oeresund1"):
                 if(self.options.oresundOpen):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
                 else:
-                    self.linesList[i] = (Line(splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(self.options.energyIslandWest and linename == "EnergyIsland-DK1"):
-                self.linesList[i] = (Line(splitted[1],splitted[2],1400,1400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],1400,1400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(self.options.energyIslandWest and linename == "EnergyIsland-BE"):
-                self.linesList[i] = (Line(splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(self.options.energyIslandEast and linename == "Bornholm-DK2"):
-                self.linesList[i] = (Line(splitted[1],splitted[2],1200,1200,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],1200,1200,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(self.options.energyIslandEast and linename == "Bornholm-DE"):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             else:
                 #default; for hardcoded lines that have same value independent of year
-                self.linesList[i] = (Line(splitted[1],splitted[2],float(splitted[3]),float(splitted[4]),name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],float(splitted[3]),float(splitted[4]),name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             line = f.readline() #read next line
             usedNames.append(name)
             i = i+1
+
+        self.fromIndeces = np.zeros((len(self.nameList),30),dtype = 'int')
+        self.toIndeces = np.zeros((len(self.nameList),30),dtype = 'int')
+        self.fromLength = np.zeros((len(self.nameList)),dtype = 'int')
+        self.toLength = np.zeros((len(self.nameList)),dtype = 'int')
+        self.toVec = np.empty(2*self.numberOfLines, dtype='<U15')
+        self.fromVec = np.empty(2*self.numberOfLines, dtype='<U15')
+        F_index = 0
+
+        for i in range(len(self.linesList)):
+            aIndex = self.linesList[i].aIndex
+            bIndex = self.linesList[i].bIndex
+            self.toVec[F_index]=self.linesList[i].b
+            self.fromVec[F_index]=self.linesList[i].a
+            self.toIndeces[bIndex][self.toLength[bIndex]]=F_index
+            self.fromIndeces[aIndex][self.toLength[aIndex]]=F_index
+            self.toLength[bIndex] += 1
+            self.fromLength[aIndex] += 1
+
+            self.toVec[F_index+1]=self.linesList[i].a
+            self.fromVec[F_index+1]=self.linesList[i].b
+            self.toIndeces[aIndex][self.toLength[aIndex]]=F_index+1
+            self.fromIndeces[bIndex][self.fromLength[bIndex]]=F_index+1
+            self.toLength[aIndex] += 1
+            self.fromLength[bIndex] += 1
+            F_index += 2
 
     def GetNumberOfLines(self):
         i = 0
@@ -253,11 +285,9 @@ class Simulation:
     #solves the MaxFlow problem under current conditions. 
     def SolveMaxFlowProblem(self):
         #now, solve Maxflow Problem. I suspect that Pulp likes to minimize all variables from the start, and then adjusts the model until
-        #solution is found. Therefore there is assymmetry in the way it is currently defined, as the "direction" of a line impacts the
-        #results. Therefore all lines should be seperated, such that for the "DK1_to_DK2" line have both "DK1_to_DK2" and "DK2_to_DK1".
+        #solution is found. Therefore there is asymmetry as the "direction" of a line impacts the
+        #results. Therefore all lines should be seperated, such that for example the "DK1_to_DK2" line have both "DK1_to_DK2" and "DK2_to_DK1".
         F_vec = np.empty(shape=2*self.numberOfLines, dtype = LpVariable)
-        toVec = np.empty(2*self.numberOfLines, dtype='<U15')
-        fromVec = np.empty(2*self.numberOfLines, dtype='<U15')
     
         F_index = 0
 
@@ -265,18 +295,16 @@ class Simulation:
         indexMapRev = np.empty(self.numberOfLines, dtype='<U31')
 
         for i in range(len(self.linesList)):
+            aIndex = self.linesList[i].aIndex
+            bIndex = self.linesList[i].bIndex
             #the variables are stored in pulp alphabetically, therefore should randomize first 3 letters of name. 
             #the "a" is necessary because pulp gets confused if variable names start with numbers
             varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName()
             F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapAB())
-            toVec[F_index]=self.linesList[i].GetB()
-            fromVec[F_index]=self.linesList[i].GetA()
             indexMapNonRev[i] = varname
 
             varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName() + "_rev"
             F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapBA())
-            toVec[F_index+1]=self.linesList[i].GetA()
-            fromVec[F_index+1]=self.linesList[i].GetB()
             indexMapRev[i] = varname
             F_index += 2
 
@@ -294,14 +322,26 @@ class Simulation:
             
             build = 0
 
-
+            for j in range(self.fromLength[i]):
+                index = self.fromIndeces[i][j]
+                build -= F_vec[index]
+                index = self.toIndeces[i][j]
+                build += F_vec[index]
+            '''
+            print(count)
+            count = 0
             for j in range(len(F_vec)):
-                if(self.nameList[i] == toVec[j]):
+                if(self.nameList[i] == self.toVec[j]):
                     #flow is into node
                     build += F_vec[j]
-                if(self.nameList[i] == fromVec[j]):
+                    count += 1
+
+                if(self.nameList[i] == self.fromVec[j]):
                     #flow is out of node
                     build += -F_vec[j]
+                    count += 1
+            print(count)
+            '''
 
             if(hasSurplus):
                 #if there is surplus, the flow out of the node should not be greater than the surplus.
@@ -327,6 +367,7 @@ class Simulation:
             self.transferList[i] = 0
 
         #save line output 
+    
         for i in (range(len(model.variables()))):
 
             if("dummy" in model.variables()[i].name):
