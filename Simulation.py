@@ -280,7 +280,21 @@ class Simulation:
             i += 1
 
 
+    def binarySearch(self, L, target):
+        start = 0
+        end = len(L) - 1
 
+        while start <= end:
+            middle = (start + end)// 2
+            #print(middle)
+            midpoint = L[middle]
+            #print(f"{midpoint} {target}")
+            if midpoint > target:
+                end = middle - 1
+            elif midpoint < target:
+                start = middle + 1
+            else:
+                return middle
 
     #solves the MaxFlow problem under current conditions. 
     def SolveMaxFlowProblem(self):
@@ -295,8 +309,6 @@ class Simulation:
         indexMapRev = np.empty(self.numberOfLines, dtype='<U31')
 
         for i in range(len(self.linesList)):
-            aIndex = self.linesList[i].aIndex
-            bIndex = self.linesList[i].bIndex
             #the variables are stored in pulp alphabetically, therefore should randomize first 3 letters of name. 
             #the "a" is necessary because pulp gets confused if variable names start with numbers
             varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName()
@@ -327,21 +339,6 @@ class Simulation:
                 build -= F_vec[index]
                 index = self.toIndeces[i][j]
                 build += F_vec[index]
-            '''
-            print(count)
-            count = 0
-            for j in range(len(F_vec)):
-                if(self.nameList[i] == self.toVec[j]):
-                    #flow is into node
-                    build += F_vec[j]
-                    count += 1
-
-                if(self.nameList[i] == self.fromVec[j]):
-                    #flow is out of node
-                    build += -F_vec[j]
-                    count += 1
-            print(count)
-            '''
 
             if(hasSurplus):
                 #if there is surplus, the flow out of the node should not be greater than the surplus.
@@ -368,22 +365,19 @@ class Simulation:
 
         #save line output 
     
+        shuffledModelNames = np.empty(2*self.numberOfLines, dtype='<U31')
+        shuffledModelValues = np.zeros(2*self.numberOfLines)
         for i in (range(len(model.variables()))):
+            shuffledModelNames[i] = model.variables()[i].name
+            shuffledModelValues[i] = model.variables()[i].value()
 
-            if("dummy" in model.variables()[i].name):
-                continue
-        
-            if(model.variables()[i].value() == 0):
-                continue
+        for i in range(len(indexMapRev)):
+            index = self.binarySearch(shuffledModelNames, indexMapRev[i])
+            self.transferList[i] -= shuffledModelValues[index]
 
-            if(model.variables()[i].name[-4:] == "_rev"):
-                index = np.where(indexMapRev == model.variables()[i].name)[0]
-                self.transferList[index] -= model.variables()[i].value()
-
-            else:
-                index = np.where(indexMapNonRev == model.variables()[i].name)[0]
-                self.transferList[index] += model.variables()[i].value()
-
+        for i in range(len(indexMapNonRev)):
+            index = self.binarySearch(shuffledModelNames, indexMapNonRev[i])
+            self.transferList[i] += shuffledModelValues[index]
 
     #Running the simulation
     def RunSimulation(self, beginHour: int, endHour: int):
