@@ -6,6 +6,7 @@ from pulp import LpMaximize, LpProblem, LpStatus, lpSum, LpVariable, LpMinimize,
 from DataHolder import DataHolder
 from Options import Options
 import random
+import time
 
 class Simulation:
     def __init__(self, options: Options, dh: DataHolder, asaveFilePath: str, asaving: bool = True, saveDiagnosticsFile: bool = True):
@@ -50,6 +51,9 @@ class Simulation:
         self.toVec = 0
         self.fromVec = 0
         self.InitializeLines()
+        self.indexArray = np.empty(2*self.numberOfLines,dtype=int)
+        for i in range(2*self.numberOfLines):
+            self.indexArray[i]=i
 
         #list to store the value transfered on each line
         self.transferList = np.zeros(self.numberOfLines)
@@ -302,6 +306,8 @@ class Simulation:
         #solution is found. Therefore there is asymmetry as the "direction" of a line impacts the
         #results. Therefore all lines should be seperated, such that for example the "DK1_to_DK2" line have both "DK1_to_DK2" and "DK2_to_DK1".
         F_vec = np.empty(shape=2*self.numberOfLines, dtype = LpVariable)
+        shuffledNames = self.indexArray.copy()
+        np.random.shuffle(shuffledNames)
     
         F_index = 0
 
@@ -311,11 +317,11 @@ class Simulation:
         for i in range(len(self.linesList)):
             #the variables are stored in pulp alphabetically, therefore should randomize first 3 letters of name. 
             #the "a" is necessary because pulp gets confused if variable names start with numbers
-            varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName()
+            varname = "a" + f"{shuffledNames[F_index]:03}" + self.linesList[i].GetName()
             F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapAB())
             indexMapNonRev[i] = varname
 
-            varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName() + "_rev"
+            varname = "a" + f"{shuffledNames[F_index+1]:03}" + self.linesList[i].GetName() + "_rev"
             F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapBA())
             indexMapRev[i] = varname
             F_index += 2
@@ -357,36 +363,61 @@ class Simulation:
         model += obj_func
 
         #solve model
+        #model_begin = time.time()
         status = model.solve(GLPK_CMD(msg=False))
+        #print(f"Solve model took {time.time() - model_begin}")
 
         for i in range(len(self.transferList)):
             #reset transferlist
             self.transferList[i] = 0
 
         #save line output 
-    
-        shuffledModelNames = np.empty(2*self.numberOfLines, dtype='<U31')
-        shuffledModelValues = np.zeros(2*self.numberOfLines)
-        for i in (range(len(model.variables()))):
-            shuffledModelNames[i] = model.variables()[i].name
-            shuffledModelValues[i] = model.variables()[i].value()
+        F_index = 0
+        variableList = model.variables()
 
-        for i in range(len(indexMapRev)):
-            index = self.binarySearch(shuffledModelNames, indexMapRev[i])
-            self.transferList[i] -= shuffledModelValues[index]
+        #sometimes, for unknown reasons, a variable called "__dummy" is put in at the front. Remove it.
+        dLen = len(variableList) - len(F_vec)
+        variableList = variableList[dLen:]
 
-        for i in range(len(indexMapNonRev)):
-            index = self.binarySearch(shuffledModelNames, indexMapNonRev[i])
-            self.transferList[i] += shuffledModelValues[index]
+        for i in range(len(self.linesList)):
+            nonRevValue = variableList[shuffledNames[F_index]].value()
+            revValue = variableList[shuffledNames[F_index+1]].value()
+            '''if nonRevValue is None: #this is to debug the "__dummy" problem
+                print(F_vec)
+                print(variableList[shuffledNames[F_index]].name)
+                print(len(variableList))
+                print(len(F_vec))
+                for j in range(len(variableList)):
+                    print(variableList[j].name)
+            if revValue is None:
+                print(F_vec)
+                print(variableList[shuffledNames[F_index+1]].name)
+                print(len(variableList))
+                print(len(F_vec))
+                for j in range(len(variableList)):
+                    print(variableList[j].name)'''
+            self.transferList[i] += nonRevValue
+            self.transferList[i] -= revValue
+            F_index += 2
 
     #Running the simulation
     def RunSimulation(self, beginHour: int, endHour: int):
+        #prev_time = time.time()
         for i in range(beginHour, endHour):
-            print("Starting hour " + str(i))
+            #start_time = time.time()
+            #print("Starting hour " + str(i))
             self.PrepareHour(i)
+            #prep_time = time.time()
+            #print(f"Prepare hour took {prep_time-start_time}")
             self.SolveMaxFlowProblem()
+            #solve_time = time.time()
+            #print(f"Solve maxflow took {solve_time-prep_time}")
             if(self.saving):
                 self.SaveData(i)
+            #ave_time = time.time()
+            #print(f"Save took {save_time-solve_time}")
+            #print(f"Total time is {time.time()-prev_time}")
+            #prev_time = time.time()
 
         if(self.saving):
             self.fileOut.close()
