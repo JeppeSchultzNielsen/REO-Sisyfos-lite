@@ -8,43 +8,39 @@ from NonTDProduction import NonTDProduction
 from Options import Options
 
 class Area:
-    def __init__(self, options: Options, dh: DataHolder, areaName: str, nodeIndex: int, simulationYear: int, climateYear: int):
+    def __init__(self, options: Options, dh: DataHolder, areaName: str, nodeIndex: int):
         self.name = areaName
         self.nodeIndex = nodeIndex
         self.dh = dh
         self.options = options
         print("Preparing area " + self.name)
 
-        self.simulationYear = simulationYear
-        self.climateYear = climateYear
+        self.simulationYear = options.simulationYear
+        self.climateYear = options.climateYear
         
         #initialize arrays to hold timeseries
         self.demandTimeSeries = dh.GetDemandTimeSeries(nodeIndex)
 
         #variables in timeSeries are normalized, need normalizationfactors from SisyfosData, including the non timedependent production (nonTDProd)
-        self.nonTDProd = NonTDProduction(self.options, "nonTDProd"+self.name)
-        self.PVprod = Production(self.options,"PVProd"+self.name)
-        self.WSprod = Production(self.options,"WSProd"+self.name)
-        self.WLprod = Production(self.options,"WLProd"+self.name)
-        self.CSPprod = Production(self.options,"CSPProd"+self.name)
-        self.HYprod = Production(self.options,"HYProd"+self.name)
-        self.HYlimitprod = Production(self.options,"HYlimitProd"+self.name)
-        self.OtherResProd = Production(self.options,"OtherResProd"+self.name)
-        self.OtherNonResProd = Production(self.options,"OtherNonResProd"+self.name)
-        self.ICHP = Production(self.options,"ICHPProd"+self.name)
         self.demand = Production(self.options,"demand"+self.name)
 
-        self.productionList = [self.PVprod,self.WSprod,self.WLprod,self.CSPprod,self.HYprod,self.HYlimitprod,self.OtherResProd,self.OtherNonResProd,self.ICHP,self.nonTDProd]
+        self.productionList = []
+        self.productionNames = []
+        self.nonTDProductionList = []
+        self.nonTDProductionNames = []
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
-
-        self.nonTDProdTimeseries = np.zeros(8760)
+        self.averages = np.zeros(len(self.timeSeriesProductionList))
+        self.createAverages()
 
         self.InitializeDemand()
         self.InitializeFactors()
 
         self.LoadOrCreateOutagePlan()
+
+        self.productionList = self.productionList+self.nonTDProductionList
+        self.productionNames = self.productionNames+self.nonTDProductionNames
 
     def GetDiagString(self):
         build = "Name\tType\tCapacity\tNoUnits\tPlannedOutage\tUnplannedOutage\tOutageTime\tHeatDep\tVariation\n"
@@ -67,54 +63,66 @@ class Area:
 
     def CreateOutagePlan(self):
         print("Creating outage plan for " + self.name)
-        #When creating an outage plan, we're creating a pseudo time series for the non-time dependent productions. So what i want is to
-        #create an array with the dimensions of number of plants * number of hours.
-        noPlants = self.nonTDProd.GetNumberOfPlants()
-
-        capacities = self.nonTDProd.GetCapacityArray()
-        noUnits = self.nonTDProd.GetNoUnitsArray()
-        plantNames = self.nonTDProd.GetNamesList()
-        plannedOutages = self.nonTDProd.GetPlannedOutageArray()
-
-        unitCapacity = capacities/noUnits
-
-        #the matrix that i'm creating should countain how many units of each plant is on in each hour.
+        noPlants = 0
         onMatrix = np.zeros([noPlants, 8760])
-        for i in range(8760):
-            for j in range(noPlants):
-                onMatrix[j][i] = noUnits[j]
+        plantNames = np.array([])
 
-        demandCopy = self.demand.GetCurrentValue() * self.demandTimeSeries
+        if(len(self.nonTDProductionList) > 0):
+            noPlants = self.nonTDProductionList[0].GetNumberOfPlants()
+            capacities = self.nonTDProductionList[0].GetCapacityArray()
+            noUnits = self.nonTDProductionList[0].GetNoUnitsArray()
+            plantNames = self.nonTDProductionList[0].GetNamesList()
+            plannedOutages = self.nonTDProductionList[0].GetPlannedOutageArray()
 
-        #now i will iterate over all units. 
-        for i in range(noPlants):
-            #first place the units with highest capacities.
-            indexMax = int(np.argmax(unitCapacity))
-            outageHours = int(plannedOutages[indexMax]*8760 + 0.5)
-            for j in range(noUnits[indexMax]):
-                #now find the hours in demandCopy where this does least damage; this is where the sum over 
-                #the outage hours is smallest (least demand)
-                smallestIndex = 0
-                smallest = 10e9
-                for k in range(8760 - outageHours):
-                    currentSum = sum( demandCopy[k:k+outageHours] )
-                    if( currentSum < smallest ):
-                        smallest = currentSum
-                        smallestIndex = k
-                
-                #adjust the on-matrix accordingly. 
-                for k in range(outageHours):
-                        onMatrix[indexMax][smallestIndex+k] -= 1
-                        #adjust the demandCopy accordingly - surplus demand falls because a unit is off now - equivalent to demand rising. 
-                        demandCopy[smallestIndex+k] += unitCapacity[indexMax]
-            #having solved the problem for this unitCapacity, we can set it to zero and do it over again with next highest unit capacity. 
-            unitCapacity[indexMax] = -10e9
+            for i in range(len(self.nonTDProductionList)-1):
+                i = i+1
+                noPlants = noPlants + self.nonTDProductionList[i].GetNumberOfPlants()
+                capacities = np.concatenate([capacities,self.nonTDProductionList[i].GetCapacityArray()])
+                noUnits = np.concatenate([noUnits,self.nonTDProductionList[i].GetNoUnitsArray()])
+                plantNames = np.concatenate([plantNames,self.nonTDProductionList[i].GetNamesList()])
+                plannedOutages = np.concatenate([plannedOutages,self.nonTDProductionList[i].GetPlannedOutageArray()])
 
-        #we can now create a time series for the nonTDProd
-        unitCapacity = capacities/noUnits
-        for i in range(8760):
-            for j in range(noPlants):
-                self.nonTDProdTimeseries[i] += onMatrix[j][i] * unitCapacity[j]
+            unitCapacity = capacities/noUnits
+
+            #the matrix that i'm creating should countain how many units of each plant is on in each hour.
+            onMatrix = np.zeros([noPlants, 8760])
+            for i in range(8760):
+                for j in range(noPlants):
+                    onMatrix[j][i] = noUnits[j]
+
+            demandCopy = np.zeros(8760)
+            for i in range(8760):
+                demandCopy[i] += self.demand.GetCurrentValue(i)
+
+            if(self.options.useVariations):
+                for i in range(len(self.productionList)-1):
+                    for j in range(8760):
+                        demandCopy[j] -= self.productionList[i].GetCurrentValue(j)
+
+            #now i will iterate over all units. 
+            for i in range(noPlants):
+                #first place the units with highest capacities.
+                indexMax = int(np.argmax(unitCapacity))
+
+                outageHours = int(plannedOutages[indexMax]*8760 + 0.5)
+                for j in range(noUnits[indexMax]):
+                    #now find the hours in demandCopy where this does least damage; this is where the sum over 
+                    #the outage hours is smallest (least demand)
+                    smallestIndex = 0
+                    smallest = 10e9
+                    for k in range(8760 - outageHours):
+                        currentSum = sum( demandCopy[k:k+outageHours] )
+                        if( currentSum < smallest ):
+                            smallest = currentSum
+                            smallestIndex = k
+                    
+                    #adjust the on-matrix accordingly. 
+                    for k in range(outageHours):
+                            onMatrix[indexMax][smallestIndex+k] -= 1
+                            #adjust the demandCopy accordingly - surplus demand falls because a unit is off now - equivalent to demand rising. 
+                            demandCopy[smallestIndex+k] += unitCapacity[indexMax]
+                #having solved the problem for this unitCapacity, we can set it to zero and do it over again with next highest unit capacity. 
+                unitCapacity[indexMax] = -10e9
 
         #save this outage plan for future use. 
         outagePlanPath = self.dh.GetOutagePlanPath()
@@ -143,15 +151,24 @@ class Area:
         remove(outagePlanPath)
         #Move new file
         move(abs_path, outagePlanPath)
-        return onMatrix
+        return (plantNames, onMatrix)
+
+    def createAverages(self):
+        for i in range(len(self.timeSeriesProductionList)):
+            self.averages[i] = np.mean(self.timeSeriesProductionList[i])
+            if(self.averages[i] == 0):
+                self.averages[i] = 1 #avoid division with zero
 
 
     def LoadOrCreateOutagePlan(self):
         if(not self.dh.outagePlanLoaded):
             print("Outage plan not loaded")
-            self.nonTDProd.SetOutagePlan(self.CreateOutagePlan(),["Warning: not implemented, after finished creating outageplan, rerun code."])
+            (header, outagePlan) = self.CreateOutagePlan()
+            for i in range(len(self.nonTDProductionList)):
+                self.nonTDProductionList[i].SetOutagePlan(outagePlan,header.tolist())
         else:
-            self.nonTDProd.SetOutagePlan(self.dh.GetOutagePlan(self.name),self.dh.GetOutagePlanHeader(self.name))
+            for i in range(len(self.nonTDProductionList)):
+                self.nonTDProductionList[i].SetOutagePlan(self.dh.GetOutagePlan(self.name),self.dh.GetOutagePlanHeader(self.name))
 
 
 
@@ -168,6 +185,8 @@ class Area:
                     cap = 0
             noUnits = 1
             type = factories[i].type
+            if(cap == 0):
+                continue
             if(factories[i].noUnits == "-"):
                 if(self.dh.outageDict[type].unitSize < 0.0000001):
                     noUnits = 1 #avoid division by zero
@@ -180,34 +199,51 @@ class Area:
             outageTime = self.dh.outageDict[type].outageTime
             heatDep = self.dh.outageDict[type].heatDep
 
+            type = type
+
             if(factories[i].variation == "-" or factories[i].variation == "No_RoR"):
-                self.nonTDProd.AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation)
+                if(not type+"_"+self.name in self.nonTDProductionNames):
+                        #create new productiontype with this name.
+                        self.nonTDProductionList.append(NonTDProduction(self.options,type+"_"+self.name))
+                        self.nonTDProductionList[-1].SetHeatBinding(self.dh.GetTemperatureArray())
+                        self.nonTDProductionNames.append(type+"_"+self.name)
+                prodListIndex = self.nonTDProductionNames.index(type+"_"+self.name,0,len(self.nonTDProductionNames))
+                self.nonTDProductionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
             else: 
                 typeArea = factories[i].variation.split("_")
                 if(len(typeArea) == 1):
                     prodType = typeArea[0]
-                    prodIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation)
+                    varIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
+                    if(not type+"_"+self.name in self.productionNames):
+                        #create new productiontype with this name.
+                        self.productionList.append(Production(self.options,type+"_"+self.name))
+                        self.productionNames.append(type+"_"+self.name)
+                    prodListIndex = self.productionNames.index(type+"_"+self.name,0,len(self.productionNames))
+                    self.productionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.timeSeriesProductionList[varIndex])
                 else: 
                     prodType = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
-                    prodIndex = self.dh.GetProductionIndex(prodType)
+                    varIndex = self.dh.GetProductionIndex(prodType)
                     areaIndex = self.dh.GetAreaIndex(area)
                     if(not areaIndex == self.nodeIndex):
                         #the timeseries for this node is the same is the timeseries for a different node; update.
-                        self.timeSeriesProductionList[prodIndex] = self.dh.prodTimeSeriesArray[areaIndex][prodIndex]
-                        print("For production of " + prodType + " in " + self.name + " using time series from " + area)
-                    prodType = typeArea[0].rstrip()
-                    prodIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
-                    self.productionList[prodIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation)
-                    
-        self.nonTDProd.SetHeatBinding(self.dh.GetTemperatureArray())
+                        print("For production of " + name + " in " + self.name + " using time series from " + area)
+                    if(not type+"_"+self.name in self.productionNames):
+                        #create new productiontype with this name.
+                        self.productionList.append(Production(self.options,type+"_"+self.name))
+                        self.productionNames.append(type+"_"+self.name)
+                    prodListIndex = self.productionNames.index(type+"_"+self.name,0,len(self.productionNames))
+                    self.productionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.dh.prodTimeSeriesArray[areaIndex][varIndex])
+
         for prod in self.productionList:
+            prod.CreateArrays()
+        for prod in self.nonTDProductionList:
             prod.CreateArrays()
 
 
     def PrepareHour(self, hour: int):
-        self.nonTDProd.PrepareHour(hour)
+        for prod in self.productionList:
+            prod.PrepareHour(hour)
     
 
 
@@ -218,10 +254,7 @@ class Area:
 
     #must be able to return the production for a given type for a given hour
     def GetProduction(self, hour: int, typeIndex: int):
-        if(typeIndex == (len(self.timeSeriesProductionList)-1)):
-            return self.nonTDProd.currentValue
-        else:
-            return self.timeSeriesProductionList[typeIndex][hour]*self.productionList[typeIndex].GetCurrentValue()
+        return self.productionList[typeIndex].GetCurrentValue(hour)
 
 
 
@@ -267,12 +300,12 @@ class Area:
 
         demand = demandFactor * relativeFactor
 
-        self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand", self.name + "demand")
+        self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand", self.name + "demand", self.demandTimeSeries)
         self.demand.CreateArrays()
 
-    def GetDemand(self, hour: int, currentAreaIndex: int):
+    def GetDemand(self, hour: int):
         #demand in TVAR is given in units such that it sums to 1TWh over a year. So it is units of MWh. 
         #the factor is TWh. Means if we just multiply the timeSeries number with the factor, we get the
         #right total demand.
-        Final_demand = self.demand.GetCurrentValue() * self.demandTimeSeries[hour]
+        Final_demand = self.demand.GetCurrentValue(hour)
         return Final_demand

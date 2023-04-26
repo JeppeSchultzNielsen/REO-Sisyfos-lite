@@ -19,6 +19,7 @@ class NonTDProduction(Production):
         self.nameList = []
         self.typesList = []
         self.variationList = []
+        self.variationColList = []
 
         self.capacityArray = 0
         self.unplannedOutageArray = 0
@@ -67,6 +68,9 @@ class NonTDProduction(Production):
     def GetCurrentUnplannedOutage(self):
         return self.currentUnplannedOutage
     
+    def GetCurrentValue(self, hour):
+        return self.currentValue
+    
     def InitializeFailedUnits(self, startingHour: int):
         #at the start of the simulation, all units should by some probability be failed; assume the odds that they are failed
         #is their %downtime.
@@ -81,7 +85,7 @@ class NonTDProduction(Production):
 
         self.failedUnitsInitialized = True
 
-    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str, variation: str):
+    def AddProducer(self, name: str, capacity: float, noUnits: int, unplannedOutage: float, plannedOutage: float, outageTime: int, heatDependence: float, type: str, variation: str, variationCol: np.array):
         self.nameList.append(name)
         self.capacityList.append(capacity)
         self.unplannedOutageList.append(unplannedOutage)
@@ -91,12 +95,14 @@ class NonTDProduction(Production):
         self.noUnitsList.append(noUnits)
         self.typesList.append(type)
         self.variationList.append(variation)
+        self.variationColList.append(variationCol)
 
 
     def PrepareHour(self, hour: int):
         #if this is the first hour, initialize failedUnits
         if(not self.failedUnitsInitialized):
             self.InitializeFailedUnits(hour)
+        
 
         #iterate over all plants to get the total production in this hour
         self.currentValue = 0; 

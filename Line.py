@@ -1,9 +1,12 @@
 import random
+from DataHolder import DataHolder
 
 class Line:
-    def __init__(self, a: str, b: str, maxCapAB: float, maxCapBA: float, name: str, noUnits: int, failureProbability: float, avgDowntime: float):
+    def __init__(self, dh: DataHolder, a: str, b: str, maxCapAB: float, maxCapBA: float, name: str, noUnits: int, failureProbability: float, avgDowntime: float):
         self.a = a
         self.b = b
+        self.aIndex = dh.names.index(a)
+        self.bIndex = dh.names.index(b)
         self.maxCapAB = maxCapAB
         self.maxCapBA = maxCapBA
         self.name = name

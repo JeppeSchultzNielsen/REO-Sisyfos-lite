@@ -8,9 +8,9 @@ from Options import Options
 import random
 
 class Simulation:
-    def __init__(self, options: Options, dh: DataHolder, asimulationYear: int, aclimateYear: int, asaveFilePath: str, asaving: bool, saveDiagnosticsFile: bool = True):
-        self.simulationYear = asimulationYear
-        self.climateYear = aclimateYear
+    def __init__(self, options: Options, dh: DataHolder, asaveFilePath: str, asaving: bool = True, saveDiagnosticsFile: bool = True):
+        self.simulationYear = options.simulationYear
+        self.climateYear = options.climateYear
         self.saveFilePath = asaveFilePath
         self.saving = asaving
 
@@ -29,15 +29,12 @@ class Simulation:
         #list of productions in all areas
         self.productionList = np.zeros(len(self.nameList))
 
-        #list of sum flow in all areas
-        self.sumFlowList = np.zeros(len(self.nameList))
-
         #initialize the lists
         for i in range(len(self.nameList)):
             if(self.nameList[i] == "DK1" or self.nameList[i] == "DK2"):
-                self.areaList[i] = (AreaDK(options, dh, self.nameList[i],i,self.simulationYear,self.climateYear))
+                self.areaList[i] = (AreaDK(options, dh, self.nameList[i],i))
             else:
-                self.areaList[i] = (Area(options, dh, self.nameList[i],i,self.simulationYear,self.climateYear))
+                self.areaList[i] = (Area(options, dh, self.nameList[i],i))
 
         self.numberOfLines = self.GetNumberOfLines()
 
@@ -46,26 +43,38 @@ class Simulation:
 
 
         #initialize the lines
+        self.fromIndeces = 0
+        self.toIndeces = 0
+        self.fromLength = 0
+        self.toLength = 0
+        self.toVec = 0
+        self.fromVec = 0
         self.InitializeLines()
 
         #list to store the value transfered on each line
         self.transferList = np.zeros(self.numberOfLines)
 
         #we wish to know how much production there is of each type in each node.
-        self.productionTypeNames = dh.productionTypes
-        self.productionTypeMatrix = np.zeros([len(self.nameList), len(self.productionTypeNames)])
+        self.productionTypeNames = []
+        longestProd = 0
+        for area in self.areaList:
+            self.productionTypeNames.append(area.productionNames)
+            if(len(area.productionNames) > longestProd):
+                longestProd = len(area.productionNames)
+        self.productionTypeMatrix = np.zeros([len(self.areaList),longestProd])
 
         #create file for saving output
         if(self.saving):
             self.fileOut = open(self.saveFilePath, "w+")
             #create header
             self.fileOut.write("hour"+"\t")
-            for name in self.nameList:
+            for i in range(len(self.nameList)):
+                name = self.nameList[i]
                 self.fileOut.write(name + "_" + "demand" + "\t")
                 self.fileOut.write(name + "_" + "surplus" + "\t")
                 self.fileOut.write(name + "_" + "EENS" + "\t")
-                for prodName in self.productionTypeNames:
-                    self.fileOut.write(name + "_" + prodName + "\t")
+                for prodname in self.productionTypeNames[i]:
+                    self.fileOut.write(prodname + "\t")
                 self.fileOut.write(name + "_"+"plannedOutage" + "\t")
                 self.fileOut.write(name + "_"+"unplannedOutage" + "\t")
             for line in self.linesList:
@@ -76,8 +85,8 @@ class Simulation:
             diagFile = open(self.saveFilePath[:-4]+"Diag.txt", "w+")
             diagFile.write("Information about parameters in run for file " + self.saveFilePath+"\n")
             diagFile.write("Options: \n")
-            diagFile.write("Simulation year: " + str(asimulationYear) + "\n")
-            diagFile.write("Climate year: " + str(aclimateYear) + "\n")
+            diagFile.write("Simulation year: " + str(self.simulationYear) + "\n")
+            diagFile.write("Climate year: " + str(self.climateYear) + "\n")
             diagFile.write("TYNDP report: " + str(dh.demandYear) + "\n")
             diagFile.write("UsePlannedDownTime: " + str(options.usePlannedDownTime) + "\n")
             diagFile.write("UseUnplannedDownTime: " + str(options.useUnplannedDownTime) + "\n")
@@ -110,7 +119,7 @@ class Simulation:
 
     #helper function for initializing all lines
     def InitializeLines(self):
-        f = open("data/linedata2040.csv","r")
+        f = open("data/linedata"+str(self.simulationYear)+".csv","r")
         line = f.readline() #skip header
         line = f.readline() #read 1st line
         i = 0
@@ -134,41 +143,67 @@ class Simulation:
 
             #all sorts of conditions according to the Sisyfos5Data lines sheet.
             if(self.options.storebaelt2 and linename == "Storebaelt"):
-                self.linesList[i] = (Line(splitted[1],splitted[2],float(splitted[3])*2,float(splitted[4])*2,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],float(splitted[3])*2,float(splitted[4])*2,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(linename == "oeresund1-2"):
                 if(self.options.oresundOpen):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],1500*2/3,1300*2/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],1500*2/3,1300*2/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
                 else:
-                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(linename == "oeresund3-4"):
                 if(self.options.oresundOpen):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],1500/3,1300*1/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],1500/3,1300*1/3,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
                 else:
-                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(linename == "oeresund1"):
                 if(self.options.oresundOpen):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
                 else:
-                    self.linesList[i] = (Line(splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(linename == "oeresund1"):
                 if(self.options.oresundOpen):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],0,0,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
                 else:
-                    self.linesList[i] = (Line(splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],15/13*400,400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(self.options.energyIslandWest and linename == "EnergyIsland-DK1"):
-                self.linesList[i] = (Line(splitted[1],splitted[2],1400,1400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],1400,1400,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(self.options.energyIslandWest and linename == "EnergyIsland-BE"):
-                self.linesList[i] = (Line(splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(self.options.energyIslandEast and linename == "Bornholm-DK2"):
-                self.linesList[i] = (Line(splitted[1],splitted[2],1200,1200,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],1200,1200,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             elif(self.options.energyIslandEast and linename == "Bornholm-DE"):
-                    self.linesList[i] = (Line(splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                    self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],2000,2000,name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             else:
                 #default; for hardcoded lines that have same value independent of year
-                self.linesList[i] = (Line(splitted[1],splitted[2],float(splitted[3]),float(splitted[4]),name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
+                self.linesList[i] = (Line(self.dh,splitted[1],splitted[2],float(splitted[3]),float(splitted[4]),name, int(splitted[5]), float(splitted[6]), int(splitted[7])))
             line = f.readline() #read next line
             usedNames.append(name)
             i = i+1
+
+        self.fromIndeces = np.zeros((len(self.nameList),30),dtype = 'int')
+        self.toIndeces = np.zeros((len(self.nameList),30),dtype = 'int')
+        self.fromLength = np.zeros((len(self.nameList)),dtype = 'int')
+        self.toLength = np.zeros((len(self.nameList)),dtype = 'int')
+        self.toVec = np.empty(2*self.numberOfLines, dtype='<U15')
+        self.fromVec = np.empty(2*self.numberOfLines, dtype='<U15')
+        F_index = 0
+
+        for i in range(len(self.linesList)):
+            aIndex = self.linesList[i].aIndex
+            bIndex = self.linesList[i].bIndex
+            self.toVec[F_index]=self.linesList[i].b
+            self.fromVec[F_index]=self.linesList[i].a
+            self.toIndeces[bIndex][self.toLength[bIndex]]=F_index
+            self.fromIndeces[aIndex][self.toLength[aIndex]]=F_index
+            self.toLength[bIndex] += 1
+            self.fromLength[aIndex] += 1
+
+            self.toVec[F_index+1]=self.linesList[i].a
+            self.fromVec[F_index+1]=self.linesList[i].b
+            self.toIndeces[aIndex][self.toLength[aIndex]]=F_index+1
+            self.fromIndeces[bIndex][self.fromLength[bIndex]]=F_index+1
+            self.toLength[aIndex] += 1
+            self.fromLength[bIndex] += 1
+            F_index += 2
 
     def GetNumberOfLines(self):
         i = 0
@@ -189,24 +224,19 @@ class Simulation:
 
 
     def PrepareHour(self, hour: int):
-        i = 0
-        for area in self.areaList:
+        for i in range(len(self.areaList)):
+            area = self.areaList[i]
             area.PrepareHour(hour)
-            currentAreaIndex = i
             totalProduction = 0
-            j = 0
-            for prodType in self.productionTypeNames:
+
+            for j in range(len(self.productionTypeNames[i])):
                 prod = area.GetProduction(hour, j)
                 totalProduction += prod
                 self.productionTypeMatrix[i][j] = prod
-                j += 1
 
             self.productionList[i] = totalProduction
-            self.demandList[i] = area.GetDemand(hour, currentAreaIndex)
+            self.demandList[i] = area.GetDemand(hour)
 
-            i += 1
-
-        i = 0
         for line in self.linesList:
             line.PrepareHour(hour)
 
@@ -221,7 +251,6 @@ class Simulation:
             self.fileOut.write(f"{self.demandList[i]:.3f}" + "\t")
             self.fileOut.write(f"{self.productionList[i]-self.demandList[i]:.3f}" + "\t")
 
-            j = 0
             EENS = self.productionList[i]-self.demandList[i]
             for j in range(len(self.linesList)):
                 if(name == self.linesList[j].GetA()):
@@ -234,13 +263,16 @@ class Simulation:
                 EENS = 0
             self.fileOut.write(f"{EENS:.3f}" + "\t")
 
-            j = 0
-            for prodName in self.productionTypeNames:
+            currentPlanned = 0
+            currentUnplanned = 0
+            for j in range(len(self.productionTypeNames[i])):
                 self.fileOut.write(f"{self.productionTypeMatrix[i][j]:.3f}" + "\t")
-                j += 1
+                currentPlanned += self.areaList[i].productionList[j].GetCurrentPlannedOutage()
+                currentUnplanned += self.areaList[i].productionList[j].GetCurrentUnplannedOutage()
 
-            self.fileOut.write(f"{self.areaList[i].nonTDProd.GetCurrentPlannedOutage():.3f}" + "\t")
-            self.fileOut.write(f"{self.areaList[i].nonTDProd.GetCurrentUnplannedOutage():.3f}" + "\t")
+
+            self.fileOut.write(f"{currentPlanned}" + "\t")
+            self.fileOut.write(f"{currentUnplanned}" + "\t")
             i += 1
         i = 0
         for line in self.linesList:
@@ -248,16 +280,28 @@ class Simulation:
             i += 1
 
 
+    def binarySearch(self, L, target):
+        start = 0
+        end = len(L) - 1
 
+        while start <= end:
+            middle = (start + end)// 2
+            #print(middle)
+            midpoint = L[middle]
+            #print(f"{midpoint} {target}")
+            if midpoint > target:
+                end = middle - 1
+            elif midpoint < target:
+                start = middle + 1
+            else:
+                return middle
 
     #solves the MaxFlow problem under current conditions. 
     def SolveMaxFlowProblem(self):
         #now, solve Maxflow Problem. I suspect that Pulp likes to minimize all variables from the start, and then adjusts the model until
-        #solution is found. Therefore there is assymmetry in the way it is currently defined, as the "direction" of a line impacts the
-        #results. Therefore all lines should be seperated, such that for the "DK1_to_DK2" line have both "DK1_to_DK2" and "DK2_to_DK1".
+        #solution is found. Therefore there is asymmetry as the "direction" of a line impacts the
+        #results. Therefore all lines should be seperated, such that for example the "DK1_to_DK2" line have both "DK1_to_DK2" and "DK2_to_DK1".
         F_vec = np.empty(shape=2*self.numberOfLines, dtype = LpVariable)
-        toVec = np.empty(2*self.numberOfLines, dtype='<U15')
-        fromVec = np.empty(2*self.numberOfLines, dtype='<U15')
     
         F_index = 0
 
@@ -269,14 +313,10 @@ class Simulation:
             #the "a" is necessary because pulp gets confused if variable names start with numbers
             varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName()
             F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapAB())
-            toVec[F_index]=self.linesList[i].GetB()
-            fromVec[F_index]=self.linesList[i].GetA()
             indexMapNonRev[i] = varname
 
             varname = "a" + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + self.linesList[i].GetName() + "_rev"
             F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapBA())
-            toVec[F_index+1]=self.linesList[i].GetA()
-            fromVec[F_index+1]=self.linesList[i].GetB()
             indexMapRev[i] = varname
             F_index += 2
 
@@ -294,14 +334,11 @@ class Simulation:
             
             build = 0
 
-
-            for j in range(len(F_vec)):
-                if(self.nameList[i] == toVec[j]):
-                    #flow is into node
-                    build += F_vec[j]
-                if(self.nameList[i] == fromVec[j]):
-                    #flow is out of node
-                    build += -F_vec[j]
+            for j in range(self.fromLength[i]):
+                index = self.fromIndeces[i][j]
+                build -= F_vec[index]
+                index = self.toIndeces[i][j]
+                build += F_vec[index]
 
             if(hasSurplus):
                 #if there is surplus, the flow out of the node should not be greater than the surplus.
@@ -327,22 +364,20 @@ class Simulation:
             self.transferList[i] = 0
 
         #save line output 
+    
+        shuffledModelNames = np.empty(2*self.numberOfLines, dtype='<U31')
+        shuffledModelValues = np.zeros(2*self.numberOfLines)
         for i in (range(len(model.variables()))):
+            shuffledModelNames[i] = model.variables()[i].name
+            shuffledModelValues[i] = model.variables()[i].value()
 
-            if("dummy" in model.variables()[i].name):
-                continue
-        
-            if(model.variables()[i].value() == 0):
-                continue
+        for i in range(len(indexMapRev)):
+            index = self.binarySearch(shuffledModelNames, indexMapRev[i])
+            self.transferList[i] -= shuffledModelValues[index]
 
-            if(model.variables()[i].name[-4:] == "_rev"):
-                index = np.where(indexMapRev == model.variables()[i].name)[0]
-                self.transferList[index] -= model.variables()[i].value()
-
-            else:
-                index = np.where(indexMapNonRev == model.variables()[i].name)[0]
-                self.transferList[index] += model.variables()[i].value()
-
+        for i in range(len(indexMapNonRev)):
+            index = self.binarySearch(shuffledModelNames, indexMapNonRev[i])
+            self.transferList[i] += shuffledModelValues[index]
 
     #Running the simulation
     def RunSimulation(self, beginHour: int, endHour: int):
