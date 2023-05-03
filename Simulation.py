@@ -48,9 +48,8 @@ class Simulation:
         self.toIndeces = 0
         self.fromLength = 0
         self.toLength = 0
-        self.toVec = 0
-        self.fromVec = 0
         self.InitializeLines()
+        self.InitializeToFrom()
         self.indexArray = np.empty(2*self.numberOfLines,dtype=int)
         for i in range(2*self.numberOfLines):
             self.indexArray[i]=i
@@ -83,9 +82,10 @@ class Simulation:
                 self.fileOut.write(name + "_"+"unplannedOutage" + "\t")
             for line in self.linesList:
                 self.fileOut.write(line.GetName() + "\t")
+            for line in self.linesList:
+                self.fileOut.write(line.GetName() +"_units"+ "\t")
         
         if(saveDiagnosticsFile):
-            print(self.saveFilePath[:-4]+"Diag.txt")
             diagFile = open(self.saveFilePath[:-4]+"Diag.txt", "w+")
             diagFile.write("Information about parameters in run for file " + self.saveFilePath+"\n")
             diagFile.write("Options: \n")
@@ -183,26 +183,21 @@ class Simulation:
             usedNames.append(name)
             i = i+1
 
+    def InitializeToFrom(self):
         self.fromIndeces = np.zeros((len(self.nameList),30),dtype = 'int')
         self.toIndeces = np.zeros((len(self.nameList),30),dtype = 'int')
         self.fromLength = np.zeros((len(self.nameList)),dtype = 'int')
         self.toLength = np.zeros((len(self.nameList)),dtype = 'int')
-        self.toVec = np.empty(2*self.numberOfLines, dtype='<U15')
-        self.fromVec = np.empty(2*self.numberOfLines, dtype='<U15')
         F_index = 0
 
         for i in range(len(self.linesList)):
             aIndex = self.linesList[i].aIndex
             bIndex = self.linesList[i].bIndex
-            self.toVec[F_index]=self.linesList[i].b
-            self.fromVec[F_index]=self.linesList[i].a
             self.toIndeces[bIndex][self.toLength[bIndex]]=F_index
             self.fromIndeces[aIndex][self.toLength[aIndex]]=F_index
             self.toLength[bIndex] += 1
             self.fromLength[aIndex] += 1
 
-            self.toVec[F_index+1]=self.linesList[i].a
-            self.fromVec[F_index+1]=self.linesList[i].b
             self.toIndeces[aIndex][self.toLength[aIndex]]=F_index+1
             self.fromIndeces[bIndex][self.fromLength[bIndex]]=F_index+1
             self.toLength[aIndex] += 1
@@ -282,23 +277,8 @@ class Simulation:
         for line in self.linesList:
             self.fileOut.write(f"{self.transferList[i]:.3f}" + "\t")
             i += 1
-
-
-    def binarySearch(self, L, target):
-        start = 0
-        end = len(L) - 1
-
-        while start <= end:
-            middle = (start + end)// 2
-            #print(middle)
-            midpoint = L[middle]
-            #print(f"{midpoint} {target}")
-            if midpoint > target:
-                end = middle - 1
-            elif midpoint < target:
-                start = middle + 1
-            else:
-                return middle
+        for line in self.linesList:
+            self.fileOut.write(f"{line.noUnits - line.failedUnits}" + "\t")
 
     #solves the MaxFlow problem under current conditions. 
     def SolveMaxFlowProblem(self):
@@ -311,19 +291,14 @@ class Simulation:
     
         F_index = 0
 
-        indexMapNonRev = np.empty(self.numberOfLines, dtype='<U31')
-        indexMapRev = np.empty(self.numberOfLines, dtype='<U31')
-
         for i in range(len(self.linesList)):
             #the variables are stored in pulp alphabetically, therefore should randomize first 3 letters of name. 
             #the "a" is necessary because pulp gets confused if variable names start with numbers
             varname = "a" + f"{shuffledNames[F_index]:03}" + self.linesList[i].GetName()
             F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapAB())
-            indexMapNonRev[i] = varname
 
             varname = "a" + f"{shuffledNames[F_index+1]:03}" + self.linesList[i].GetName() + "_rev"
             F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapBA())
-            indexMapRev[i] = varname
             F_index += 2
 
 
@@ -332,7 +307,7 @@ class Simulation:
         obj_func = 0
 
         #find demand and production in each node. 
-        for i in range(len(self.demandList)):
+        for i in range(len(self.nameList)):
             hasSurplus = True
             surplus = self.productionList[i] - self.demandList[i]
             if(surplus < 0):
@@ -367,6 +342,7 @@ class Simulation:
         status = model.solve(GLPK_CMD(msg=False))
         #print(f"Solve model took {time.time() - model_begin}")
 
+        #reset transferList
         for i in range(len(self.transferList)):
             #reset transferlist
             self.transferList[i] = 0
@@ -382,20 +358,7 @@ class Simulation:
         for i in range(len(self.linesList)):
             nonRevValue = variableList[shuffledNames[F_index]].value()
             revValue = variableList[shuffledNames[F_index+1]].value()
-            '''if nonRevValue is None: #this is to debug the "__dummy" problem
-                print(F_vec)
-                print(variableList[shuffledNames[F_index]].name)
-                print(len(variableList))
-                print(len(F_vec))
-                for j in range(len(variableList)):
-                    print(variableList[j].name)
-            if revValue is None:
-                print(F_vec)
-                print(variableList[shuffledNames[F_index+1]].name)
-                print(len(variableList))
-                print(len(F_vec))
-                for j in range(len(variableList)):
-                    print(variableList[j].name)'''
+
             self.transferList[i] += nonRevValue
             self.transferList[i] -= revValue
             F_index += 2
@@ -405,7 +368,8 @@ class Simulation:
         #prev_time = time.time()
         for i in range(beginHour, endHour):
             #start_time = time.time()
-            #print("Starting hour " + str(i))
+            if(i%100 == 0):
+                print(f"{self.saveFilePath}: starting hour {i}")
             self.PrepareHour(i)
             #prep_time = time.time()
             #print(f"Prepare hour took {prep_time-start_time}")

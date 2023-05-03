@@ -1,0 +1,550 @@
+Information about parameters in run for file test.txt
+Options: 
+Simulation year: 2035
+Climate year: 1985
+TYNDP report: 2030
+UsePlannedDownTime: True
+UseUnplannedDownTime: True
+demFlexKlassisk: 0.25
+demFlexCVP: 0.95
+demFlexPtX: 1
+demFlexTransport: 0.2
+Storebaelt2: False
+oresundOpen: False
+EnergyIslandEast: True
+EnergyIslandWest: True
+DK1
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Overskudsel_DK-West_	ICHP_DK1	160.477	1	0.0	0.0	0.0	0.0	ICHP
+Havvind_DKV	Wind_DK1	3186.6	1	0.0	0.0	0.0	0.0	WS_DK1
+Kystvind_DKV	Wind_DK1	200.0	1	0.0	0.0	0.0	0.0	WS_DK1
+Landvind_DKV	Wind_DK1	4433.0	1	0.0	0.0	0.0	0.0	WL_DK1
+Solceller_DKV	Solar_DK1	6745.0	1	0.0	0.0	0.0	0.0	PV_DK1
+VandkraftDK	ROR_DK1	6.93	1	0.0	0.0	0.0	0.0	HY_DELU
+flatDemand_DK1	flatDemandDK1	-998.235792043379	1	0	0	0	0	-
+Fynsvaerket_Blok_7.1	CKV_BP_DK1	272.0	1	0.073972603	0.091666667	48.0	0.7	-
+Fynsvaerket_Blok_7.2	CKV_BP_DK1	35.0	1	0.073972603	0.091666667	48.0	0.7	-
+Fynsvaerket_Blok_8	CKV_BP_DK1	31.0	1	0.073972603	0.091666667	48.0	0.7	-
+Herningvaerket_-	CKV_BP_DK1	73.2	1	0.073972603	0.091666667	48.0	0.7	-
+Randersvaerket_-	CKV_BP_DK1	52.0	1	0.073972603	0.091666667	48.0	0.7	-
+Skaerbaekvaerket_Blok_3	CKV_EX_DK1	392.0	1	0.073972603	0.091666667	48.0	0.0	-
+Studstrupvaerket_Blok_5	CKV_GT_DK1	14.0	1	0.073972603	0.093333333	48.0	0.0	-
+Hjoerring_KV_	DKV_CC_DK1	56.15	1	0.073972603	0.05	48.0	0.7	-
+Viborg_KV_	DKV_CC_DK1	57.0	1	0.073972603	0.05	48.0	0.7	-
+Silkeborg_KV_	DKV_CC_DK1	54.25	1	0.073972603	0.05	48.0	0.7	-
+Silkeborg_KV_Ombygget_	DKV_CC_DK1	54.3	1	0.073972603	0.05	48.0	0.7	-
+Horsens_KV_	DKV_CC_DK1	4.9	1	0.073972603	0.05	48.0	0.7	-
+Soenderborg_KV_	DKV_CC_DK1	3.5	1	0.073972603	0.05	48.0	0.7	-
+AVV-Forbraending_KV_	DKV_affald_DK1	3.22	1	0.057692308	0.05	48.0	0.7	-
+AVoe-Forbraending_KV_	DKV_affald_DK1	1.68	1	0.057692308	0.05	48.0	0.7	-
+Thisted-Forbraending_KV_	DKV_affald_DK1	2.31	1	0.057692308	0.05	48.0	0.7	-
+Maabjergvaerket_KV_	DKV_affald_DK1	18.9	1	0.057692308	0.05	48.0	0.7	-
+Svendborg_KV_	DKV_affald_DK1	3.15	1	0.057692308	0.05	48.0	0.7	-
+Aars_KV_	DKV_affald_DK1	2.023	1	0.057692308	0.05	48.0	0.7	-
+Forbraendingsmotor_Biogas_Frederikshavn_	DKV_GM_DK1	0.38	1	0.073972603	0.05	48.0	0.7	-
+Broenderslev_KV_	DKV_GM_DK1	22.4	1	0.073972603	0.05	48.0	0.7	-
+Forbraendingsmotor_Biogas_Herning_	DKV_GM_DK1	0.357	1	0.073972603	0.05	48.0	0.7	-
+Forbraendingsmotor_Biogas_Esbjerg_	DKV_GM_DK1	1.27	1	0.073972603	0.05	48.0	0.7	-
+Forbraendingsmotor_Biogas_TVIS_	DKV_GM_DK1	0.357	1	0.073972603	0.05	48.0	0.7	-
+Motor_Naturgas_Odense_	DKV_GM_DK1	5.58	1	0.073972603	0.05	48.0	0.7	-
+Motor_Biogas_Odense_	DKV_GM_DK1	5.327	1	0.073972603	0.05	48.0	0.7	-
+Kombianlaeg_NG_	DKV_GM_DK1	11.9	1	0.073972603	0.05	48.0	0.7	-
+Forbraendingsmotor_Anholt_	DKV_GM_DK1	2.4	1	0.073972603	0.05	48.0	0.7	-
+Motorer_-_restomraader_-_DK1_	DKV_GM_DK1	412.9324487	82	0.073972603	0.05	48.0	0.7	-
+Broenderslev_ORC_CSP_	DKV_bio_DK1	4.0	1	0.073972603	0.091666667	48.0	0.7	-
+Lisbjerg_KV_	DKV_bio_DK1	37.0	1	0.073972603	0.091666667	48.0	0.7	-
+RenoSyd_KV_	CKV_affald_DK1	1.995	1	0.057692308	0.05	48.0	0.0	-
+aarhus-Forbraending_KV_Ovn4_	CKV_affald_DK1	7.91	1	0.057692308	0.05	48.0	0.0	-
+aarhus-Forbraending_KV_Ovn2_	CKV_affald_DK1	3.15	1	0.057692308	0.05	48.0	0.0	-
+aarhus-Forbraending_KV_Ovn1_	CKV_affald_DK1	3.15	1	0.057692308	0.05	48.0	0.0	-
+L90-Esbjerg-Forbraending_KV_	CKV_affald_DK1	12.95	1	0.057692308	0.05	48.0	0.0	-
+TAS-Forbraending_KV_	CKV_affald_DK1	4.382	1	0.057692308	0.05	48.0	0.0	-
+Odense_KV_Affaldslinje11+12_	CKV_affald_DK1	6.3	1	0.057692308	0.05	48.0	0.0	-
+Odense_KV_Affaldslinje13_	CKV_affald_DK1	9.1	1	0.057692308	0.05	48.0	0.0	-
+I/S_Reno_Nord_	CKV_affald_DK1	4.9	1	0.057692308	0.05	48.0	0.0	-
+I/S_Reno_Nord_	CKV_affald_DK1	12.53	1	0.057692308	0.05	48.0	0.0	-
+Gasturbine_Naturgas_NG_DK-West_	DKV_GT_DK1	35.436	7	0.073972603	0.05	48.0	0.7	-
+Gasturbine_Esbjerg_	Regulerkraft_DK1	25.0	1	0.073972603	0.05	48.0	0.0	-
+oevrig_decentral_regulerkraft-Vest_	Regulerkraft_DK1	8.586343156	1	0.073972603	0.05	48.0	0.0	-
+ReservesDK-West	RS_DK1	-110.0	1	0.0	0.0	0.0	0.0	-
+demandDK1	demandDK1	29.379105982266033	1	0	0	0	0	DK1demand
+
+
+DK2
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Overskudsel_DK-East_	ICHP_DK2	48.19	1	0.0	0.0	0.0	0.0	ICHP
+Havvind_DKoe	Wind_DK2	2215.4	1	0.0	0.0	0.0	0.0	WS_DK2
+Kystvind_DKoe	Wind_DK2	500.0	1	0.0	0.0	0.0	0.0	WS_DK2
+Landvind_DKoe	Wind_DK2	898.605	1	0.0	0.0	0.0	0.0	WL_DK2
+Solceller_DKoe	Solar_DK2	3766.0	1	0.0	0.0	0.0	0.0	PV_DK2
+flatDemand_DK2	flatDemandDK2	-158.96727455936073	1	0	0	0	0	-
+Amagervaerket_Blok_4	CKV_BP_DK2	150.0	1	0.073972603	0.091666667	48.0	0.7	-
+Asnaesvaerket_Blok_6	CKV_BP_DK2	25.0	1	0.073972603	0.091666667	48.0	0.7	-
+Avedoerevaerket_Blok_2	CKV_EX_DK2	560.0	1	0.073972603	0.091666667	48.0	0.0	-
+Kyndbyvaerket_Blok_21	CKV_EX_DK2	2.0	1	0.073972603	0.091666667	48.0	0.0	-
+Kyndbyvaerket_Blok_22	KYV22_DK2	260.0	1	0.073972603	0.093333333	48.0	0.0	-
+Kyndbyvaerket_Blok_41	CKV_GT_DK2	18.0	1	0.073972603	0.093333333	48.0	0.0	-
+Kyndbyvaerket_Blok_51	CKV_GT_DK2	63.0	1	0.073972603	0.093333333	48.0	0.0	-
+Kyndbyvaerket_Blok_52	CKV_GT_DK2	63.0	1	0.073972603	0.093333333	48.0	0.0	-
+Masnedoevaerket_Blok_31	CKV_GT_DK2	70.0	1	0.073972603	0.093333333	48.0	0.0	-
+Helsingoer_KV_	DKV_CC_DK2	55.0	1	0.073972603	0.05	48.0	0.7	-
+DTU_KV_	DKV_CC_DK2	38.5	1	0.073972603	0.05	48.0	0.7	-
+Nordforbraending_KV_	CKV_affald_DK2	5.6	1	0.057692308	0.05	48.0	0.0	-
+ARC_KV_AmagerBakke_	CKV_affald_DK2	43.4	1	0.057692308	0.05	48.0	0.0	-
+KARA-Forbraending_KV_Anlaeg5_	CKV_affald_DK2	9.59	1	0.057692308	0.05	48.0	0.0	-
+KARA-Forbraending_KV_Anlaeg6_	CKV_affald_DK2	13.58	1	0.057692308	0.05	48.0	0.0	-
+Vestforbraending_KV_Anlaeg5_	CKV_affald_DK2	11.9	1	0.057692308	0.05	48.0	0.0	-
+Vestforbraending_KV_Anlaeg6_	CKV_affald_DK2	15.4	1	0.057692308	0.05	48.0	0.0	-
+I/S_Norfors_	CKV_affald_DK2	5.18	1	0.057692308	0.05	48.0	0.0	-
+Hilleroed_KV_ORC_	DKV_bio_DK2	5.12	1	0.073972603	0.091666667	48.0	0.7	-
+Koge_KV_Blok8_	DKV_bio_DK2	15.0	1	0.073972603	0.091666667	48.0	0.7	-
+MasnedoeKV_	DKV_bio_DK2	9.98	1	0.073972603	0.091666667	48.0	0.7	-
+MariboSakskoebing_KV_	DKV_bio_DK2	11.5	1	0.073972603	0.091666667	48.0	0.7	-
+Flisforgasser_Gasmotor_Hilleroed_	DKV_GM_DK2	3.94	1	0.073972603	0.05	48.0	0.7	-
+Noedstroemsanlaeg_DK-East_	DKV_GM_DK2	3.6	1	0.073972603	0.05	48.0	0.7	-
+Motorer_-_restomraader_-_DK2_	DKV_GM_DK2	114.7627778	22	0.073972603	0.05	48.0	0.7	-
+Slagelse-Forbraending_KV_	DKV_affald_DK2	7.63	1	0.057692308	0.05	48.0	0.7	-
+NykoebingFalster-Forbraending_KV_	DKV_affald_DK2	4.69	1	0.057692308	0.05	48.0	0.7	-
+Naestved-Forbraending_KV_	DKV_affald_DK2	9.023	1	0.057692308	0.05	48.0	0.7	-
+oevrig_decentral_regulerkraft-oest_	Regulerkraft_DK2	36.0	7	0.073972603	0.05	48.0	0.0	-
+ReservesDK-East	RS_DK2	-110.0	1	0.0	0.0	0.0	0.0	-
+demandDK2	demandDK2	16.044836172621864	1	0	0	0	0	DK2demand
+
+
+DKBO
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+VindBornholm	Wind_DKBO	37.0	1	0.0	0.0	0.0	0.0	WL_DK2
+EnergioeEast	Wind_DKBO	3000.0	1	0.0	0.0	0.0	0.0	WS_DKKF
+PVBornholm	Solar_DKBO	37.66	1	0.0	0.0	0.0	0.0	PV_DK2
+oestkraft_Blok_6	CKV_EX_DKBO	37.0	1	0.073972603	0.091666667	48.0	0.0	-
+oestkraft_Dieselvaerk	CKV_DI_DKBO	19.6	4	0.073972603	0.093333333	48.0	0.0	-
+oestkraft_Blok_7	CKV_DI_DKBO	15.0	3	0.073972603	0.093333333	48.0	0.0	-
+oestkraft_Blok_5	KYV22_DKBO	27.5	1	0.073972603	0.093333333	48.0	0.0	-
+demandDKBO	demandDKBO	0.24312849361	1	0	0	0	0	DKBOdemand
+
+
+DKKF
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+HavvindKF	Wind_DKKF	600.0	1	0.0	0.0	0.0	0.0	WS_DKKF
+demandDKKF	demandDKKF	0.0	1	0	0	0	0	DKKFdemand
+
+
+DKEI
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+EnergioeVest	Wind_DKEI	3000.0	1	0.0	0.0	0.0	0.0	WS_DK1
+demandDKEI	demandDKEI	0.0	1	0	0	0	0	DKEIdemand
+
+
+NOn
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Wind-on-shore	Wind_NOn	2283.295	1	0.0	0.0	0.0	0.0	WL_NOn
+Hydro-turbine	HydroRes_NOn	3020.2	60	0.11	0.05	48.0	0.0	-
+Hydro-pump	HydroRes_NOn	2950.0	59	0.11	0.05	48.0	0.0	-
+Other_RES	OtherRes_NOn_NOn	40.0015	1	0.25	0.0	0.0	0.0	-
+Othernon-RES	OtherNonRes_NO_NOn	195.0	3	0.0	0.0	0.0	0.0	-
+DSR	DSR_NOn	1296.0	129	0.05	0.25	48.0	0.0	-
+ReservesNOn	RS_NOn	-150.0	1	0.0	0.0	0.0	0.0	-
+demandNOn	demandNOn	21.094178843421624	1	0	0	0	0	NOndemand
+
+
+NOm
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Wind-on-shore	Wind_NOm	1947.1125	1	0.0	0.0	0.0	0.0	WL_NOm
+Hydro-turbine	HydroRes_NOm	2715.7	54	0.11	0.05	48.0	0.0	-
+Hydro-pump	HydroRes_NOm	2690.5	53	0.11	0.05	48.0	0.0	-
+Othernon-RES	OtherNonRes_NO_NOm	20.0	1	0.0	0.0	0.0	0.0	-
+DSR	DSR_NOm	1424.0	142	0.05	0.25	48.0	0.0	-
+ReservesNOm	RS_NOm	-150.0	1	0.0	0.0	0.0	0.0	-
+demandNOm	demandNOm	30.127992826837428	1	0	0	0	0	NOmdemand
+
+
+NOs
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Wind-on-shore	Wind_NOs	3707.73	1	0.0	0.0	0.0	0.0	WL_NOs
+Solar-PV	Solar_NOs	1250.0	1	0.0	0.0	0.0	0.0	PV_NOs
+Hydro-turbine	HydroRes_NOs	12750.2	255	0.11	0.05	48.0	0.0	-
+Hydro-pump	HydroRes_NOs	12390.0	247	0.11	0.05	48.0	0.0	-
+Other_RES	OtherRes_NO_NOs	36.15	1	0.0	0.0	0.0	0.0	-
+Othernon-RES	OtherNonRes_NO_NOs	50.0	1	0.0	0.0	0.0	0.0	-
+DSR	DSR_NOs	1792.0	179	0.05	0.25	48.0	0.0	-
+Reserves_Nos	RS_NOs	-600.0	1	0.0	0.0	0.0	0.0	-
+demandNOs	demandNOs	116.20379522406658	1	0	0	0	0	NOsdemand
+
+
+SE1
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Wind-on-shore	Wind_SE1	4833.294	1	0.0	0.0	0.0	0.0	WL_SE1
+Solar-PV	Solar_SE1	15.624295	1	0.0	0.0	0.0	0.0	PV_SE1
+Other_RES	MustRun_SE1	281.45	1	0.0	0.0	0.0	0.0	OtherRes_SE1
+Hydro-turbine	HydroRes_SE1	5379.5	107	0.11	0.05	48.0	0.0	-
+DSR	DSR_SE1	107.1	10	0.05	0.25	48.0	0.0	-
+Battery	Battery_SE1	170.0	17	0.05	0.2	48.0	0.0	-
+ReservesSE1	RS_SE1	-410.0	1	0.0	0.0	0.0	0.0	-
+demandSE1	demandSE1	12.252827600418929	1	0	0	0	0	SE1demand
+
+
+SE2
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Wind-on-shore	Wind_SE2	7193.535	1	0.0	0.0	0.0	0.0	WL_SE2
+Solar-PV	Solar_SE2	262.1909	1	0.0	0.0	0.0	0.0	PV_SE2
+Other_RES	MustRun_SE2	649.3	1	0.0	0.0	0.0	0.0	OtherRes_SE2
+Gas	GasUdland_SE2	53.374	1	0.073972603	0.05	48.0	0.0	-
+Hydro-turbine	HydroRes_SE2	8065.05	161	0.11	0.05	48.0	0.0	-
+DSR	DSR_SE2	161.7	16	0.05	0.25	48.0	0.0	-
+Battery	Battery_SE2	295.5	29	0.05	0.2	48.0	0.0	-
+ReservesSE2	RS_SE2	-1040.0	1	0.0	0.0	0.0	0.0	-
+demandSE2	demandSE2	21.623456788864715	1	0	0	0	0	SE2demand
+
+
+SE3
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Wind-on-shore	Wind_SE3	4728.7015	1	0.0	0.0	0.0	0.0	WL_SE3
+Wind-off-shore	Wind_SE3	1330.505	1	0.0	0.0	0.0	0.0	WS_SE3
+Solar-PV	Solar_SE3	3941.5545	1	0.0	0.0	0.0	0.0	PV_SE3
+Other_RES	MustRun_SE3	2558.5	1	0.0	0.0	0.0	0.0	OtherRes_SE3
+Nuclear	NuclearSweden_SE3	3417.5	3	0.16	0.05	96.0	0.0	-
+Gas	GasUdland_SE3	190.5205	1	0.073972603	0.05	48.0	0.0	-
+Hydro-turbine	HydroRes_SE3	2747.0	54	0.11	0.05	48.0	0.0	-
+DSR	DSR_SE3	468.3	46	0.05	0.25	48.0	0.0	-
+Battery	Battery_SE3	1406.0	140	0.05	0.2	48.0	0.0	-
+Reserves_SE3	RS_SE3	-130.0	1	0.0	0.0	0.0	0.0	-
+demandSE3	demandSE3	98.21923114812556	1	0	0	0	0	SE3demand
+
+
+SE4
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Wind-on-shore	Wind_SE4	3302.322	1	0.0	0.0	0.0	0.0	WL_SE4
+Wind-off-shore	Wind_SE4	570.97405	1	0.0	0.0	0.0	0.0	WS_SE4
+Solar-PV	Solar_SE4	1468.868	1	0.0	0.0	0.0	0.0	PV_SE4
+Other_RES	MustRun_SE4	723.4445	1	0.0	0.0	0.0	0.0	OtherRes_SE4
+Hydro-turbine	HydroRes_SE4	347.0	6	0.11	0.05	48.0	0.0	-
+DSR	DSR_SE4	132.3	13	0.05	0.25	48.0	0.0	-
+Battery	Battery_SE4	378.0	37	0.05	0.2	48.0	0.0	-
+ReservesSE4	RS_SE4	-50.0	1	0.0	0.0	0.0	0.0	-
+demandSE4	demandSE4	25.97274199379133	1	0	0	0	0	SE4demand
+
+
+FI
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Wind-on-shore	Wind_FI	13252.4025	1	0.0	0.0	0.0	0.0	WL_FI
+Wind-off-shore	Wind_FI	42.0	1	0.0	0.0	0.0	0.0	WS_FI
+Solar-PV	Solar_FI	1240.0	1	0.0	0.0	0.0	0.0	PV_FI
+Other_RES	MustRun_FI	2913.0	1	0.0	0.0	0.0	0.0	OtherRes_FI
+Othernon-RES	MustRun_FI	2420.0	1	0.0	0.0	0.0	0.0	OtherNonRes_FI
+Nuclear	NuclearFinland_FI	4042.0	4	0.039	0.05	96.0	0.0	-
+Hard_Coal	KulUdland_FI	471.55	1	0.073972603	0.091666667	48.0	0.0	-
+Gas	GasUdland_FI	759.5	7	0.073972603	0.05	48.0	0.0	-
+Hydro-turbine	HydroRes_FI	3199.999	63	0.11	0.05	48.0	0.0	-
+Biofuels	Biofuels_FI	494.95	9	0.073972603	0.091666667	48.0	0.0	-
+DSR	DSR_FI	6309.5	630	0.05	0.25	48.0	0.0	-
+Battery	Battery_FI	950.0	95	0.05	0.2	48.0	0.0	-
+ReservesFI	RS_FI	-1700.0	1	0.0	0.0	0.0	0.0	-
+demandFI	demandFI	113.13359655439828	1	0	0	0	0	FIdemand
+
+
+DELU
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_DELU	4097.4644	1	0.0	0.0	0.0	0.0	HY_DELU
+Hydro-turbine	HydroRes_DELU	1296.87	25	0.11	0.05	48.0	0.0	HYlimit_DELU
+Wind-on-shore	Wind_DELU	86537.9932	1	0.0	0.0	0.0	0.0	WL_DELU
+Wind-off-shore	Wind_DELU	28322.15	1	0.0	0.0	0.0	0.0	WS_DELU
+Solar-PV	Solar_DELU	95365.93698	1	0.0	0.0	0.0	0.0	PV_DELU
+Othernon-RES	MustRun_DELU	18254.33722	1	0.0	0.0	0.0	0.0	OtherNonRes_DELU
+Lignite	KulUdland_DELU	4467.1	11	0.073972603	0.091666667	48.0	0.0	-
+Hard_Coal	KulUdland_DELU	4020.4	10	0.073972603	0.091666667	48.0	0.0	-
+Gas	GasUdland_DELU	21055.3275	210	0.073972603	0.05	48.0	0.0	-
+Oil	OlieUdland_DELU	531.495	10	0.073972603	0.093333333	48.0	0.0	-
+Hydro-pump	HydroPumpCL_DELU	10186.5	203	0.05	0.2	48.0	0.0	-
+Other_RES	OtherRes_DELU_DELU	5988.292857	119	0.341902962	0.0	0.0	0.0	-
+DSR	DSR_DELU	1824.5	182	0.05	0.25	48.0	0.0	-
+Battery	Battery_DELU	6192.0	619	0.05	0.2	48.0	0.0	-
+ReservesDELU	RS_DELU	-5379.0	1	0.0	0.0	0.0	0.0	-
+demandDELU	demandDELU	621.1498960389227	1	0	0	0	0	DELUdemand
+
+
+AT
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_AT	6281.267325	1	0.0	0.0	0.0	0.0	HY_AT
+Wind-on-shore	Wind_AT	10999.5	1	0.0	0.0	0.0	0.0	WL_AT
+Solar-PV	Solar_AT	17000.0	1	0.0	0.0	0.0	0.0	PV_AT
+Gas	GasUdland_AT	2519.35	25	0.073972603	0.05	48.0	0.0	-
+Oil	OlieUdland_AT	84.203	1	0.073972603	0.093333333	48.0	0.0	-
+Hydro-turbine	HydroRes_AT	2431.4	48	0.11	0.05	48.0	0.0	-
+Hydro-pump	HydroPumpCL_AT	6142.5	122	0.05	0.2	48.0	0.0	-
+Other_RES	OtherRes_AT_AT	599.9575	11	0.354679803	0.0	0.0	0.0	-
+Othernon-RES	OtherNonRes_AT_AT	953.12	19	0.431413613	0.0	0.0	0.0	-
+Battery	Battery_AT	2469.017212	246	0.05	0.2	48.0	0.0	-
+ReservesAT	RS_AT	-544.3173862	1	0.0	0.0	0.0	0.0	-
+demandAT	demandAT	91.15270822325158	1	0	0	0	0	ATdemand
+
+
+NL
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_NL	44.5	1	0.0	0.0	0.0	0.0	HY_NL
+Wind-on-shore	Wind_NL	8591.0	1	0.0	0.0	0.0	0.0	WL_NL
+Wind-off-shore	Wind_NL	13704.0	1	0.0	0.0	0.0	0.0	WS_NL
+Solar-PV	Solar_NL	25000.0	1	0.0	0.0	0.0	0.0	PV_NL
+Nuclear	Borssele_NL	243.0	1	0.111	0.05	96.0	0.0	-
+Hard_Coal	KulUdland_NL	1690.5	4	0.073972603	0.091666667	48.0	0.0	-
+Gas	GasUdland_NL	10213.15	102	0.073972603	0.05	48.0	0.0	-
+Other_RES	OtherRes_NL_NL	540.0	10	0.6	0.0	0.0	0.0	-
+Othernon-RES	OtherNonRes_NL_NL	3771.885	75	0.579770115	0.0	0.0	0.0	-
+Biofuels	Biofuels_NL	1690.5	33	0.073972603	0.091666667	48.0	0.0	-
+DSR	DSR_NL	700.0	70	0.05	0.25	48.0	0.0	-
+Battery	Battery_NL	1737.5	173	0.05	0.2	48.0	0.0	-
+ReservesNL	RS_NL	-1500.0	1	0.0	0.0	0.0	0.0	-
+demandNL	demandNL	129.1469882283576	1	0	0	0	0	NLdemand
+
+
+GB
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_GB	1966.97	1	0.0	0.0	0.0	0.0	HY_GB
+Wind-on-shore	Wind_GB	15741.35721	1	0.0	0.0	0.0	0.0	WL_GB
+Wind-off-shore	Wind_GB	29910.5	1	0.0	0.0	0.0	0.0	WS_GB
+Solar-PV	Solar_GB	21161.515	1	0.0	0.0	0.0	0.0	PV_GB
+Nuclear	NuclearGB_GB	11785.5	19	0.238	0.05	96.0	0.0	-
+Hard_Coal	KulUdland_GB	1992.0	4	0.073972603	0.091666667	48.0	0.0	-
+Gas	GasUdland_GB	37021.55	370	0.073972603	0.05	48.0	0.0	-
+Oil	OlieUdland_GB	371.0	7	0.073972603	0.093333333	48.0	0.0	-
+Hydro-pump	HydroPumpCL_GB	3374.0	67	0.05	0.2	48.0	0.0	-
+Other_RES	OtherRes_GB_GB	4700.2055	94	0.247573862	0.0	0.0	0.0	-
+Othernon-RES	OtherNonRes_GB_GB	7432.327	148	0.074312303	0.0	0.0	0.0	-
+Biofuels	Biofuels_GB	1992.0	39	0.073972603	0.091666667	48.0	0.0	-
+DSR	DSR_GB	1961.0	196	0.05	0.25	48.0	0.0	-
+Battery	Battery_GB	2335.0	233	0.05	0.2	48.0	0.0	-
+ReservesGB	RS_GB	-3409.0	1	0.0	0.0	0.0	0.0	-
+demandGB	demandGB	326.570201245294	1	0	0	0	0	GBdemand
+
+
+FR
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_FR	13600.0	1	0.0	0.0	0.0	0.0	HY_FR
+Hydro-turbine	HydroRes_FR	8200.182927	164	0.11	0.05	48.0	0.0	HYlimit_FR
+Wind-on-shore	Wind_FR	47309.5	1	0.0	0.0	0.0	0.0	WL_FR
+Wind-off-shore	Wind_FR	6931.5	1	0.0	0.0	0.0	0.0	WS_FR
+Solar-PV	Solar_FR	48010.0	1	0.0	0.0	0.0	0.0	PV_FR
+Othernon-RES	MustRun_FR	8616.5	1	0.0	0.0	0.0	0.0	OtherNonRes_FR
+Nuclear	NuclearFR_FR	50671.0	46	0.223	0.05	96.0	0.0	-
+Gas	GasUdland_FR	7066.5	70	0.073972603	0.05	48.0	0.0	-
+Oil	OlieUdland_FR	485.5	9	0.073972603	0.093333333	48.0	0.0	-
+Hydro-pump	HydroPumpCL_FR	3942.5	78	0.05	0.2	48.0	0.0	-
+Other_RES	OtherRes_FR_FR	2377.0	47	0.528834837	0.0	0.0	0.0	-
+DSR	DSR_FR	5150.0	515	0.05	0.25	48.0	0.0	-
+Battery	Battery_FR	2950.0	295	0.05	0.2	48.0	0.0	-
+ReservesFR	RS_FR	-2180.0	1	0.0	0.0	0.0	0.0	-
+demandFR	demandFR	509.63439241223324	1	0	0	0	0	FRdemand
+
+
+BE
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_BE	148.106	1	0.0	0.0	0.0	0.0	HY_BE
+Wind-on-shore	Wind_BE	4922.97169	1	0.0	0.0	0.0	0.0	WL_BE
+Wind-off-shore	Wind_BE	5162.5	1	0.0	0.0	0.0	0.0	WS_BE
+Solar-PV	Solar_BE	12346.26165	1	0.0	0.0	0.0	0.0	PV_BE
+Hard_Coal	KulUdland_BE	270.0	1	0.073972603	0.091666667	48.0	0.0	-
+Gas	GasUdland_BE	8550.65	85	0.073972603	0.05	48.0	0.0	-
+Oil	OlieUdland_BE	158.15	3	0.073972603	0.093333333	48.0	0.0	-
+Hydro-pump	HydroPumpCL_BE	1395.0	27	0.05	0.2	48.0	0.0	-
+Other_RES	MustRun_BE	289.6291725	1	0.0	0.0	0.0	0.0	-
+Othernon-RES	OtherNonRes_BE_BE	1324.0	26	0.36977492	0.0	0.0	0.0	-
+Biofuels	Biofuels_BE	270.393	5	0.073972603	0.091666667	48.0	0.0	-
+DSR	DSR_BE	1800.0	180	0.05	0.25	48.0	0.0	-
+Battery	Battery_BE	1290.5	129	0.05	0.2	48.0	0.0	-
+ReservesBL	RS_BE	-429.818973	1	0.0	0.0	0.0	0.0	-
+demandBE	demandBE	99.80770191969081	1	0	0	0	0	BEdemand
+
+
+ESPT
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_ESPT	4492.3455	1	0.0	0.0	0.0	0.0	HY_ESPT
+Hydro-turbine	HydroRes_ESPT	14627.7095	292	0.11	0.05	48.0	0.0	HYlimit_ESPT
+Wind-on-shore	Wind_ESPT	61843.25	1	0.0	0.0	0.0	0.0	WL_ESPT
+Wind-off-shore	Wind_ESPT	494.0	1	0.0	0.0	0.0	0.0	WS_ESPT
+Solar-PV	Solar_ESPT	59614.32052	1	0.0	0.0	0.0	0.0	PV_ESPT
+Solar-thermal	Solar_ESPT	7771.0	1	0.0	0.0	0.0	0.0	CSP_ESPT
+Other_RES	MustRun_ESPT	3135.85	1	0.0	0.0	0.0	0.0	OtherRes_ESPT
+Othernon-RES	MustRun_ESPT	4638.5	1	0.0	0.0	0.0	0.0	OtherNonRes_ESPT
+Nuclear	NuclearES_ESPT	1520.36	1	0.093	0.05	96.0	0.0	-
+Gas	GasUdland_ESPT	27337.28	273	0.073972603	0.05	48.0	0.0	-
+Hydro-pump	HydroPumpCL_ESPT	14030.5	280	0.05	0.2	48.0	0.0	-
+DSR	DSR_ESPT	1600.0	160	0.05	0.25	48.0	0.0	-
+Battery	Battery_ESPT	4640.5	464	0.05	0.2	48.0	0.0	-
+Reserves_ESPT	RS_ESPT	-2296.0	1	0.0	0.0	0.0	0.0	-
+demandESPT	demandESPT	358.62848124114	1	0	0	0	0	ESPTdemand
+
+
+CH
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_CH	4113.0	1	0.0	0.0	0.0	0.0	HY_CH
+Wind-on-shore	Wind_CH	377.5	1	0.0	0.0	0.0	0.0	WL_CH
+Solar-PV	Solar_CH	7000.0	1	0.0	0.0	0.0	0.0	PV_CH
+Nuclear	NuclearCH_CH	1282.5	1	0.096	0.05	96.0	0.0	-
+Hydro-turbine	HydroRes_CH	8152.0	163	0.11	0.05	48.0	0.0	-
+Hydro-pump	HydroPumpCL_CH	3989.0	79	0.05	0.2	48.0	0.0	-
+Other_RES	OtherRes_CH_CH	1197.0	23	0.535832415	0.0	0.0	0.0	-
+Othernon-RES	OtherNonRes_CH_CH	889.4203371	17	0.535585042	0.0	0.0	0.0	-
+Battery	Battery_CH	898.5	89	0.05	0.2	48.0	0.0	-
+ReservesCH	RS_CH	-869.0	1	0.0	0.0	0.0	0.0	-
+demandCH	demandCH	61.68565041858181	1	0	0	0	0	CHdemand
+
+
+IT
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_IT	5812.075312	1	0.0	0.0	0.0	0.0	HY_IT
+Hydro-turbine	HydroRes_IT	9679.470826	193	0.11	0.05	48.0	0.0	HYlimit_IT
+Wind-on-shore	Wind_IT	20270.0051	1	0.0	0.0	0.0	0.0	WL_IT
+Wind-off-shore	Wind_IT	900.0	1	0.0	0.0	0.0	0.0	WS_IT
+Solar-PV	Solar_IT	55644.77561	1	0.0	0.0	0.0	0.0	PV_IT
+Solar-thermal	Solar_IT	880.0	1	0.0	0.0	0.0	0.0	PV_IT
+Othernon-RES	MustRun_IT	7621.0	1	0.0	0.0	0.0	0.0	OtherNonRes_IT
+Gas	GasUdland_IT	43145.33	431	0.073972603	0.05	48.0	0.0	-
+Oil	OlieUdland_IT	433.0	8	0.073972603	0.093333333	48.0	0.0	-
+Hydro-pump	HydroPumpCL_IT	11917.5	238	0.05	0.2	48.0	0.0	-
+Other_RES	OtherRes_IT_IT	4822.656016	96	0.352266667	0.0	0.0	0.0	-
+DSR	DSR_IT	2310.0	231	0.05	0.25	48.0	0.0	-
+Battery	Battery_IT	2298.5	229	0.05	0.2	48.0	0.0	-
+ReservesIT	RS_IT	-4500.0	1	0.0	0.0	0.0	0.0	-
+demandIT	demandIT	360.9986543429398	1	0	0	0	0	ITdemand
+
+
+EELVLT
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_EELVLT	1717.4	1	0.0	0.0	0.0	0.0	HY_EELVLT
+Wind-on-shore	Wind_EELVLT	3365.0	1	0.0	0.0	0.0	0.0	WL_EELVLT
+Wind-off-shore	Wind_EELVLT	1467.856436	1	0.0	0.0	0.0	0.0	WS_EELVLT
+Solar-PV	Solar_EELVLT	2199.5	1	0.0	0.0	0.0	0.0	PV_EELVLT
+Solar-thermal	Solar_EELVLT	40.0	1	0.0	0.0	0.0	0.0	CSP_EELVLT
+Other_RES	MustRun_EELVLT	444.902859	1	0.0	0.0	0.0	0.0	OtherRes_EELVLT
+Gas	GasUdland_EELVLT	966.0	9	0.073972603	0.05	48.0	0.0	-
+Oil	OlieUdland_EELVLT	693.4	13	0.073972603	0.093333333	48.0	0.0	-
+Hydro-pump	HydroPumpCL_EELVLT	1062.5	21	0.05	0.2	48.0	0.0	-
+Othernon-RES	OtherNonRes_EELVLT_EELVLT	287.0	5	0.213793103	0.0	0.0	0.0	-
+Biofuels	Biofuels_EELVLT	116.6	2	0.073972603	0.091666667	48.0	0.0	-
+DSR	DSR_EELVLT	288.0	28	0.05	0.25	48.0	0.0	-
+Battery	Battery_EELVLT	458.5	45	0.05	0.2	48.0	0.0	-
+ReservesEELVLT	RS_EELVLT	-975.0	1	0.0	0.0	0.0	0.0	-
+demandEELVLT	demandEELVLT	33.5877997509424	1	0	0	0	0	EELVLTdemand
+
+
+PL
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_PL	521.252515	1	0.0	0.0	0.0	0.0	HY_PL
+Wind-on-shore	Wind_PL	8809.5	1	0.0	0.0	0.0	0.0	WL_PL
+Wind-off-shore	Wind_PL	6960.0	1	0.0	0.0	0.0	0.0	WS_PL
+Solar-PV	Solar_PL	13713.0	1	0.0	0.0	0.0	0.0	PV_PL
+Other_RES	MustRun_PL	2253.8715	1	0.0	0.0	0.0	0.0	OtherRes_PL
+Othernon-RES	MustRun_PL	7087.437924	1	0.0	0.0	0.0	0.0	OtherNonRes_PL
+Nuclear	Nuclear_PL	2800.0	2	0.15	0.05	96.0	0.0	-
+Lignite	KulUdland_PL	4279.5	10	0.073972603	0.091666667	48.0	0.0	-
+Hard_Coal	KulUdland_PL	9134.722391	22	0.073972603	0.091666667	48.0	0.0	-
+Gas	GasUdland_PL	7501.0	75	0.073972603	0.05	48.0	0.0	-
+Hydro-turbine	HydroRes_PL	183.3072	3	0.11	0.05	48.0	0.0	-
+Hydro-pump	HydroPumpCL_PL	1501.5	30	0.05	0.2	48.0	0.0	-
+Biofuels	Biofuels_PL	301.7225	6	0.073972603	0.091666667	48.0	0.0	-
+Battery	Battery_PL	1000.0	100	0.05	0.2	48.0	0.0	-
+ReservesPL	RS_PL	-1000.0	1	0.0	0.0	0.0	0.0	-
+demandPL	demandPL	195.68604614749498	1	0	0	0	0	PLdemand
+
+
+CZSK
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_CZSK	1972.264455	1	0.0	0.0	0.0	0.0	HY_CZSK
+Hydro-turbine	HydroRes_CZSK	700.085	14	0.11	0.05	48.0	0.0	HYlimit_CZSK
+Wind-on-shore	Wind_CZSK	1477.624747	1	0.0	0.0	0.0	0.0	WL_CZSK
+Solar-PV	Solar_CZSK	5578.754394	1	0.0	0.0	0.0	0.0	PV_CZSK
+Other_RES	MustRun_CZSK	1278.459532	1	0.0	0.0	0.0	0.0	OtherRes_CZSK
+Othernon-RES	MustRun_CZSK	1531.413123	1	0.0	0.0	0.0	0.0	OtherNonRes_CZSK
+Nuclear	NuclearCZSK_CZSK	6780.12	11	0.146	0.05	96.0	0.0	-
+Lignite	KulUdland_CZSK	3703.840984	9	0.073972603	0.091666667	48.0	0.0	-
+Hard_Coal	KulUdland_CZSK	684.8357844	1	0.073972603	0.091666667	48.0	0.0	-
+Gas	GasUdland_CZSK	1998.970557	19	0.073972603	0.05	48.0	0.0	-
+Oil	OlieUdland_CZSK	69.915	1	0.073972603	0.093333333	48.0	0.0	-
+Hydro-pump	HydroPumpCL_CZSK	2082.0	41	0.05	0.2	48.0	0.0	-
+Biofuels	Biofuels_CZSK	75.40267422	1	0.073972603	0.091666667	48.0	0.0	-
+Battery	Battery_CZSK	1157.166672	115	0.05	0.2	48.0	0.0	-
+ReservesCZSK	RS_CZSK	-1842.5	1	0.0	0.0	0.0	0.0	-
+demandCZSK	demandCZSK	120.38115403065571	1	0	0	0	0	CZSKdemand
+
+
+HU
+Name	Type	Capacity	NoUnits	PlannedOutage	UnplannedOutage	OutageTime	HeatDep	Variation
+Hydro-Run	ROR_HU	56.0	1	0.0	0.0	0.0	0.0	HY_HU
+Wind-on-shore	Wind_HU	162.9	1	0.0	0.0	0.0	0.0	WL_HU
+Solar-PV	Solar_HU	6727.0246	1	0.0	0.0	0.0	0.0	PV_HU
+Other_RES	MustRun_HU	574.55	1	0.0	0.0	0.0	0.0	OtherRes_HU
+Othernon-RES	MustRun_HU	286.506	1	0.0	0.0	0.0	0.0	OtherNonRes_HU
+Nuclear	NuclearHU_HU	3310.0	6	0.081	0.05	96.0	0.0	-
+Gas	GasUdland_HU	1273.0	12	0.073972603	0.05	48.0	0.0	-
+Biofuels	Biofuels_HU	53.05	1	0.073972603	0.091666667	48.0	0.0	-
+Battery	Battery_HU	630.5	63	0.05	0.2	48.0	0.0	-
+ReservesHU	RS_HU	-1550.0	1	0.0	0.0	0.0	0.0	-
+demandHU	demandHU	46.202049294688486	1	0	0	0	0	HUdemand
+
+
+Lines: 
+Name	CapAB	capBA	noUnits	Downtime	DowntimeDuration
+DK1_to_DK2	590.0	600.0	1	0.1	96
+DK1_to_NOs	1632.0	1632.0	4	0.1	96
+DK1_to_SE3	715.0	715.0	2	0.1	96
+DK1_to_DELU	2500.0	2500.0	4	0.08	48
+DK1_to_DELU_1	1000.0	1000.0	1	0.08	48
+DK1_to_NL	700.0	700.0	1	0.1	96
+DK1_to_GB	1400.0	1400.0	1	0.1	96
+DK2_to_SE4	0	0	2	0.08	48
+DK2_to_SE4_1	0	0	2	0.08	48
+DK2_to_SE4_2	461.5384615384615	400	1	0.08	48
+DK2_to_SE4_3	462.0	400.0	1	0.08	48
+DKBO_to_SE4	70.0	70.0	1	0.08	48
+DK2_to_DELU	600.0	585.0	1	0.1	96
+DK2_to_DKKF	600.0	600.0	1	0.1	96
+DKKF_to_DELU	400.0	400.0	1	0.1	96
+DKEI_to_DK1	1400	1400	2	0.1	96
+DKEI_to_BE	2000	2000	2	0.1	96
+DKBO_to_DK2	1200	1200	2	0.1	96
+DKBO_to_DELU	2000	2000	2	0.1	96
+NOm_to_NOn	1200.0	1200.0	3	0.04	48
+NOm_to_NOs	1375.0	1375.0	3	0.04	48
+SE1_to_SE2	3300.0	3300.0	3	0.04	48
+SE2_to_SE3	8100.0	8100.0	8	0.04	48
+SE3_to_SE4	5400.0	2000.0	5	0.04	48
+SE3_to_SE4_1	800.0	800.0	2	0.1	96
+NOm_to_SE2	600.0	1000.0	6	0.04	48
+NOn_to_SE1	700.0	473.0	6	0.04	48
+NOn_to_SE2	158.0	263.0	6	0.04	48
+NOs_to_SE3	2145.0	2095.0	6	0.04	48
+NOn_to_FI	100.0	100.0	1	0.04	48
+NOs_to_DELU	1400.0	1400.0	1	0.1	96
+NOs_to_NL	700.0	700.0	1	0.1	96
+NOs_to_GB	2800.0	2800.0	2	0.1	96
+SE1_to_FI	2000.0	2000.0	3	0.04	48
+SE3_to_FI	1200.0	1200.0	2	0.1	96
+SE4_to_DELU	1315.0	1315.0	1	0.1	96
+SE4_to_EELVLT	700.0	700.0	1	0.1	96
+SE4_to_PL	600.0	600.0	1	0.1	96
+FI_to_EELVLT	1016.0	1016.0	2	0.1	96
+DELU_to_NL	5000.0	5000.0	5	0.04	48
+DELU_to_AT	7500.0	7500.0	8	0.04	48
+DELU_to_PL	2000.0	3000.0	3	0.04	48
+DELU_to_GB	1400.0	1400.0	2	0.1	96
+DELU_to_FR	5180.0	5180.0	5	0.04	48
+DELU_to_CH	3300.0	4600.0	5	0.04	48
+DELU_to_BE	380.0	380.0	1	0.04	48
+DELU_to_BE_1	1000.0	1000.0	1	0.1	96
+DELU_to_CZSK	2000.0	2600.0	3	0.04	48
+CZSK_to_PL	1990.0	1790.0	2	0.04	48
+AT_to_CZSK	900.0	900.0	1	0.04	48
+AT_to_HU	800.0	800.0	1	0.04	48
+AT_to_IT	1355.0	1150.0	6	0.04	48
+NL_to_GB	1000.0	1000.0	1	0.1	96
+NL_to_BE	3400.0	3400.0	3	0.04	48
+BE_to_FR	2800.0	4300.0	4	0.04	48
+BE_to_GB	1000.0	1000.0	1	0.1	96
+GB_to_FR	5400.0	5400.0	6	0.1	96
+FR_to_ESPT	5000.0	5000.0	5	0.04	48
+FR_to_CH	3200.0	1300.0	3	0.04	48
+FR_to_IT	4350.0	2160.0	4	0.04	48
+AT_to_CH	1700.0	1700.0	2	0.04	48
+CH_to_IT	3850.0	1800.0	4	0.04	48
+CH_to_IT_1	1000.0	1000.0	1	0.1	96
+EELVLT_to_PL	700.0	700.0	1	0.1	96
+CZSK_to_HU	2600.0	1800.0	3	0.04	48

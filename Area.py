@@ -31,8 +31,6 @@ class Area:
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
-        self.averages = np.zeros(len(self.timeSeriesProductionList))
-        self.createAverages()
 
         self.InitializeDemand()
         self.InitializeFactors()
@@ -152,12 +150,6 @@ class Area:
         #Move new file
         move(abs_path, outagePlanPath)
         return (plantNames, onMatrix)
-
-    def createAverages(self):
-        for i in range(len(self.timeSeriesProductionList)):
-            self.averages[i] = np.mean(self.timeSeriesProductionList[i])
-            if(self.averages[i] == 0):
-                self.averages[i] = 1 #avoid division with zero
 
 
     def LoadOrCreateOutagePlan(self):
