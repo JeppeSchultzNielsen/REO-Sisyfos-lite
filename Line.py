@@ -29,7 +29,7 @@ class Line:
             #generate number between 0 and 1 - if below failure odds, unit fails. 
             rand = random.random()
             if(rand < self.failOdds):
-                print(f"{self.name} failed in hour {hour}")
+                #print(f"{self.name} failed in hour {hour}")
                 newFails += 1
         
         self.failedUnits += newFails
@@ -43,7 +43,7 @@ class Line:
         for k in range(self.failedUnits):
             rand = random.random()
             if(rand < regenOdds):
-                print(f"{self.name} healed in hour {hour}")
+                #print(f"{self.name} healed in hour {hour}")
                 newRegens += 1
         self.failedUnits -= newRegens
 
