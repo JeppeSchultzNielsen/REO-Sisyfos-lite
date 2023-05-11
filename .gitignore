@@ -5,4 +5,4 @@ data/TVAR.csv
 data/TVARUNFIXED.csv
 __pycache__
 pythonVenv
-results
+results/*
