@@ -410,6 +410,8 @@ class Simulation:
                 hasSurplus = False
             if(variableSurplus < 0):
                 hasVarSurplus = False
+            else:
+                surplus = variableSurplus
 
 
             if(hasSurplus and not hasVarSurplus):
