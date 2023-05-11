@@ -23,6 +23,7 @@ class Area:
 
         #variables in timeSeries are normalized, need normalizationfactors from SisyfosData, including the non timedependent production (nonTDProd)
         self.demand = Production(self.options,"demand"+self.name)
+        self.nonTDdemand = NonTDProduction(self.options,"RS_flat_"+self.name)
 
         self.productionList = []
         self.productionNames = []
@@ -37,12 +38,12 @@ class Area:
 
         self.LoadOrCreateOutagePlan()
 
-        self.productionList = self.productionList+self.nonTDProductionList
-        self.productionNames = self.productionNames+self.nonTDProductionNames
+        self.totProductionList = self.productionList+self.nonTDProductionList
+        self.totProductionNames = self.productionNames+self.nonTDProductionNames
 
     def GetDiagString(self):
         build = "Name\tType\tCapacity\tNoUnits\tPlannedOutage\tUnplannedOutage\tOutageTime\tHeatDep\tVariation\n"
-        printList = self.productionList.copy()
+        printList = self.totProductionList.copy()
         printList.append(self.demand)
         for i in range(len(printList)):
             for j in range(len(printList[i].nameList)):
@@ -197,12 +198,19 @@ class Area:
 
             if(factories[i].variation == "-" or factories[i].variation == "No_RoR"):
                 if(not type+"_"+self.name in self.nonTDProductionNames):
+                        if(type == "RS"):
+                            #is demand type.
+                            pass
+                        else:
                         #create new productiontype with this name.
-                        self.nonTDProductionList.append(NonTDProduction(self.options,type+"_"+self.name))
-                        self.nonTDProductionList[-1].SetHeatBinding(self.dh.GetTemperatureArray())
-                        self.nonTDProductionNames.append(type+"_"+self.name)
-                prodListIndex = self.nonTDProductionNames.index(type+"_"+self.name,0,len(self.nonTDProductionNames))
-                self.nonTDProductionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
+                            self.nonTDProductionList.append(NonTDProduction(self.options,type+"_"+self.name))
+                            self.nonTDProductionList[-1].SetHeatBinding(self.dh.GetTemperatureArray())
+                            self.nonTDProductionNames.append(type+"_"+self.name)
+                if(type == "RS"):
+                    self.nonTDdemand.AddProducer(name, -cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
+                else:
+                    prodListIndex = self.nonTDProductionNames.index(type+"_"+self.name,0,len(self.nonTDProductionNames))
+                    self.nonTDProductionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
             else: 
                 typeArea = factories[i].variation.split("_")
                 if(len(typeArea) == 1):
@@ -233,10 +241,15 @@ class Area:
             prod.CreateArrays()
         for prod in self.nonTDProductionList:
             prod.CreateArrays()
+        self.nonTDdemand.CreateArrays()
+        self.nonTDdemand.SetOutagePlan([],[])
+        self.nonTDdemand.SetHeatBinding(self.dh.GetTemperatureArray())
+        #nonTDdemand is not time dependent in any way - only need to prepare it once.
+        self.nonTDdemand.PrepareHour(0)
 
 
     def PrepareHour(self, hour: int):
-        for prod in self.productionList:
+        for prod in self.totProductionList:
             prod.PrepareHour(hour)
     
 
@@ -248,7 +261,7 @@ class Area:
 
     #must be able to return the production for a given type for a given hour
     def GetProduction(self, hour: int, typeIndex: int):
-        return self.productionList[typeIndex].GetCurrentValue(hour)
+        return self.totProductionList[typeIndex].GetCurrentValue(hour)
 
 
 
@@ -301,5 +314,5 @@ class Area:
         #demand in TVAR is given in units such that it sums to 1TWh over a year. So it is units of MWh. 
         #the factor is TWh. Means if we just multiply the timeSeries number with the factor, we get the
         #right total demand.
-        Final_demand = self.demand.GetCurrentValue(hour)
+        Final_demand = self.demand.GetCurrentValue(hour) + self.nonTDdemand.GetCurrentValue(hour)
         return Final_demand

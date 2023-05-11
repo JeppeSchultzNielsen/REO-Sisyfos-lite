@@ -20,6 +20,8 @@ class Line:
 
         self.currentAB = 0
         self.currentBA = 0
+        self.hourAB = 0
+        self.horBA = 0
 
 
     def PrepareHour(self, hour: int):
@@ -35,7 +37,9 @@ class Line:
         self.failedUnits += newFails
 
         self.currentAB = self.maxCapAB * (self.noUnits - self.failedUnits)/self.noUnits
+        self.hourAB = self.currentAB
         self.currentBA = self.maxCapBA * (self.noUnits - self.failedUnits)/self.noUnits
+        self.hourBA = self.currentBA
 
         #allow units to heal
         regenOdds = 1/self.avgDowntime

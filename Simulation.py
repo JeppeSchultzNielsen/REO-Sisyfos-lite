@@ -29,6 +29,10 @@ class Simulation:
 
         #list of productions in all areas
         self.productionList = np.zeros(len(self.nameList))
+        self.variableProductionList = np.zeros(len(self.nameList))
+
+        #how much production has "already been used" when doing simulations i multiple steps.
+        self.alreadyUsed = np.zeros(len(self.nameList))
 
         #initialize the lists
         for i in range(len(self.nameList)):
@@ -59,11 +63,15 @@ class Simulation:
 
         #we wish to know how much production there is of each type in each node.
         self.productionTypeNames = []
+        self.variableProductionNames = []
+        self.nonVariableProductionNames = []
         longestProd = 0
         for area in self.areaList:
-            self.productionTypeNames.append(area.productionNames)
+            self.productionTypeNames.append(area.totProductionNames)
+            self.variableProductionNames.append(area.productionNames)
+            self.nonVariableProductionNames.append(area.nonTDProductionNames)   
             if(len(area.productionNames) > longestProd):
-                longestProd = len(area.productionNames)
+                longestProd = len(area.totProductionNames)
         self.productionTypeMatrix = np.zeros([len(self.areaList),longestProd])
 
         #create file for saving output
@@ -226,20 +234,29 @@ class Simulation:
         for i in range(len(self.areaList)):
             area = self.areaList[i]
             area.PrepareHour(hour)
+            self.alreadyUsed = np.zeros(len(self.nameList))
             totalProduction = 0
+            totalVarProd = 0
 
             for j in range(len(self.productionTypeNames[i])):
                 prod = area.GetProduction(hour, j)
                 totalProduction += prod
+
                 self.productionTypeMatrix[i][j] = prod
+                if(j < len(self.areaList[i].productionList)):
+                    totalVarProd += prod
 
             self.productionList[i] = totalProduction
+            self.variableProductionList[i] = totalVarProd
             self.demandList[i] = area.GetDemand(hour)
 
+        #reset transferList
+        for i in range(len(self.transferList)):
+            #reset transferlist
+            self.transferList[i] = 0
+        
         for line in self.linesList:
             line.PrepareHour(hour)
-
-    
 
     #writes all current data to the output file
     def SaveData(self, hour: int):
@@ -266,8 +283,8 @@ class Simulation:
             currentUnplanned = 0
             for j in range(len(self.productionTypeNames[i])):
                 self.fileOut.write(f"{self.productionTypeMatrix[i][j]:.3f}" + "\t")
-                currentPlanned += self.areaList[i].productionList[j].GetCurrentPlannedOutage()
-                currentUnplanned += self.areaList[i].productionList[j].GetCurrentUnplannedOutage()
+                currentPlanned += self.areaList[i].totProductionList[j].GetCurrentPlannedOutage()
+                currentUnplanned += self.areaList[i].totProductionList[j].GetCurrentUnplannedOutage()
 
 
             self.fileOut.write(f"{currentPlanned}" + "\t")
@@ -279,6 +296,9 @@ class Simulation:
             i += 1
         for line in self.linesList:
             self.fileOut.write(f"{line.noUnits - line.failedUnits}" + "\t")
+
+
+
 
     #solves the MaxFlow problem under current conditions. 
     def SolveMaxFlowProblem(self):
@@ -295,10 +315,10 @@ class Simulation:
             #the variables are stored in pulp alphabetically, therefore should randomize first 3 letters of name. 
             #the "a" is necessary because pulp gets confused if variable names start with numbers
             varname = "a" + f"{shuffledNames[F_index]:03}" + self.linesList[i].GetName()
-            F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapAB())
+            F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentAB)
 
             varname = "a" + f"{shuffledNames[F_index+1]:03}" + self.linesList[i].GetName() + "_rev"
-            F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].GetMaxCapBA())
+            F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentBA)
             F_index += 2
 
 
@@ -309,7 +329,7 @@ class Simulation:
         #find demand and production in each node. 
         for i in range(len(self.nameList)):
             hasSurplus = True
-            surplus = self.productionList[i] - self.demandList[i]
+            surplus = self.productionList[i] - self.demandList[i] - self.alreadyUsed[i]
             if(surplus < 0):
                 hasSurplus = False
             
@@ -342,10 +362,88 @@ class Simulation:
         status = model.solve(GLPK_CMD(msg=False))
         #print(f"Solve model took {time.time() - model_begin}")
 
-        #reset transferList
-        for i in range(len(self.transferList)):
-            #reset transferlist
-            self.transferList[i] = 0
+        #save line output 
+        F_index = 0
+        variableList = model.variables()
+
+        #sometimes, for unknown reasons, a variable called "__dummy" is put in at the front. Remove it.
+        dLen = len(variableList) - len(F_vec)
+        variableList = variableList[dLen:]
+
+        for i in range(len(self.linesList)):
+            nonRevValue = variableList[shuffledNames[F_index]].value()
+            revValue = variableList[shuffledNames[F_index+1]].value()
+
+            self.transferList[i] += nonRevValue
+            self.transferList[i] -= revValue
+            F_index += 2
+
+
+
+
+
+
+    def SolveMaxFlowProblemStep1(self):
+        F_vec = np.empty(shape=2*self.numberOfLines, dtype = LpVariable)
+        shuffledNames = self.indexArray.copy()
+        np.random.shuffle(shuffledNames)
+    
+        F_index = 0
+
+        for i in range(len(self.linesList)):
+            varname = "a" + f"{shuffledNames[F_index]:03}" + self.linesList[i].GetName()
+            F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentAB)
+
+            varname = "a" + f"{shuffledNames[F_index+1]:03}" + self.linesList[i].GetName() + "_rev"
+            F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentBA)
+            F_index += 2
+
+        model = LpProblem(name="maxFlow", sense=LpMaximize)
+        obj_func = 0
+
+        for i in range(len(self.nameList)):
+            hasSurplus = True
+            hasVarSurplus = True
+            surplus = self.productionList[i] - self.demandList[i] - self.alreadyUsed[i]
+            variableSurplus = self.variableProductionList[i] - self.demandList[i] - self.alreadyUsed[i]
+            if(surplus < 0):
+                hasSurplus = False
+            if(variableSurplus < 0):
+                hasVarSurplus = False
+
+
+            if(hasSurplus and not hasVarSurplus):
+                #Hack to keep out nodes that only has surplus but not variable surplus.
+                surplus = 0
+
+            build = 0
+
+            for j in range(self.fromLength[i]): 
+                index = self.fromIndeces[i][j]
+                build -= F_vec[index]
+                index = self.toIndeces[i][j]
+                build += F_vec[index]
+
+            if(hasSurplus):
+                #if there is surplus, the flow out of the node should not be greater than the surplus.
+                model += (-build <= surplus, "constraint_demand_" + self.nameList[i])
+                #also, the flow into the node should not be greater than 0.
+                model += (build <= 0, "constraint_demand_0_" + self.nameList[i])
+            else:
+                #if there is not varSurplus, the flow into the node should not be greater than the demand.
+                model += (build <= -surplus, "constraint_demand_" + self.nameList[i])
+                #also, the flow out of the node should not be greater than 0.
+                model += (-build <= 0, "constraint_demand_0_" + self.nameList[i])
+                #also the total flow into the node should be maximized
+                obj_func += build
+    
+        #create objective for model
+        model += obj_func
+
+        #solve model
+        #model_begin = time.time()
+        status = model.solve(GLPK_CMD(msg=False))
+        #print(f"Solve model took {time.time() - model_begin}")
 
         #save line output 
         F_index = 0
@@ -363,25 +461,133 @@ class Simulation:
             self.transferList[i] -= revValue
             F_index += 2
 
+    def readjustParams(self):
+        for i in range(len(self.transferList)):
+            transfer = self.transferList[i]
+            fromInd = self.linesList[i].aIndex
+            toInd = self.linesList[i].bIndex
+            self.alreadyUsed[fromInd] += transfer
+            self.alreadyUsed[toInd] -= transfer
+            if(transfer > 0):
+                self.linesList[i].currentAB = self.linesList[i].hourAB - transfer #we already used som capacity in this direction
+            else:
+                self.linesList[i].currentBA = self.linesList[i].hourBA + transfer #we already used som capacity in this direction
+
+
+
+
+    def SolveMaxFlowProblemStep3(self):
+        F_vec = np.empty(shape=2*self.numberOfLines, dtype = LpVariable)
+        shuffledNames = self.indexArray.copy()
+        np.random.shuffle(shuffledNames)
+    
+        F_index = 0
+
+        for i in range(len(self.linesList)):
+            varname = "a" + f"{shuffledNames[F_index]:03}" + self.linesList[i].GetName()
+            F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentAB)
+
+            varname = "a" + f"{shuffledNames[F_index+1]:03}" + self.linesList[i].GetName() + "_rev"
+            F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentBA)
+            F_index += 2
+
+        model = LpProblem(name="maxFlow", sense=LpMaximize)
+        obj_func = LpVariable(name= "__dummy", lowBound = 0)
+
+        for i in range(len(self.nameList)):
+            hasSurplus = True
+            hasVarSurplus = True
+            surplus = self.productionList[i] - self.demandList[i] - self.alreadyUsed[i]
+            variableSurplus = self.variableProductionList[i] - self.demandList[i] - self.alreadyUsed[i]
+            if(surplus < 0):
+                hasSurplus = False
+            if(variableSurplus < 0):
+                hasVarSurplus = False
+
+
+            build = []
+
+            for j in range(self.fromLength[i]): 
+                index = self.fromIndeces[i][j]
+                build -= F_vec[index]
+                index = self.toIndeces[i][j]
+                build += F_vec[index]
+
+            if(hasVarSurplus):
+                #if there is surplus, the flow out of the node should not be greater than the surplus.
+                model += (-build <= variableSurplus, "constraint_demand_" + self.nameList[i])
+                #also, the flow into the node should not be greater than 0.
+                model += (build <= 0, "constraint_demand_0_" + self.nameList[i])
+            else:
+                #if there is not varSurplus, the flow into the node should not be greater than the demand.
+                model += (build <= -variableSurplus, "constraint_demand_" + self.nameList[i])
+                #also, the flow out of the node should not be greater than 0.
+                model += (-build <= 0, "constraint_demand_0_" + self.nameList[i])
+                #also the total flow into the node should be maximized
+    
+        #create objective for model
+        model += obj_func
+        #solve model
+        #model_begin = time.time()
+        status = model.solve(GLPK_CMD(msg=False))
+        #print(f"Solve model took {time.time() - model_begin}")
+
+        #save line output 
+        F_index = 0
+        variableList = model.variables()
+
+        #sometimes, for unknown reasons, a variable called "__dummy" is put in at the front. Remove it.
+        dLen = len(variableList) - len(F_vec)
+        variableList = variableList[dLen:]
+
+        for i in range(len(self.linesList)):
+            nonRevValue = variableList[shuffledNames[F_index]].value()
+            revValue = variableList[shuffledNames[F_index+1]].value()
+
+            self.transferList[i] += nonRevValue
+            self.transferList[i] -= revValue
+            F_index += 2
+
+
     #Running the simulation
     def RunSimulation(self, beginHour: int, endHour: int):
         #prev_time = time.time()
-        for i in range(beginHour, endHour):
-            #start_time = time.time()
-            if(i%100 == 0):
-                print(f"{self.saveFilePath}: starting hour {i}")
-            self.PrepareHour(i)
-            #prep_time = time.time()
-            #print(f"Prepare hour took {prep_time-start_time}")
-            self.SolveMaxFlowProblem()
-            #solve_time = time.time()
-            #print(f"Solve maxflow took {solve_time-prep_time}")
-            if(self.saving):
-                self.SaveData(i)
-            #ave_time = time.time()
-            #print(f"Save took {save_time-solve_time}")
-            #print(f"Total time is {time.time()-prev_time}")
-            #prev_time = time.time()
+        if(not self.options.prioritizeVariableProduction):
+            for i in range(beginHour, endHour):
+                #start_time = time.time()
+                if(i%100 == 0):
+                    print(f"{self.saveFilePath}: starting hour {i}")
+                self.PrepareHour(i)
+                #prep_time = time.time()
+                #print(f"Prepare hour took {prep_time-start_time}")
+                self.SolveMaxFlowProblem()
+                #solve_time = time.time()
+                #print(f"Solve maxflow took {solve_time-prep_time}")
+                if(self.saving):
+                    self.SaveData(i)
+                #ave_time = time.time()
+                #print(f"Save took {save_time-solve_time}")
+                #print(f"Total time is {time.time()-prev_time}")
+                #prev_time = time.time()
+        else:
+            for i in range(beginHour, endHour):
+                if(i%1 == 0):
+                    print(f"{self.saveFilePath}: starting hour {i}")
+                #priority is still to have minimal EENS. Therefore solve first problem by maximizing flow of variable production to nodes which are in need. 
+                self.PrepareHour(i)
+                self.SolveMaxFlowProblemStep1()
+                #readjust model parameters becomes some capacity has already been used
+                self.readjustParams()
+                #priority is still to have minimal EENS. Therefore solve then problem by maximizing flow of total production to nodes which are in need. 
+                #run model again, this time to maximize use of renewables.
+                self.SolveMaxFlowProblem()
+                self.readjustParams()
+                #now maximize use of "uregulerbar produktion". 
+                self.SolveMaxFlowProblemStep3()
+
+                if(self.saving):
+                    self.SaveData(i)
+
 
         if(self.saving):
             self.fileOut.close()
