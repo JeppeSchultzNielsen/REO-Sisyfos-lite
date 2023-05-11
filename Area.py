@@ -197,30 +197,30 @@ class Area:
             type = type
 
             if(factories[i].variation == "-" or factories[i].variation == "No_RoR"):
-                if(not type+"_"+self.name in self.nonTDProductionNames):
+                if(not self.name+"_"+type in self.nonTDProductionNames):
                         if(type == "RS"):
                             #is demand type.
                             pass
                         else:
                         #create new productiontype with this name.
-                            self.nonTDProductionList.append(NonTDProduction(self.options,type+"_"+self.name))
+                            self.nonTDProductionList.append(NonTDProduction(self.options,self.name+"_"+type))
                             self.nonTDProductionList[-1].SetHeatBinding(self.dh.GetTemperatureArray())
-                            self.nonTDProductionNames.append(type+"_"+self.name)
+                            self.nonTDProductionNames.append(self.name+"_"+type)
                 if(type == "RS"):
                     self.nonTDdemand.AddProducer(name, -cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
                 else:
-                    prodListIndex = self.nonTDProductionNames.index(type+"_"+self.name,0,len(self.nonTDProductionNames))
+                    prodListIndex = self.nonTDProductionNames.index(self.name+"_"+type,0,len(self.nonTDProductionNames))
                     self.nonTDProductionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
             else: 
                 typeArea = factories[i].variation.split("_")
                 if(len(typeArea) == 1):
                     prodType = typeArea[0]
                     varIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
-                    if(not type+"_"+self.name in self.productionNames):
+                    if(not self.name+"_"+type in self.productionNames):
                         #create new productiontype with this name.
-                        self.productionList.append(Production(self.options,type+"_"+self.name))
-                        self.productionNames.append(type+"_"+self.name)
-                    prodListIndex = self.productionNames.index(type+"_"+self.name,0,len(self.productionNames))
+                        self.productionList.append(Production(self.options,self.name+"_"+type))
+                        self.productionNames.append(self.name+"_"+type)
+                    prodListIndex = self.productionNames.index(self.name+"_"+type,0,len(self.productionNames))
                     self.productionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.timeSeriesProductionList[varIndex])
                 else: 
                     prodType = typeArea[0].rstrip().lower()
@@ -230,11 +230,11 @@ class Area:
                     if(not areaIndex == self.nodeIndex):
                         #the timeseries for this node is the same is the timeseries for a different node; update.
                         print("For production of " + name + " in " + self.name + " using time series from " + area)
-                    if(not type+"_"+self.name in self.productionNames):
+                    if(not self.name+"_"+type in self.productionNames):
                         #create new productiontype with this name.
-                        self.productionList.append(Production(self.options,type+"_"+self.name))
-                        self.productionNames.append(type+"_"+self.name)
-                    prodListIndex = self.productionNames.index(type+"_"+self.name,0,len(self.productionNames))
+                        self.productionList.append(Production(self.options,self.name+"_"+type))
+                        self.productionNames.append(self.name+"_"+type)
+                    prodListIndex = self.productionNames.index(self.name+"_"+type,0,len(self.productionNames))
                     self.productionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.dh.prodTimeSeriesArray[areaIndex][varIndex])
 
         for prod in self.productionList:
@@ -307,7 +307,7 @@ class Area:
 
         demand = demandFactor * relativeFactor
 
-        self.demand.AddProducer("demand" + self.name, demand, 1, 0, 0, 0, 0, "demand", self.name + "demand", self.demandTimeSeries)
+        self.demand.AddProducer("demand_" + self.name, demand, 1, 0, 0, 0, 0, "demand", self.name + "demand", self.demandTimeSeries)
         self.demand.CreateArrays()
 
     def GetDemand(self, hour: int):
