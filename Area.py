@@ -29,6 +29,7 @@ class Area:
         self.productionNames = []
         self.nonTDProductionList = []
         self.nonTDProductionNames = []
+        self.variableProd = []
 
         #list of timeSeries in same order as productionList.
         self.timeSeriesProductionList = dh.GetProdTimeSeriesArray(nodeIndex)
@@ -214,12 +215,15 @@ class Area:
             else: 
                 typeArea = factories[i].variation.split("_")
                 if(len(typeArea) == 1):
+                    #this is ICHP
                     prodType = typeArea[0]
                     varIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
                     if(not self.name+"_"+type in self.productionNames):
                         #create new productiontype with this name.
                         self.productionList.append(Production(self.options,self.name+"_"+type))
                         self.productionNames.append(self.name+"_"+type)
+                        #append this same production to variableProd.
+                        self.variableProd.append(self.productionList[-1])
                     prodListIndex = self.productionNames.index(self.name+"_"+type,0,len(self.productionNames))
                     self.productionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.timeSeriesProductionList[varIndex])
                 else: 
@@ -234,6 +238,9 @@ class Area:
                         #create new productiontype with this name.
                         self.productionList.append(Production(self.options,self.name+"_"+type))
                         self.productionNames.append(self.name+"_"+type)
+                        if(prodType in ("pv","ws","wl","csp","hy","otherres","othernonres","ichp")):
+                            #append this same production to variableProd.
+                            self.variableProd.append(self.productionList[-1])
                     prodListIndex = self.productionNames.index(self.name+"_"+type,0,len(self.productionNames))
                     self.productionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.dh.prodTimeSeriesArray[areaIndex][varIndex])
 

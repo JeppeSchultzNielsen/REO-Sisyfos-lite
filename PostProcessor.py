@@ -47,14 +47,14 @@ class PostProcessor:
                              "NuclearCZSK",
                              "NuclearHU",
                              "OtherNONRE",
-                             "OntherNonRes_NO",
-                             "OntherNonRes_AT",
-                             "OntherNonRes_NL",
-                             "OntherNonRes_GB",
-                             "OntherNonRes_FR",
-                             "OntherNonRes_BE",
-                             "OntherNonRes_CH",
-                             "OntherNonRes_EELVLT",
+                             "OtherNonRes_NO",
+                             "OtherNonRes_AT",
+                             "OtherNonRes_NL",
+                             "OtherNonRes_GB",
+                             "OtherNonRes_FR",
+                             "OtherNonRes_BE",
+                             "OtherNonRes_CH",
+                             "OtherNonRes_EELVLT",
                              "Peat",
                              "GasUdland",
                              "KulUdland",
@@ -66,21 +66,46 @@ class PostProcessor:
         self.names = ["DK1", "DK2", "DKBO", "DKKF", "DKEI", "NOn","NOm","NOs","SE1","SE2","SE3","SE4","FI","DELU","AT","NL","GB","FR","BE","ESPT","CH","IT","EELVLT", "PL", "CZSK","HU"]
 
     def process(self, toProcess: str, writeTo: str):
-        node1 = Node("DELU")
-        pass
+        nodes = []
+        for i in range(len(self.names)):
+            nodes.append(Node(self.names[i]))
+
+        f = open(toProcess,"r")
+        w = open(writeTo,"w")
+        header = f.readline()
+        w.write(header)
+
+        splittedHeader = header.split("\t")
+        for i in range(len(nodes)):
+            nodes[i].readHeader(splittedHeader)
         
+        moreTxt = True
+        lineNo = 0
+        while(moreTxt):
+            if(lineNo%1000 == 0):
+                print("Post processing " + toProcess +": line " + str(lineNo))
+            line = f.readline()
+            moreTxt = line
+            if(not moreTxt): 
+                continue
+            splittedLine = line.rstrip().split("\t")
+            for node in nodes:
+                node.readHour(splittedLine)
+                node.adjustProduction()
+                for i in range(len(node.prodIndexesInHeader)):
+                    splittedLine[node.prodIndexesInHeader[i]] = f"{node.shouldBe[node.prodIndexesInValues[i]]:.7f}"
+            toWrite = ""
+            for i in range(len(splittedLine)):
+                toWrite += splittedLine[i]+"\t"
+            toWrite +="\n"
+            w.write(toWrite)
+            lineNo += 1
 
-
-class Entry:
-    def __init__(self, index):
-        self.index = index
-        self.positiveTo = float("Nan")
-        self.negativeTo = float("Nan")
 
 class Node: 
     def __init__(self, name):
         self.currentHourValues = np.zeros(len(PostProcessor().priorityList))
-        self.prodIndexesInheader = []
+        self.prodIndexesInHeader = []
         self.prodIndexesInValues = []
         self.priorityList = PostProcessor().priorityList
         self.shouldBe = np.zeros(len(self.priorityList))
@@ -93,9 +118,13 @@ class Node:
 
     def readHeader(self, splittedHeader):
         for i in range(len(splittedHeader)):
-            spl = splittedHeader[i].split("_")
+            spl = splittedHeader[i].rstrip().split("_")
+            if(len(spl) < 2):
+                continue
             if(spl[1] == "to"):
                 #this is a line
+                if(spl[-1] == "units"):
+                    continue
                 if(spl[0] == self.name):
                     self.fromIndeces.append(i)
                 if(spl[2] == self.name):
@@ -103,19 +132,47 @@ class Node:
             else:
                 #this is not a line
                 if(spl[0] == self.name):
-                    if(spl[1] in ("EENS","surplus","plannedOutage","unplannedOutage")):
+                    if(spl[1] in ("EENS","surplus","plannedOutage","unplannedOutage","varSurplus","netImport")):
                        continue
                     if(spl[1] == "demand"):
                        self.demandIndex = i
                     else:
-                        #it's a type of production.
+                        #it's a type of production. Join the string after node name again. 
+                        prodName = spl[1]
+                        for j in range(len(spl)-2):
+                            prodName += "_"+spl[j+2]
                         found = False
                         for j in range(len(self.priorityList)):
-                            if( spl[1] == self.priorityList[j]):
+                            if(prodName == self.priorityList[j]):
                                 found = True
-                                self.prodIndexesInheader.append(i)
+                                self.prodIndexesInHeader.append(i)
                                 self.prodIndexesInValues.append(j)
                         if(not found):
                             print("Error: did not expect " + splittedHeader[i])
+
+    def readHour(self, splittedLine):
+        self.demandValue = float(splittedLine[self.demandIndex])
+        for i in range(len(self.prodIndexesInHeader)):
+            self.currentHourValues[self.prodIndexesInValues[i]] = float(splittedLine[self.prodIndexesInHeader[i]])
+
+        self.currentNetImport = 0
+        for i in range(len(self.toIndeces)):
+            self.currentNetImport += float(splittedLine[self.toIndeces[i]])
+            #print(splittedLine[self.toIndeces[i]])
+
+        for i in range(len(self.fromIndeces)):
+            self.currentNetImport -= float(splittedLine[self.fromIndeces[i]])
+            #print(splittedLine[self.fromIndeces[i]])
+
+    def adjustProduction(self):
+        target = (self.demandValue - self.currentNetImport)
+        sum = 0
+        for i in range(len(self.shouldBe)):
+            if( (sum + self.currentHourValues[i]) < target):
+                self.shouldBe[i] = self.currentHourValues[i]
+                sum += self.currentHourValues[i]
+            else:
+                self.shouldBe[i] = target - sum
+                sum += target - sum
 
 

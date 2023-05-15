@@ -76,58 +76,64 @@ class Simulation:
 
         #create file for saving output
         if(self.saving):
-            self.fileOut = open(self.saveFilePath, "w+")
-            #create header
-            self.fileOut.write("hour"+"\t")
-            for i in range(len(self.nameList)):
-                name = self.nameList[i]
-                self.fileOut.write(name + "_" + "demand" + "\t")
-                self.fileOut.write(name + "_" + "surplus" + "\t")
-                self.fileOut.write(name + "_" + "EENS" + "\t")
-                for prodname in self.productionTypeNames[i]:
-                    self.fileOut.write(prodname + "\t")
-                self.fileOut.write(name + "_"+"plannedOutage" + "\t")
-                self.fileOut.write(name + "_"+"unplannedOutage" + "\t")
-            for line in self.linesList:
-                self.fileOut.write(line.GetName() + "\t")
-            for line in self.linesList:
-                self.fileOut.write(line.GetName() +"_units"+ "\t")
+            self.InitializeFile()
         
         if(saveDiagnosticsFile):
-            diagFile = open(self.saveFilePath[:-4]+"Diag.txt", "w+")
-            diagFile.write("Information about parameters in run for file " + self.saveFilePath+"\n")
-            diagFile.write("Options: \n")
-            diagFile.write("Simulation year: " + str(self.simulationYear) + "\n")
-            diagFile.write("Climate year: " + str(self.climateYear) + "\n")
-            diagFile.write("TYNDP report: " + str(dh.demandYear) + "\n")
-            diagFile.write("UsePlannedDownTime: " + str(options.usePlannedDownTime) + "\n")
-            diagFile.write("UseUnplannedDownTime: " + str(options.useUnplannedDownTime) + "\n")
-            diagFile.write("demFlexKlassisk: " + str(options.demFlexKlassisk) + "\n")
-            diagFile.write("demFlexCVP: " + str(options.demFlexCVP) + "\n")
-            diagFile.write("demFlexPtX: " + str(options.demFlexPtX) + "\n")
-            diagFile.write("demFlexTransport: " + str(options.demFlexTransport) + "\n")
-            diagFile.write("Storebaelt2: " + str(options.storebaelt2) + "\n")
-            diagFile.write("oresundOpen: " + str(options.oresundOpen) + "\n")
-            diagFile.write("EnergyIslandEast: " + str(options.energyIslandEast) + "\n")
-            diagFile.write("EnergyIslandWest: " + str(options.energyIslandWest) + "\n")
-
-
-            for i in range(len(self.areaList)):
-                diagFile.write(self.areaList[i].name+"\n")
-                diagFile.write(self.areaList[i].GetDiagString()+"\n")
-
-                diagFile.write("\n")
-
-            diagFile.write("Lines: \n")
-            diagFile.write("Name\tCapAB\tcapBA\tnoUnits\tDowntime\tDowntimeDuration\n")
-            for i in range(len(self.linesList)):
-                diagFile.write(str(self.linesList[i].name) +"\t"+str(self.linesList[i].maxCapAB)+"\t"+str(self.linesList[i].maxCapBA)+
-                               "\t"+str(self.linesList[i].noUnits)+"\t"+str(self.linesList[i].failureProb)
-                               +"\t"+str(self.linesList[i].avgDowntime)+"\n")
+            self.CreateDiagFile()
                 
 
+    def InitializeFile(self):
+        self.fileOut = open(self.saveFilePath, "w+")
+        #create header
+        self.fileOut.write("hour"+"\t")
+        for i in range(len(self.nameList)):
+            name = self.nameList[i]
+            self.fileOut.write(name + "_" + "demand" + "\t")
+            self.fileOut.write(name + "_" + "surplus" + "\t")
+            self.fileOut.write(name + "_" + "varSurplus" + "\t")
+            self.fileOut.write(name + "_" + "netImport" + "\t")
+            self.fileOut.write(name + "_" + "EENS" + "\t")
+            for prodname in self.productionTypeNames[i]:
+                self.fileOut.write(prodname + "\t")
+            self.fileOut.write(name + "_"+"plannedOutage" + "\t")
+            self.fileOut.write(name + "_"+"unplannedOutage" + "\t")
+        for line in self.linesList:
+            self.fileOut.write(line.GetName() + "\t")
+        for line in self.linesList:
+            self.fileOut.write(line.GetName() +"_units"+ "\t")
 
 
+    def CreateDiagFile(self):
+        diagFile = open(self.saveFilePath[:-4]+"Diag.txt", "w+")
+        diagFile.write("Information about parameters in run for file " + self.saveFilePath+"\n")
+        diagFile.write("Options: \n")
+        diagFile.write("Simulation year: " + str(self.simulationYear) + "\n")
+        diagFile.write("Climate year: " + str(self.climateYear) + "\n")
+        diagFile.write("TYNDP report: " + str(self.dh.demandYear) + "\n")
+        diagFile.write("UsePlannedDownTime: " + str(self.options.usePlannedDownTime) + "\n")
+        diagFile.write("UseUnplannedDownTime: " + str(self.options.useUnplannedDownTime) + "\n")
+        diagFile.write("demFlexKlassisk: " + str(self.options.demFlexKlassisk) + "\n")
+        diagFile.write("demFlexCVP: " + str(self.options.demFlexCVP) + "\n")
+        diagFile.write("demFlexPtX: " + str(self.options.demFlexPtX) + "\n")
+        diagFile.write("demFlexTransport: " + str(self.options.demFlexTransport) + "\n")
+        diagFile.write("Storebaelt2: " + str(self.options.storebaelt2) + "\n")
+        diagFile.write("oresundOpen: " + str(self.options.oresundOpen) + "\n")
+        diagFile.write("EnergyIslandEast: " + str(self.options.energyIslandEast) + "\n")
+        diagFile.write("EnergyIslandWest: " + str(self.options.energyIslandWest) + "\n")
+
+
+        for i in range(len(self.areaList)):
+            diagFile.write(self.areaList[i].name+"\n")
+            diagFile.write(self.areaList[i].GetDiagString()+"\n")
+
+            diagFile.write("\n")
+
+        diagFile.write("Lines: \n")
+        diagFile.write("Name\tCapAB\tcapBA\tnoUnits\tDowntime\tDowntimeDuration\n")
+        for i in range(len(self.linesList)):
+            diagFile.write(str(self.linesList[i].name) +"\t"+str(self.linesList[i].maxCapAB)+"\t"+str(self.linesList[i].maxCapBA)+
+                            "\t"+str(self.linesList[i].noUnits)+"\t"+str(self.linesList[i].failureProb)
+                            +"\t"+str(self.linesList[i].avgDowntime)+"\n")
 
     #helper function for initializing all lines
     def InitializeLines(self):
@@ -243,8 +249,9 @@ class Simulation:
                 totalProduction += prod
 
                 self.productionTypeMatrix[i][j] = prod
-                if(j < len(self.areaList[i].productionList)):
-                    totalVarProd += prod
+            for j in range(len(self.areaList[i].variableProd)):
+                prod = self.areaList[i].variableProd[j].GetCurrentValue(hour)
+                totalVarProd += prod
 
             self.productionList[i] = totalProduction
             self.variableProductionList[i] = totalVarProd
@@ -266,13 +273,18 @@ class Simulation:
         for name in self.nameList:
             self.fileOut.write(f"{self.demandList[i]:.3f}" + "\t")
             self.fileOut.write(f"{self.productionList[i]-self.demandList[i]:.3f}" + "\t")
-
+            self.fileOut.write(f"{self.variableProductionList[i]-self.demandList[i]:.3f}" + "\t")
             EENS = self.productionList[i]-self.demandList[i]
+            netImport = 0
             for j in range(len(self.linesList)):
                 if(name == self.linesList[j].GetA()):
                     EENS -= self.transferList[j]
+                    netImport -= self.transferList[j]
                 if(name == self.linesList[j].GetB()):
                     EENS += self.transferList[j]
+                    netImport += self.transferList[j]
+
+            self.fileOut.write(f"{netImport:.3f}" + "\t")
 
             EENS = - EENS
             if(EENS < 0):
@@ -301,7 +313,7 @@ class Simulation:
 
 
     #solves the MaxFlow problem under current conditions. 
-    def SolveMaxFlowProblem(self):
+    def SolveMaxFlowProblem(self, step):
         #now, solve Maxflow Problem. I suspect that Pulp likes to minimize all variables from the start, and then adjusts the model until
         #solution is found. Therefore there is asymmetry as the "direction" of a line impacts the
         #results. Therefore all lines should be seperated, such that for example the "DK1_to_DK2" line have both "DK1_to_DK2" and "DK2_to_DK1".
@@ -329,9 +341,26 @@ class Simulation:
         #find demand and production in each node. 
         for i in range(len(self.nameList)):
             hasSurplus = True
+            hasVarSurplus = True
             surplus = self.productionList[i] - self.demandList[i] - self.alreadyUsed[i]
-            if(surplus < 0):
-                hasSurplus = False
+            variableSurplus = self.variableProductionList[i] - self.demandList[i] - self.alreadyUsed[i]
+            if(step == 0):
+                if(surplus < 0):
+                    hasSurplus = False
+                if(variableSurplus < 0):
+                    hasVarSurplus = False
+                else:
+                    surplus = variableSurplus
+                if(hasSurplus and not hasVarSurplus):
+                #Hack to keep out nodes that only has surplus but not variable surplus.
+                    surplus = 0
+            if(step == 1):
+                if(surplus < 0):
+                    hasSurplus = False
+            if(step == 2):
+                surplus = variableSurplus
+                if(surplus < 0):
+                    hasSurplus = False
             
             build = 0
 
@@ -356,7 +385,6 @@ class Simulation:
     
         #create objective for model
         model += obj_func
-
         #solve model
         #model_begin = time.time()
         status = model.solve(GLPK_CMD(msg=False))
@@ -378,92 +406,9 @@ class Simulation:
             self.transferList[i] -= revValue
             F_index += 2
 
-
-
-
-
-
-    def SolveMaxFlowProblemStep1(self):
-        F_vec = np.empty(shape=2*self.numberOfLines, dtype = LpVariable)
-        shuffledNames = self.indexArray.copy()
-        np.random.shuffle(shuffledNames)
-    
-        F_index = 0
-
-        for i in range(len(self.linesList)):
-            varname = "a" + f"{shuffledNames[F_index]:03}" + self.linesList[i].GetName()
-            F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentAB)
-
-            varname = "a" + f"{shuffledNames[F_index+1]:03}" + self.linesList[i].GetName() + "_rev"
-            F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentBA)
-            F_index += 2
-
-        model = LpProblem(name="maxFlow", sense=LpMaximize)
-        obj_func = 0
-
-        for i in range(len(self.nameList)):
-            hasSurplus = True
-            hasVarSurplus = True
-            surplus = self.productionList[i] - self.demandList[i] - self.alreadyUsed[i]
-            variableSurplus = self.variableProductionList[i] - self.demandList[i] - self.alreadyUsed[i]
-            if(surplus < 0):
-                hasSurplus = False
-            if(variableSurplus < 0):
-                hasVarSurplus = False
-            else:
-                surplus = variableSurplus
-
-
-            if(hasSurplus and not hasVarSurplus):
-                #Hack to keep out nodes that only has surplus but not variable surplus.
-                surplus = 0
-
-            build = 0
-
-            for j in range(self.fromLength[i]): 
-                index = self.fromIndeces[i][j]
-                build -= F_vec[index]
-                index = self.toIndeces[i][j]
-                build += F_vec[index]
-
-            if(hasSurplus):
-                #if there is surplus, the flow out of the node should not be greater than the surplus.
-                model += (-build <= surplus, "constraint_demand_" + self.nameList[i])
-                #also, the flow into the node should not be greater than 0.
-                model += (build <= 0, "constraint_demand_0_" + self.nameList[i])
-            else:
-                #if there is not varSurplus, the flow into the node should not be greater than the demand.
-                model += (build <= -surplus, "constraint_demand_" + self.nameList[i])
-                #also, the flow out of the node should not be greater than 0.
-                model += (-build <= 0, "constraint_demand_0_" + self.nameList[i])
-                #also the total flow into the node should be maximized
-                obj_func += build
-    
-        #create objective for model
-        model += obj_func
-
-        #solve model
-        #model_begin = time.time()
-        status = model.solve(GLPK_CMD(msg=False))
-        #print(f"Solve model took {time.time() - model_begin}")
-
-        #save line output 
-        F_index = 0
-        variableList = model.variables()
-
-        #sometimes, for unknown reasons, a variable called "__dummy" is put in at the front. Remove it.
-        dLen = len(variableList) - len(F_vec)
-        variableList = variableList[dLen:]
-
-        for i in range(len(self.linesList)):
-            nonRevValue = variableList[shuffledNames[F_index]].value()
-            revValue = variableList[shuffledNames[F_index+1]].value()
-
-            self.transferList[i] += nonRevValue
-            self.transferList[i] -= revValue
-            F_index += 2
 
     def readjustParams(self):
+        self.alreadyUsed = np.zeros(len(self.nameList))
         for i in range(len(self.transferList)):
             transfer = self.transferList[i]
             fromInd = self.linesList[i].aIndex
@@ -474,81 +419,6 @@ class Simulation:
                 self.linesList[i].currentAB = self.linesList[i].hourAB - transfer #we already used som capacity in this direction
             else:
                 self.linesList[i].currentBA = self.linesList[i].hourBA + transfer #we already used som capacity in this direction
-
-
-
-
-    def SolveMaxFlowProblemStep3(self):
-        F_vec = np.empty(shape=2*self.numberOfLines, dtype = LpVariable)
-        shuffledNames = self.indexArray.copy()
-        np.random.shuffle(shuffledNames)
-    
-        F_index = 0
-
-        for i in range(len(self.linesList)):
-            varname = "a" + f"{shuffledNames[F_index]:03}" + self.linesList[i].GetName()
-            F_vec[F_index] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentAB)
-
-            varname = "a" + f"{shuffledNames[F_index+1]:03}" + self.linesList[i].GetName() + "_rev"
-            F_vec[F_index+1] = LpVariable(name= varname, lowBound = 0, upBound = self.linesList[i].currentBA)
-            F_index += 2
-
-        model = LpProblem(name="maxFlow", sense=LpMaximize)
-        obj_func = LpVariable(name= "__dummy", lowBound = 0)
-
-        for i in range(len(self.nameList)):
-            hasSurplus = True
-            hasVarSurplus = True
-            surplus = self.productionList[i] - self.demandList[i] - self.alreadyUsed[i]
-            variableSurplus = self.variableProductionList[i] - self.demandList[i] - self.alreadyUsed[i]
-            if(surplus < 0):
-                hasSurplus = False
-            if(variableSurplus < 0):
-                hasVarSurplus = False
-
-
-            build = []
-
-            for j in range(self.fromLength[i]): 
-                index = self.fromIndeces[i][j]
-                build -= F_vec[index]
-                index = self.toIndeces[i][j]
-                build += F_vec[index]
-
-            if(hasVarSurplus):
-                #if there is surplus, the flow out of the node should not be greater than the surplus.
-                model += (-build <= variableSurplus, "constraint_demand_" + self.nameList[i])
-                #also, the flow into the node should not be greater than 0.
-                model += (build <= 0, "constraint_demand_0_" + self.nameList[i])
-            else:
-                #if there is not varSurplus, the flow into the node should not be greater than the demand.
-                model += (build <= -variableSurplus, "constraint_demand_" + self.nameList[i])
-                #also, the flow out of the node should not be greater than 0.
-                model += (-build <= 0, "constraint_demand_0_" + self.nameList[i])
-                #also the total flow into the node should be maximized
-    
-        #create objective for model
-        model += obj_func
-        #solve model
-        #model_begin = time.time()
-        status = model.solve(GLPK_CMD(msg=False))
-        #print(f"Solve model took {time.time() - model_begin}")
-
-        #save line output 
-        F_index = 0
-        variableList = model.variables()
-
-        #sometimes, for unknown reasons, a variable called "__dummy" is put in at the front. Remove it.
-        dLen = len(variableList) - len(F_vec)
-        variableList = variableList[dLen:]
-
-        for i in range(len(self.linesList)):
-            nonRevValue = variableList[shuffledNames[F_index]].value()
-            revValue = variableList[shuffledNames[F_index+1]].value()
-
-            self.transferList[i] += nonRevValue
-            self.transferList[i] -= revValue
-            F_index += 2
 
 
     #Running the simulation
@@ -562,7 +432,7 @@ class Simulation:
                 self.PrepareHour(i)
                 #prep_time = time.time()
                 #print(f"Prepare hour took {prep_time-start_time}")
-                self.SolveMaxFlowProblem()
+                self.SolveMaxFlowProblem(1)
                 #solve_time = time.time()
                 #print(f"Solve maxflow took {solve_time-prep_time}")
                 if(self.saving):
@@ -575,17 +445,12 @@ class Simulation:
             for i in range(beginHour, endHour):
                 if(i%1 == 0):
                     print(f"{self.saveFilePath}: starting hour {i}")
-                #priority is still to have minimal EENS. Therefore solve first problem by maximizing flow of variable production to nodes which are in need. 
                 self.PrepareHour(i)
-                self.SolveMaxFlowProblemStep1()
-                #readjust model parameters becomes some capacity has already been used
+                self.SolveMaxFlowProblem(0)
                 self.readjustParams()
-                #priority is still to have minimal EENS. Therefore solve then problem by maximizing flow of total production to nodes which are in need. 
-                #run model again, this time to maximize use of renewables.
-                self.SolveMaxFlowProblem()
+                self.SolveMaxFlowProblem(1)
                 self.readjustParams()
-                #now maximize use of "uregulerbar produktion". 
-                self.SolveMaxFlowProblemStep3()
+                self.SolveMaxFlowProblem(2)
 
                 if(self.saving):
                     self.SaveData(i)
