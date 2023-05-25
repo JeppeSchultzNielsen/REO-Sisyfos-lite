@@ -195,8 +195,6 @@ class Area:
             outageTime = self.dh.outageDict[type].outageTime
             heatDep = self.dh.outageDict[type].heatDep
 
-            type = type
-
             if(factories[i].variation == "-" or factories[i].variation == "No_RoR"):
                 if(not self.name+"_"+type in self.nonTDProductionNames):
                         if(type == "RS"):
@@ -215,7 +213,7 @@ class Area:
             else: 
                 typeArea = factories[i].variation.split("_")
                 if(len(typeArea) == 1):
-                    #this is ICHP
+                    #this is ICHP, all others have len 2 when splitted 
                     prodType = typeArea[0]
                     varIndex = self.dh.productionTypes.index(prodType, 0, len(self.dh.productionTypes))
                     if(not self.name+"_"+type in self.productionNames):
@@ -226,7 +224,7 @@ class Area:
                         self.variableProd.append(self.productionList[-1])
                     prodListIndex = self.productionNames.index(self.name+"_"+type,0,len(self.productionNames))
                     self.productionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation, self.timeSeriesProductionList[varIndex])
-                else: 
+                else:  
                     prodType = typeArea[0].rstrip().lower()
                     area = typeArea[1].rstrip().lower()
                     varIndex = self.dh.GetProductionIndex(prodType)

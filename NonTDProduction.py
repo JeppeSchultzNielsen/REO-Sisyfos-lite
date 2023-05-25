@@ -102,7 +102,6 @@ class NonTDProduction(Production):
         #if this is the first hour, initialize failedUnits
         if(not self.failedUnitsInitialized):
             self.InitializeFailedUnits(hour)
-        
 
         #iterate over all plants to get the total production in this hour
         self.currentValue = 0; 

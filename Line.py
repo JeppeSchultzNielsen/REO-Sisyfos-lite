@@ -21,7 +21,18 @@ class Line:
         self.currentAB = 0
         self.currentBA = 0
         self.hourAB = 0
-        self.horBA = 0
+        self.hourBA = 0
+        newFails = 0
+
+        #initialize line with failed units with some probability
+        for i in range(self.noUnits - self.failedUnits):
+            #generate number between 0 and 1 - if below failure odds, unit fails. 
+            rand = random.random()
+            if(rand < failureProbability):
+                #print(f"{self.name} failed in hour {hour}")
+                newFails += 1
+        
+        self.failedUnits += newFails
 
 
     def PrepareHour(self, hour: int):
