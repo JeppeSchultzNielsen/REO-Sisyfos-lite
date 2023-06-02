@@ -1,0 +1,59 @@
+\contentsline {section}{\numberline {1}Introduktion}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Sisyfos}{1}{subsection.1.1}%
+\contentsline {section}{\numberline {2}Quickstart guide}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Et andet eksempel på en main fil}{3}{subsection.2.1}%
+\contentsline {section}{\numberline {3}Overordnet beskrivelse}{4}{section.3}%
+\contentsline {section}{\numberline {4}Input-data}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}TVAR.csv}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}demands.txt}{6}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}relativeDemands2025.txt og relativeDemands2030.txt}{6}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}DK1Demand.txt og DK2Demand.txt}{6}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}capacities.txt}{6}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}outageParams.txt}{6}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}linedata****.csv}{7}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}outagePlan}{7}{subsection.4.8}%
+\contentsline {section}{\numberline {5}Options}{7}{section.5}%
+\contentsline {section}{\numberline {6}DataHolder}{7}{section.6}%
+\contentsline {subsection}{\numberline {6.1}\_\_init\_\_}{7}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}LoadProductionDict}{9}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}LoadOutageDict}{9}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}InitializeEmptyTimeSeriesArray}{9}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}CreateProdNamesList}{9}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}InitializeTimeSeries}{9}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}LoadOutagePlan}{10}{subsection.6.7}%
+\contentsline {section}{\numberline {7}Simulation}{10}{section.7}%
+\contentsline {subsection}{\numberline {7.1}\_\_init\_\_}{10}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}InitializeLines}{10}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}InitializeToFrom}{10}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}RunSimulation}{12}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}PrepareHour}{12}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}SolveMaxFlowProbem}{13}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}readjustParams}{14}{subsection.7.7}%
+\contentsline {subsection}{\numberline {7.8}SaveData}{15}{subsection.7.8}%
+\contentsline {section}{\numberline {8}Line}{15}{section.8}%
+\contentsline {subsection}{\numberline {8.1}PrepareHour}{15}{subsection.8.1}%
+\contentsline {section}{\numberline {9}Area}{15}{section.9}%
+\contentsline {subsection}{\numberline {9.1}\_\_init\_\_}{15}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}InitializeDemand}{16}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}InitializeFactors}{17}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}LoadOrCreateOutagePlan}{17}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}CreateOutagePlan}{18}{subsection.9.5}%
+\contentsline {section}{\numberline {10}AreaDK}{18}{section.10}%
+\contentsline {section}{\numberline {11}Production}{19}{section.11}%
+\contentsline {subsection}{\numberline {11.1}AddProducer}{19}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}GetCurrentValue}{19}{subsection.11.2}%
+\contentsline {section}{\numberline {12}NonTDProduction}{19}{section.12}%
+\contentsline {subsection}{\numberline {12.1}SetOutagePlan}{20}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}InitializeFailedUnits}{20}{subsection.12.2}%
+\contentsline {subsection}{\numberline {12.3}PrepareHour}{20}{subsection.12.3}%
+\contentsline {section}{\numberline {13}PostProcessor}{20}{section.13}%
+\contentsline {subsection}{\numberline {13.1}process}{21}{subsection.13.1}%
+\contentsline {section}{\numberline {14}Node}{21}{section.14}%
+\contentsline {subsection}{\numberline {14.1}ReadHeader}{21}{subsection.14.1}%
+\contentsline {subsection}{\numberline {14.2}ReadHour}{21}{subsection.14.2}%
+\contentsline {subsection}{\numberline {14.3}AdjustProduction}{22}{subsection.14.3}%
+\contentsline {section}{\numberline {15}Kommentarer om Sisyfos}{22}{section.15}%
+\contentsline {subsection}{\numberline {15.1}Flexibelt forbrug}{22}{subsection.15.1}%
+\contentsline {subsection}{\numberline {15.2}Værker udenfor modellen}{22}{subsection.15.2}%
+\contentsline {subsection}{\numberline {15.3}Ændrede forbrugsvaner}{23}{subsection.15.3}%
+\contentsline {subsection}{\numberline {15.4}Batterier}{23}{subsection.15.4}%
