@@ -205,11 +205,9 @@ class Area:
                             self.nonTDProductionList.append(NonTDProduction(self.options,self.name+"_"+type))
                             self.nonTDProductionList[-1].SetHeatBinding(self.dh.GetTemperatureArray())
                             self.nonTDProductionNames.append(self.name+"_"+type)
-                            print(type)
                             if(self.options.prioritizeNuclear):
                                 if(type in ("Nuclear","NuclearSweden","NuclearFinland","Kernekraft_DE","Borssele","NuclearGB","NuclearFR","NuclearBE","NuclearES","NuclearCH","NuclearCZSK","NuclearHU") or "nuclear" in type or "Nuclear" in type):
                                     self.variableProd.append(self.nonTDProductionList[-1])
-                                    print("Added " + type)
                 if(type == "RS"):
                     self.nonTDdemand.AddProducer(name, -cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
                 else:

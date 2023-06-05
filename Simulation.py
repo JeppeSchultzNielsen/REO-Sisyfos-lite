@@ -443,7 +443,7 @@ class Simulation:
                 #prev_time = time.time()
         else:
             for i in range(beginHour, endHour):
-                if(i%1 == 0):
+                if(i%100 == 0):
                     print(f"{self.saveFilePath}: starting hour {i}")
                 self.PrepareHour(i)
                 self.SolveMaxFlowProblem(0)
