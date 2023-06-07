@@ -15,7 +15,10 @@ class Averager:
                 print("Averager: reading " + name)
                 data += np.loadtxt(name, skiprows = 1)
             data = data/len(pathsToAverage)
-            w.close()
             print("Averager: saving output to" + output)
-            with open(output, "ab") as f:
-                np.savetxt(f, data, fmt="%10.3f", delimiter="\t")
+            for i in range(len(data)):
+                build = ""
+                for j in range(len(data[i])):
+                      build += (f"{data[i][j]:.3f}" + "\t")
+                build += "\n"
+                w.write(build)

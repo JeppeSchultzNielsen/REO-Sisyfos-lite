@@ -18,6 +18,8 @@ class Options:
         self.tyndpYear = 2030
         self.prioritizeVariableProduction = False
         self.prioritizeNuclear = False
+        self.useDSR = True
+        self.useReserve = True
         if(simulationYear == 2025):
             self.demFlexTransport = 0 #0 for 2025 grundberegning, 0.1 for 2030, 0.2 for 2035, 0.3 for 2040 these numbers are taken from the tabels at A189 in "Demand" in SisyfosData - defaults are 2030 numbers
             self.demFlexCVP = 0.7 #0.7 for 2025, 0.9 for 2030, 0.95 for 2035, 1 for 2040

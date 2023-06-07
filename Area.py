@@ -46,6 +46,7 @@ class Area:
         build = "Name\tType\tCapacity\tNoUnits\tPlannedOutage\tUnplannedOutage\tOutageTime\tHeatDep\tVariation\n"
         printList = self.totProductionList.copy()
         printList.append(self.demand)
+        printList.append(self.nonTDdemand)
         for i in range(len(printList)):
             for j in range(len(printList[i].nameList)):
                 build += printList[i].nameList[j] + "\t"
@@ -183,6 +184,8 @@ class Area:
             type = factories[i].type
             if(cap == 0):
                 continue
+            if(type == "DSR" and not self.options.useDSR):
+                continue
             if(factories[i].noUnits == "-"):
                 if(self.dh.outageDict[type].unitSize < 0.0000001):
                     noUnits = 1 #avoid division by zero
@@ -209,7 +212,8 @@ class Area:
                                 if(type in ("Nuclear","NuclearSweden","NuclearFinland","Kernekraft_DE","Borssele","NuclearGB","NuclearFR","NuclearBE","NuclearES","NuclearCH","NuclearCZSK","NuclearHU") or "nuclear" in type or "Nuclear" in type):
                                     self.variableProd.append(self.nonTDProductionList[-1])
                 if(type == "RS"):
-                    self.nonTDdemand.AddProducer(name, -cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
+                    if(self.options.useReserve):
+                        self.nonTDdemand.AddProducer(name, -cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)
                 else:
                     prodListIndex = self.nonTDProductionNames.index(self.name+"_"+type,0,len(self.nonTDProductionNames))
                     self.nonTDProductionList[prodListIndex].AddProducer(name, cap, noUnits, unplanned, planned, outageTime, heatDep, type,factories[i].variation,self.dh.constantTimeSeries)

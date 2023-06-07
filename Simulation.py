@@ -110,6 +110,7 @@ class Simulation:
         diagFile.write("Simulation year: " + str(self.simulationYear) + "\n")
         diagFile.write("Climate year: " + str(self.climateYear) + "\n")
         diagFile.write("TYNDP report: " + str(self.dh.demandYear) + "\n")
+        diagFile.write("PlannedDownTime path: " + str(self.dh.outagePlanPath) + "\n")
         diagFile.write("UsePlannedDownTime: " + str(self.options.usePlannedDownTime) + "\n")
         diagFile.write("UseUnplannedDownTime: " + str(self.options.useUnplannedDownTime) + "\n")
         diagFile.write("demFlexKlassisk: " + str(self.options.demFlexKlassisk) + "\n")
@@ -120,6 +121,10 @@ class Simulation:
         diagFile.write("oresundOpen: " + str(self.options.oresundOpen) + "\n")
         diagFile.write("EnergyIslandEast: " + str(self.options.energyIslandEast) + "\n")
         diagFile.write("EnergyIslandWest: " + str(self.options.energyIslandWest) + "\n")
+        diagFile.write("prioritizeVariableProduction: "+ str(self.options.prioritizeVariableProduction) + "\n")
+        diagFile.write("prioritizeNuclear: "+ str(self.options.prioritizeNuclear) + "\n")
+        diagFile.write("useDSR: "+ str(self.options.useDSR) + "\n")
+        diagFile.write("useReserve: "+ str(self.options.useReserve) + "\n")
 
 
         for i in range(len(self.areaList)):

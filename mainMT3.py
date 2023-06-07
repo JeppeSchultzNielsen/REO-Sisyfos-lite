@@ -23,6 +23,7 @@ for i in [2013,2014,2015]:
     options.useVariations = True
     options.tyndpYear = 2030
     options.prioritizeVariableProduction = True
+    options.prioritizeNuclear = True
     dh = DataHolder(options,"data/outage/Plan2035_1985_var.csv")
     for j in range(5):
         sim = Simulation(options, dh,f"results/2035_{i}_{j}_nuPrio.txt", True, False)

@@ -115,6 +115,8 @@ class Node:
         self.demandIndex = -1
         self.demandValue = 0
         self.name = name
+        self.relevantNames = []
+        self.relevantIndeces = []
 
     def readHeader(self, splittedHeader):
         for i in range(len(splittedHeader)):
@@ -126,9 +128,13 @@ class Node:
                 if(spl[-1] == "units"):
                     continue
                 if(spl[0] == self.name):
+                    self.relevantNames.append(splittedHeader[i])
+                    self.relevantIndeces.append(i)
                     self.fromIndeces.append(i)
                 if(spl[2] == self.name):
                     self.toIndeces.append(i)
+                    self.relevantNames.append(splittedHeader[i])
+                    self.relevantIndeces.append(i)
             else:
                 #this is not a line
                 if(spl[0] == self.name):
@@ -147,6 +153,8 @@ class Node:
                                 found = True
                                 self.prodIndexesInHeader.append(i)
                                 self.prodIndexesInValues.append(j)
+                                self.relevantNames.append(splittedHeader[i])
+                                self.relevantIndeces.append(i)
                         if(not found):
                             print("Error: did not expect " + splittedHeader[i])
 
