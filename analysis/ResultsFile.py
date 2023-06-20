@@ -19,10 +19,12 @@ class ResultsFile:
 
     def getColumn(self,toGet):
         if(isinstance(toGet,str)):
-            ind = self.splittedheader.index(toGet)
+            ind = self.splittedHeader.index(toGet)
         else:
             ind = toGet
         return self.data[ind]
     
     def getNode(self,nodeName):
         ind = self.nodeNames.index(nodeName)
+        return self.nodes[ind]
+        

@@ -116,6 +116,8 @@ class Node:
         self.demandValue = 0
         self.name = name
         self.relevantNames = []
+        self.fromNames = []
+        self.toNames = []
         self.relevantIndeces = []
 
     def readHeader(self, splittedHeader):
@@ -131,10 +133,12 @@ class Node:
                     self.relevantNames.append(splittedHeader[i])
                     self.relevantIndeces.append(i)
                     self.fromIndeces.append(i)
+                    self.fromNames.append(spl[2])
                 if(spl[2] == self.name):
                     self.toIndeces.append(i)
                     self.relevantNames.append(splittedHeader[i])
                     self.relevantIndeces.append(i)
+                    self.toNames.append(spl[0])
             else:
                 #this is not a line
                 if(spl[0] == self.name):
