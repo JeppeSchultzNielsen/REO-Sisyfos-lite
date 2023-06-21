@@ -1,4 +1,3 @@
-%Dette er dokumentationen for koden. 
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
 \usepackage{hyperref}
@@ -18,11 +17,18 @@
 
 \maketitle
 \tableofcontents
+\section{Ændringer til dette dokument}
+02-06-23: Tilføjede section med ændringer. Tilføjede lille kommentar om hvilket spørgsmål Sisyfos skal besvare, og kommentar om EENS og afbrudsminutter i sektionen om Sisyfos. Tilføjede section om DivKapDK2 og FlatDemandDK2. Tilføjede section om brownout blocks. Tilføjede option PrioritizeNuclear. Tilføjede sektion om analyse og averager.
 
+05-06-23: Tilføjede section om optimering. Tilføjede section om output.
+
+07-06-23: Kommentar om DSR. Tilføjede options om at bruge DSR og Reserve.
 \section{Introduktion}
 Dette dokument beskriver kode, der kan findes på \url{https://github.com/JeppeSchultzNielsen/REO-Sisyfos-lite}, som er et forsøg på en rekonstruering af Energistyrelsens beregningsmodel Sisyfos. Beskrivelsen er ikke 100\% udtømmende, så forventningen er at den fungerer som opslagsværk mens koden læses. Kun de komplicerede aspekter af koden bliver beskrevet -- det vil sige at eksempelvis getter-metoder bliver ignoreret. 
 \subsection{Sisyfos}
-Sisyfos er en beregningsmodel, der simulerer et netværk af "noder" der kan producere, forbruge og udveksle energi. Den er skabt til at undersøge effektsikkerheden i de allermest kritiske timer. Den gør derfor nogle antagelser, som f.eks. at ignorere fleksibelt forbrug, fordi fleksibelt forbrug ikke spiller en rolle i de allermest kritiske timer, fordi elprisen ville være høj nok til at fleksibelt forbrug er slukket. Sisyfos er i Energistyrelsens ord udelukkende end "fysisk-teknisk model" og kan derfor ikke modellere elpris eller ellagre (s. 4 i baggrundsrapporten).
+Sisyfos er en beregningsmodel, der simulerer et netværk af "noder" der kan producere, forbruge og udveksle energi. Den er skabt til at besvare spørgsmålet "er der nogensinde effektmangel?", altså undersøge effektsikkerheden i de allermest kritiske timer. Den gør derfor nogle antagelser, som f.eks. at ignorere fleksibelt forbrug, fordi fleksibelt forbrug ikke spiller en rolle i de allermest kritiske timer, fordi elprisen ville være høj nok til at fleksibelt forbrug er slukket. Sisyfos er i Energistyrelsens ord udelukkende end "fysisk-teknisk model" og kan derfor ikke modellere elpris eller ellagre (s. 4 i baggrundsrapporten). 
+
+Hovedresultatet for Sisyfos er EENS (expected energy not served), der er et tal i MWh, der angiver differencen mellem forbrug og kapacitet i de timer, hvor der har været underskud. Energistyrelsen oplyser ofte dette tal som afbrudsminutter, hvor EENS normeres til forbruget. Eksempelvis vil det sige, at hvis forbruget i en time er 1000 MW, og der kun er 900 MW kapacitet, så er der 100 MWh EENS i denne time. Man har altså været nødt til at slukke for 10\% af forbruget i en time, hvilket altså svarer til 6 afbrudsminutter.
 
 \section{Quickstart guide}
 Projektet kan downloades fra github på flere måder. Man kan (forudsat, at man har git installeret på ens computer) åbne en terminal, bevæge sig ind i mappen man ønsker at placere koden i ved brug af "cd" kommandoen, og så skrive
@@ -98,6 +104,61 @@ for i in range(2):
 På linje 11 er prioritizeVariableProduction sat til true, hvilket betyder, at modellen maksimerer brugen af uregulerbare kilder. På line 14 gives udetidsplanen "data/outage/Plan2035\_1985\_noVar.csv". Dette betyder at det er en udetidsplan lavet til 2035, baseret på klimaåret 1985, hvor der ikke er taget højde for variabel produktion, da udetidsplanen blev lavet (se eventuelt sektionen om CreateOutagePlan). 
 Bemærk, at hvis jeg giver en adresse til en outagePlan, der ikke eksiterer, laver programmet selv en udetidsplan og gemmer den på denne adresse. Dette er en meget tidskrævende proces (ca. 2 timer).
 På linje 17 giver jeg først Simulation objektet parameteren True, fordi den skal gemme outputtet, og False fordi den ikke skal gemme en diagnostikfil, hvor der står hvad parametrene for simuleringen har været. 
+
+\subsection{Optimering}
+Der er ikke bygget multithreading ind i Sisyfos-lite, men man kan lave en grov multithreading. Hvis jeg har ønsket at lave mange simuleringer har jeg gjort det således: jeg har lavet fire filer, der ligner denne main fil:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+from Simulation import Simulation
+from DataHolder import DataHolder
+from Options import Options
+from PostProcessor import PostProcessor
+
+for i in [2013,2014,2015]:
+    options = Options(2035,i)
+    options.usePlannedDownTime = True
+    options.useUnplannedDownTime = True
+    options.energyIslandEast = True
+    options.energyIslandWest = True
+    options.useVariations = True
+    options.tyndpYear = 2030
+    options.prioritizeVariableProduction = True
+    dh = DataHolder(options,"data/outage/Plan2035_1985_var.csv")
+    for j in range(5):
+        sim = Simulation(options, dh,f"results/2035_{i}_{j}_nuPrio.txt", True, False)
+        sim.RunSimulation(0,8760)
+        pp = PostProcessor()
+        pp.process(f"results/2035_{i}_{j}_nuPrio.txt",f"results/2035_{i}_{j}_nuPrio_pp.txt"
+\end{Verbatim}
+og kaldt dem "main.py", "mainMT1.py" og så videre. I disse filer er den eneste forskel årstallene i linje 17. Så har jeg kørt dem fra hver deres terminal som beskrevet i quickstart-guiden, hvilket resulterer i at man kører 4 separate processer, der gerne skulle køre på 4 forskellige tråde (og bruger 4 gange så meget RAM, men det er ikke alverden). Jeg er ikke super skarp på multithreading, men det ser ud til øge effektiviteten med en faktor 4.
+
+På min maskine kan jeg færdiggøre 4 simuleringer med prioritering af variabel produktion på ca. 9 minutter på denne måde (eller ca. 3 minutter, hvis man ikke prioriterer variabel produktion, altså kører simuleringen som Energistyrelsen gør). Det betyder at det ville tage ca. 1260 minutter eller 21 timer at køre samme antal simuleringer som Energistyrelsen (12*50 simuleringsår) -- eller ca. 7 timer under samme indstillinger som Energistyrelsen.
+
+\subsubsection{Antivirus}
+Jeg bemærkede, at antivirus-programmer på windows ikke bryder sig om at man skriver meget data til disken. Jeg har forsøgt både med windows defender og Malwarebytes -- i begge tilfælde vil programmet læse alt data, der skrives under simuleringen, hvilket betyder at antivirusprogrammet maxer CPUen ud. Det er ikke lykkedes mig at lave undtagelser i selve antivirusprogrammerne for at undgå dette. Jeg har ikke samme problem når jeg kører simuleringen på Ubuntu, måske fordi jeg slet ikke har antivirus på min ubuntu installation. 
+
+Et grimt fix til dette er at deaktivere real-time protection i windows defender mens man kører simuleringen, hvilket stopper det store CPU forbrug. Alternativt kan man acceptere et lille tab i performance. 
+
+\subsection{Output}
+Her følger en lille beskrivelse af output-filen. Først kommer kolonner, der indeholder information om hver node for hver time. Disse følger en bestemt struktur:
+
+Først kommer demand, der er forbruget i noden + den strategiske reserve.
+
+Så kommer "surplus", der er den totale produktion fratrukket demand. 
+
+Så kommer "varSurplus" som er den totale variable produktion i noden (produktion, der følger en timeserie) fratrukket demand. Hvis option "prioritizeNuclear" er true, er Nuclear inkluderet i variabel produktion.
+
+Så kommer "netImport" som er netto importen i noden -- altså import fratrukket eksport. 
+
+Så kommer "EENS", som er den del af forbruget, der ikke er blevet dækket af produktion og import i noden. 
+
+Så kommer alle produktionstyperne i noden, og hvor meget af produktionen de er ansvarlige for.
+
+Så kommer den kapacitet, der er ude som følge af planlagt udetid, og efterfølgende den kapacitet der er ude som følge af stokastisk udetid. 
+
+Dette mønster gentager sig for alle nodes. Efter det kommer den transporterede energi på alle transmissionslinjer. Navnene følger generelt et mønster her som er "A\_to\_B". Hvis tallet er negativt, betyder det altså at energi strømmer fra B til A. 
+
+Efter alle transmissionslinjer kommer antallet af aktive enheder på hver transmissionsline. Dette tal varierer afhængigt af om der er stokastisk udetid, og kan altså forklare hvorfor der ikke transmitteres energi på en linje selvom der er overskud i den ene ende og underskud i den anden. 
+
 \section{Overordnet beskrivelse}
 Koden består af følgende filer, der med undtagelse af main.py indeholder klasser:
 \begin{itemize}
@@ -148,7 +209,7 @@ Disse filer indeholder information om capaciteter, udetider, og antallet af enhe
 Denne mappe indeholder planer for planlagt udetid for alle værker i alle nodes i alle timer i et år som er genereret gennem CreateOutagePlan. Det vil sige at for hvert værk er der en kolonne med 8760 indgange (antallet af timer i et år), som indeholder et heltal der svarer til hvor mange enheder i værket der er tændt i den pågældende time. Det betyder at man skal generere nye udetidsplaner for hvert simuleringsår, da antallet af enheder ændrer sig når produktionskapaciteten gør -- disse udetidsplaner kan dog selvfølgelig genbruges når samme simuleringsår køres igen senere. Hvordan udetidsplanerne genereres vil blive forklaret i Area-klassen.
 
 \section{Options}
-På tabel \ref{tab:options} findes en beskrivelse af de options, der kan sættes i Options-klassen. 
+På tabel \ref{tab:options} findes en beskrivelse af de options, der kan sættes i Options-klassen. Deres standardværdier er valgt, så de reflekterer standard for Sisyfos. simulationYear og climateYear gives som parametre, når et options-objekt skabes. 
 \begin{table}
 \centering
     \begin{tabularx}{1.3\textwidth}{|s|s|s|b|}
@@ -165,6 +226,10 @@ På tabel \ref{tab:options} findes en beskrivelse af de options, der kan sættes
     energyIslandEast & True & True/False & Om den østlige energiø skal medtages i simuleringen. Hvis den er False, sættes øens kapacitet til 0, og alle linjer der burde forbinde med den får 0 kapacitet.\\
     energyIslandWest & True & True/False & Som energyIslandEast.\\
     \makecell{prioritizeVariable\\Production} & False & True/False & Om simuleringen skal forsøge at maksimere forbruget af variabel produktion (det vil sige produktion, der følger timeserier). Dette gør omtrent simuleringstiden 3 gange længere.\\
+    prioritizeNuclear & False & True/False & Prioriterer produktion fra kernekraftværk på samme måde som variabel produktion, når prioritizeVariableProduction er aktiveret. Hvis ikke prioritizeVariableProduction er true, har denne option ingen effekt.\\
+    useDSR & True & True/False & Om demand side response (i modellen et kraftværk, der simulerer ændringer i forbrug) skal medregnes.\\
+    useReserve & True & True/False & Om reserver skal medregnes 
+    
     \bottomrule
     \end{tabularx}%%
   \caption{Tabel over variable i Options-klassen.}
@@ -429,6 +494,10 @@ ReadHour kaldes for hver time efter ReadHeader er blevet kaldt. Den får som inp
 \subsection{AdjustProduction}
 I den metode opdateres nodens "ShouldBe" array, der ender med at indeholde de værdier, der skal skrives til den postprocessede fil. Der laves et target for den pågældende time, der er lig demand minus nettoimporten -- det må være det, der skal produceres i Noden. Så summes der over den produktion, der har været i Noden i den prioriterede rækkefølge indtil target er nået, mens shouldBe opdateres med de værdier der lægges til. Når man er ved at overstige target, lægges der kun det til, der skal til for at overstige target. Alt produktion der endnu ikke er nået, sættes til 0. 
 \section{Kommentarer om Sisyfos}
+\subsection{DivKapDK2 og FlatDemandDK2}
+Hvis man kigger i Sisyfos5Data.xlsx Plants-arket ligger der på linjer 150 og 151 to værker ved navn DivKapDK2 og FlatDemandDK2. Disse har begge fået "NodeName" DK-West, mens NodeNo for DivKapDK2 er 2 (som rigtigt nok svarer til DK-East), og NodeNo for FlatDemandDK2 er 1 (som svarer til DK-West). Jeg har antaget, at dette er fejl, og i Sisyfos-Lite er de rettet. 
+
+Jeg tror, den måde Sisyfos virker på, er at den r-fil, som vi ikke har fået agtindsigt i (altså selve modellen), læser data fra Sisyfos5Data.xlsx. Afhængigt af, hvordan den læser dataet, kan denne fejl være blevet taget med i Energistyrelsens resultater, hvilket altså betyder at de undervurderer EENS i DK2 og overvurderer det i DK1. 
 \subsection{Flexibelt forbrug}
 For de to danske områder er der indført fleksibelt forbrug. Sisyfos blev lavet til kun at undersøge de kritiske timer i forhold til effektoverskud. Derfor holdes fleksibelt forbrug, som PtX, fuldstændigt udenfor modellen, da antagelsen er, at dette forbrug ville blive slukket under spidsbelastning. Hvis man vil se på energiforbrug i timer udenfor spidsbelastning kan disse ikke ignoreres, og man har brug for en mere kompliceret model for forbruget.
 \subsection{Værker udenfor modellen}
@@ -442,7 +511,7 @@ For de danske områder er der indbygget ændringer i forbrugsvaner i fremtiden i
 
 Det er et problem der ville kræve en løsning, der går langt ud over kompleksiteten af Sisyfos, for forbruget i fremtiden forventes at være koblet stærkere til de uregulerbare kilder end de er nu.
 
-Sisyfos har forsøgt at imødekomme problemet gennem DSR (demand-side response), der er indkodet som et kraftværk (fordi et fald i forbrug er ækvivalent med tilvækst i produktion) i alle andre lande end Danmark. Det vil sige at man har en forventning til, at der i de kritiske timer vil blive slukket for X MW fordi strømprisen stiger. Disse tal kommer ligesom kapacitet fra MAFTYNDP.
+Sisyfos har forsøgt at imødekomme problemet gennem DSR (demand-side response), der er indkodet som et kraftværk (fordi et fald i forbrug er ækvivalent med tilvækst i produktion) i alle andre lande end Danmark. Det vil sige at man har en forventning til, at der i de kritiske timer vil blive slukket for X MW fordi strømprisen stiger. Disse tal kommer ligesom kapacitet fra MAFTYNDP, dog er det 0 for nogle lande (for Sverige er den 0 i 2020, maximal i 2030, og 0 i 2040 -- sandsynligvis fordi forskellige rapporter har sagt forskellige ting; I Østrig, Schweiz, Polen, Tjekkiet, Slovakiet og Ungarn er den altid 0). Det virker ikke som en fuldt ud gennemført løsning. I Danmark er DSR indført som det flexible forbrug beksrevet ovenfor. 
 \subsection{Batterier}
 I Sisyfos er energilagring (eksempelvis batterier og pumped hydro) modelleret som kraftværker med høj uplanlagt udetid, som ifølge baggrundsrapporten skal simulere, at batterierne tømmes. Men et batteri er ifølge udetidsparametrene delt op i enheder af 10 MW, og hydro 50 MW. Det betyder at eksempelvis Holland med 3475 MW batterikapacitet i 2040 har 348 enheder. Grundet det store antal enheder betyder den uplanlagte udetid bare, at der effektivt set er 20\% mindre kapacitet, men der er altså energi fra batterier tilgængeligt på ethvert tidspunkt (grundet det store antal enheder er der altså ikke effektivt set stokastisk udetid). 
 
@@ -453,4 +522,16 @@ Sisyfos har heller ikke nogen mekanisme til at oplade batterier på en realistis
 Fundamentalt ligger problemet i at der skal to tal til at karakterisere et batteri: hvor meget energi der er i det, og hvor meget effekt der kan trækkes ud -- og energien, der er i batteriet, skal bestemmes dynamisk, så der er energibevarelse. Sisyfos bruger kun ét tal: hvor meget effekt, der kan trækkes ud. 
 
 En eventuel løsning på problemet kunne være en ny underklasse af Production, der tager højde for dette. Men at bestemme hvornår batterier skal oplades og tages i brug er et ikke-trivielt problem, for det afhænger af el-pris som er udenfor Sisyfos' scope.
+\subsection{Brownout blocks}
+Når Energistyrelsen opgiver afbrudsminutter tager tallet højde for "brownout blocks". Når der er effektmangel lukker man forbruget i "blocks", så man lukker altså mere end nødvendigt. Denne effekt er ikke direkte bygget ind i Sisyfos-Lite, men kan tages højde for i analyse. 
+\section{Analyse}
+Nogle små analyser er lavet, som kan findes i mappen "analysis". Til det er der lavet nogle værktøjer, der gør analyse af dataet lidt nemmere. 
+\subsection{Averager}
+Denne klasse indeholder kun én funktion, Average, der tager som input en liste af stier til filer Aog en adresse som deres gennemsnit skal skrives til. Dette er en måde at "smoothe" de stokatiske udetider og de tilfældige valg, der laves når der importeres/eksporteres strøm. Et eksempel på dette kan ses ExcessAnalysis.ipynb.
+\subsection{ResultsFile}
+Denne klasse indeholder getColumn metoden, der nemt kan hente alle indgangene i en søjle i en resultatsfil, eksempelvis som:
+\begin{verbatim}
+    res = ResultsFile("../results/averaged/NuPrio2035_2009.txt")
+    excessDK1 = res.getColumn("DK1_varSurplus")+res.getColumn("DK1_netImport")
+\end{verbatim}
 \end{document}
